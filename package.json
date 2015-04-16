@@ -1,0 +1,36 @@
+{
+  "name": "kGrid",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Microsoft/kGrid.git"
+  },
+  "author": "Bin Du <bidu@microsoft.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-bower-task": "^0.4.0",
+    "grunt-contrib-clean": "^0.6.0",
+    "grunt-contrib-concat": "^0.5.0",
+    "grunt-contrib-copy": "^0.6.0",
+    "grunt-contrib-less": "^0.11.4",
+    "grunt-contrib-watch": "^0.6.1",
+    "grunt-jasmine-node": "^0.2.1",
+    "grunt-karma": "^0.9.0",
+    "grunt-ts": "^1.11.13",
+    "jsdom": "^3.0.3",
+    "karma": "^0.12.23",
+    "karma-chrome-launcher": "^0.1.4",
+    "karma-firefox-launcher": "^0.1.4",
+    "karma-ie-launcher": "^0.1.5",
+    "karma-jasmine": "^0.2.2",
+    "karma-requirejs": "^0.2.2",
+    "karma-safari-launcher": "^0.1.1",
+    "load-grunt-tasks": "^0.6.0"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "name": "kGrid",
+  "version": "0.0.0",
+  "authors": [
+    "Bin Du <bidu@microsoft.com>"
+  ],
+  "moduleType": [
+    "amd"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "~2.1.1",
+    "angularjs": "~1.2.25",
+    "require-css": "~0.1.5",
+    "angular-route": "~1.2.25",
+    "requirejs": "~2.1.15",
+    "jquery-ui": "~1.11.2"
+  }
+}

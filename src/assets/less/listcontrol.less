@@ -1,0 +1,227 @@
+.msoc-rtl
+{
+    direction: rtl;
+}
+
+.msoc-ltr
+{
+    direction: ltr;
+}
+
+.msoc-position-absolute
+{
+    position: absolute;
+}
+
+.msoc-position-relative
+{
+    position: relative;
+}
+
+.msoc-overflow-hidden
+{
+    overflow: hidden;
+}
+
+.msoc-text-overflow-ellipsis
+{
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.msoc-overflow-auto
+{
+    overflow: auto;
+}
+
+.msoc-display-none
+{
+    display: none;
+}
+
+.msoc-display-block
+{
+    display: block;
+}
+
+.msoc-layout-wh100
+{
+    width: 100%;
+    height: 100%;
+}
+
+.msoc-layout-vfull
+{
+    .msoc-position-absolute;
+    top: 0px;
+    bottom: 0px;
+    height: auto;
+}
+
+.msoc-layout-full
+{
+    .msoc-position-absolute;
+    left: 0px;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    width: auto;
+    height: auto;
+}
+
+.msoc-layout-border-box
+{
+    box-sizing: border-box;
+}
+
+.msoc-align-left
+{
+    text-align: left;
+}
+
+.msoc-align-right
+{
+    text-align: right;
+}
+
+.msoc-list
+{
+    outline: 0px;
+}
+
+.msoc-list-screen-reader
+{
+    .msoc-display-none;
+}
+
+.msoc-list-content
+{
+    .msoc-layout-full;
+}
+
+.msoc-list-canvas,
+.msoc-list-header-canvas
+{
+    width: 0px;
+    height: 0px;
+    overflow: visible;
+}
+
+.msoc-ltr .msoc-list-canvas,
+.msoc-ltr .msoc-list-header-canvas,
+{
+    left: 0px;
+}
+
+.msoc-rtl .msoc-list-canvas,
+.msoc-rtl .msoc-list-header-canvas,
+{
+    right: 0px;
+}
+
+.mosc-list-viewport,
+{
+    -webkit-overflow-scrolling: touch;
+}
+
+.msoc-list-canvas,
+.msoc-list-header-canvas,
+.msoc-list-header-viewport,
+.msoc-list-row,
+.msoc-list-stack-cell,
+.msoc-list-stack-cell-content,
+.msoc-list-stack-header-cell,
+.msoc-list-stack-header-cell-content,
+.msoc-list-stack-header-end-border,
+.msoc-list-stack-row-border,
+.msoc-list-stack-row-selection,
+.msoc-list-table-cell,
+.msoc-list-table-cell-content,
+.msoc-list-table-cell-editing,
+.msoc-list-table-cursor,
+.msoc-list-table-header-cell,
+.msoc-list-table-header-cell-content,
+.msoc-list-table-header-cell-v-border,
+.msoc-list-table-header-cell-splitter,
+.msoc-list-table-resizer,
+.msoc-list-table-row-border,
+.msoc-list-table-header-bottom-border,
+.msoc-list-viewport,
+{
+    .msoc-position-absolute;
+    .msoc-layout-border-box;
+}
+
+.msoc-list-viewport
+{
+    -webkit-overflow-scrolling: touch;
+}
+
+.msoc-list-table-header-cell
+{
+    touch-action: none;
+}
+
+.msoc-list-stack-header-cell-content,
+.msoc-list-stack-cell-content,
+.msoc-list-table-header-cell-content,
+.msoc-list-table-cell-content,
+{
+    .msoc-overflow-hidden;
+    .msoc-text-overflow-ellipsis;
+}
+
+.msoc-list-table-header-cell-splitter,
+.msoc-list-table-header-cell-v-border,
+.msoc-list-stack-header-end-border,
+{
+    top: 0px;
+    bottom: 0px;
+}
+
+.msoc-list-table-header-bottom-border,
+{
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+}
+
+.msoc-list-stack-row-border,
+{
+    left: 0px;
+    right: 0px;
+}
+
+.msoc-list-table-header-cell-splitter
+{
+    cursor: e-resize;
+}
+
+.msoc-list-table-resizer
+{
+    top: 0px;
+    width: 3px;
+    border-left: dashed 1px black;
+    border-right: dashed 1px black;
+    cursor: e-resize;
+}
+
+.msoc-list-canvas-container,
+.msoc-list-header-canvas-container
+{
+    .msoc-position-relative;
+    overflow: hidden;
+}
+
+.msoc-list-canvas.msoc-list-canvas-primary,
+.msoc-list-header-canvas.msoc-list-canvas-primary
+{
+    .msoc-layout-full;
+    overflow: hidden;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+}
+
