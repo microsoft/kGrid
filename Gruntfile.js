@@ -33,6 +33,7 @@ module.exports = function(grunt) {
                     'lib/**/*',
                     'build/js/**/*.js',
                     'build/assets/css/**/*.css',
+                    'src/demo/**/*',
                 ],
                 tasks: ['copy:install', 'jasmine_node']
             },
@@ -78,6 +79,20 @@ module.exports = function(grunt) {
                         cwd: 'build',
                         src: ['js/**/*.js', 'assets/css/**/*.css'],
                         dest: path.join(installDir),
+                        filter: 'isFile'
+                    },
+                    {                                                                                             
+                        expand: true,
+                        cwd: 'src/demo',
+                        src: ['**/*.html'],
+                        dest: path.join(installDir),
+                        filter: 'isFile'
+                    },
+                    {
+                        expand: true,
+                        cwd: 'src/demo',
+                        src: ['js/**/*'],
+                        dest: path.join(installDir, 'demo'),
                         filter: 'isFile'
                     },
                 ]
