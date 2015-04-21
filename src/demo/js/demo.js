@@ -6,13 +6,13 @@ $(function () {
     root1.append(listControlElement1);
 
     listControlObject1 = new Microsoft.Office.Controls.ListControl(listControlElement1[0]);
-    listControlObject1.width(400);
-    listControlObject1.height(400);
+    listControlObject1.width(548);
+    listControlObject1.height(398);
 
     listControlObject1.addColumns([
     { data: 'No.', field: 'no', table: { width: 100 }, },
     { data: 'Name', field: 'name', table: { width: 100 }, },
-    { data: 'Distance from Sun(AU)', field: 'distance', table: { width: 200 }, }]);
+    { data: 'Distance from Sun (AU)', field: 'distance', table: { width: 200 }, }]);
 
     data1 = [
     { no: 1, name: 'Mercury', distance: 0.4 },
@@ -33,13 +33,13 @@ $(function () {
     root2.append(listControlElement2);
 
     listControlObject2 = new Microsoft.Office.Controls.ListControl(listControlElement2[0]);
-    listControlObject2.width(400);
-    listControlObject2.height(400);
+    listControlObject2.width(548);
+    listControlObject2.height(398);
 
     listControlObject2.addColumns([
     { data: 'No.', field: 'no', table: { width: 100 }, },
     { data: 'Name', field: 'name', table: { width: 100 }, },
-    { data: 'Distance from Sun(AU)', field: 'distance', table: { width: 200 }, }]);
+    { data: 'Distance from Sun (AU)', field: 'distance', table: { width: 200 }, }]);
 
     data2 = [
     { no: 1, name: 'Mercury', distance: 0.4 },
@@ -53,8 +53,7 @@ $(function () {
     ];
     listControlObject2.rows(data2);
 
-    var button2 = $('<button>toggle rtl</button>');
-    root2.append(button2);
+    var button2 = $('#rtl_button');
     button2.on('click', function () {
         listControlObject2.rtl(!listControlObject2.rtl());
         listControlObject2.updateUI();
@@ -67,13 +66,13 @@ $(function () {
     root3.append(listControlElement3);
 
     listControlObject3 = new Microsoft.Office.Controls.ListControl(listControlElement3[0]);
-    listControlObject3.width(400);
-    listControlObject3.height(400);
+    listControlObject3.width(548);
+    listControlObject3.height(398);
 
     listControlObject3.addColumns([
     { data: 'No.', field: 'no', table: { width: 100 }, },
     { data: 'Name', field: 'name', table: { width: 100 }, },
-    { data: 'Distance from Sun(AU)', field: 'distance', table: { width: 200 }, }]);
+    { data: 'Distance from Sun (AU)', field: 'distance', table: { width: 200 }, }]);
 
     data3 = [
     { no: 1, name: 'Mercury', distance: 0.4 },
@@ -88,8 +87,7 @@ $(function () {
 
     listControlObject3.rows(data3);
 
-    var button3 = $('<button>toggle view</button>');
-    root3.append(button3);
+    var button3 = $('#view_button');
     button3.on('click', function () {
         listControlObject3.viewType(listControlObject3.viewType() == Microsoft.Office.Controls.ViewType.Stack ? Microsoft.Office.Controls.ViewType.Table : Microsoft.Office.Controls.ViewType.Stack);
         listControlObject3.updateUI();
@@ -101,13 +99,13 @@ $(function () {
     root4.append(listControlElement4);
 
     listControlObject4 = new Microsoft.Office.Controls.ListControl(listControlElement4[0]);
-    listControlObject4.width(400);
-    listControlObject4.height(400);
+    listControlObject4.width(548);
+    listControlObject4.height(398);
 
     listControlObject4.addColumns([
     { data: 'No.', field: 'no', table: { width: 100 }, },
     { data: 'Name', field: 'name', table: { width: 100 }, },
-    { data: 'Distance from Sun(AU)', field: 'distance', table: { width: 200 }, }]);
+    { data: 'Distance from Sun (AU)', field: 'distance', table: { width: 200 }, }]);
 
     data4 = [
     { no: 1, name: 'Mercury', distance: 0.4 },
@@ -129,13 +127,13 @@ $(function () {
     root5.append(listControlElement5);
 
     listControlObject5 = new Microsoft.Office.Controls.ListControl(listControlElement5[0]);
-    listControlObject5.width(400);
-    listControlObject5.height(400);
+    listControlObject5.width(548);
+    listControlObject5.height(398);
 
     listControlObject5.addColumns([
     { data: 'No.', field: 'no', table: { width: 100 }, },
     { data: 'Name', field: 'name', table: { width: 100 }, },
-    { data: 'Distance from Sun(AU)', field: 'distance', table: { width: 200 }, }]);
+    { data: 'Distance from Sun (AU)', field: 'distance', table: { width: 200 }, }]);
 
     data5 = [
     { no: 1, name: 'Mercury', distance: 0.4 },
@@ -150,8 +148,7 @@ $(function () {
 
     listControlObject5.rows(data5);
 
-    var button = $('<button>toggle theme</button>');
-    root5.append(button);
+    var button = $('#theme_button');
     button.on('click', function () {
         var theme;
 
@@ -167,8 +164,7 @@ $(function () {
         listControlObject5.updateUI();
     });
 
-    var button = $('<button>customize theme</button>');
-    root5.append(button);
+    var button = $('#customize_theme_button');
     var dialog;
 
     button.on('click', function () {
