@@ -7,22 +7,25 @@ $(function () {
 
     listControlObject1 = new Microsoft.Office.Controls.ListControl(listControlElement1[0]);
     listControlObject1.width(400);
-    listControlObject1.height(300);
+    listControlObject1.height(400);
 
     listControlObject1.addColumns([
+    { data: 'No.', field: 'no', table: { width: 100 }, },
     { data: 'Name', field: 'name', table: { width: 100 }, },
-    { data: 'Age', field: 'age', table: { width: 100 }, }]);
+    { data: 'Distance from Sun(AU)', field: 'distance', table: { width: 200 }, }]);
 
-    data = [
-    { name: 'test1', age: 25 },
-    { name: 'test2', age: 23 },
-    { name: 'test3', age: 12 },
-    { name: 'test4', age: 42 },
-    { name: 'test5', age: 26 },
-    { name: 'test6', age: 36 },
+    data1 = [
+    { no: 1, name: 'Mercury', distance: 0.4 },
+    { no: 2, name: 'Venus', distance: 0.7 },
+    { no: 3, name: 'Earth', distance: 1 },
+    { no: 4, name: 'Mars', distance: 1.5 },
+    { no: 5, name: 'Jupiter', distance: 5.2 },
+    { no: 6, name: 'Saturn', distance: 9.5 },
+    { no: 7, name: 'Uranus', distance: 19.2 },
+    { no: 8, name: 'Neptune', distance: 30.1 },
     ];
 
-    listControlObject1.rows(data);
+    listControlObject1.rows(data1);
 
     /// 2 . rtl example
     var root2 = $('#rtl');
@@ -31,21 +34,24 @@ $(function () {
 
     listControlObject2 = new Microsoft.Office.Controls.ListControl(listControlElement2[0]);
     listControlObject2.width(400);
-    listControlObject2.height(300);
+    listControlObject2.height(400);
 
     listControlObject2.addColumns([
+    { data: 'No.', field: 'no', table: { width: 100 }, },
     { data: 'Name', field: 'name', table: { width: 100 }, },
-    { data: 'Age', field: 'age', table: { width: 100 }, }]);
+    { data: 'Distance from Sun(AU)', field: 'distance', table: { width: 200 }, }]);
 
-    data = [
-    { name: 'test1', age: 25 },
-    { name: 'test2', age: 23 },
-    { name: 'test3', age: 12 },
-    { name: 'test4', age: 42 },
-    { name: 'test5', age: 26 },
-    { name: 'test6', age: 36 },
+    data2 = [
+    { no: 1, name: 'Mercury', distance: 0.4 },
+    { no: 2, name: 'Venus', distance: 0.7 },
+    { no: 3, name: 'Earth', distance: 1 },
+    { no: 4, name: 'Mars', distance: 1.5 },
+    { no: 5, name: 'Jupiter', distance: 5.2 },
+    { no: 6, name: 'Saturn', distance: 9.5 },
+    { no: 7, name: 'Uranus', distance: 19.2 },
+    { no: 8, name: 'Neptune', distance: 30.1 },
     ];
-    listControlObject2.rows(data);
+    listControlObject2.rows(data2);
 
     var button2 = $('<button>toggle rtl</button>');
     root2.append(button2);
@@ -62,22 +68,25 @@ $(function () {
 
     listControlObject3 = new Microsoft.Office.Controls.ListControl(listControlElement3[0]);
     listControlObject3.width(400);
-    listControlObject3.height(300);
+    listControlObject3.height(400);
 
     listControlObject3.addColumns([
+    { data: 'No.', field: 'no', table: { width: 100 }, },
     { data: 'Name', field: 'name', table: { width: 100 }, },
-    { data: 'Age', field: 'age', table: { width: 100 }, }]);
+    { data: 'Distance from Sun(AU)', field: 'distance', table: { width: 200 }, }]);
 
-    data = [
-    { name: 'test1', age: 25 },
-    { name: 'test2', age: 23 },
-    { name: 'test3', age: 12 },
-    { name: 'test4', age: 42 },
-    { name: 'test5', age: 26 },
-    { name: 'test6', age: 36 },
+    data3 = [
+    { no: 1, name: 'Mercury', distance: 0.4 },
+    { no: 2, name: 'Venus', distance: 0.7 },
+    { no: 3, name: 'Earth', distance: 1 },
+    { no: 4, name: 'Mars', distance: 1.5 },
+    { no: 5, name: 'Jupiter', distance: 5.2 },
+    { no: 6, name: 'Saturn', distance: 9.5 },
+    { no: 7, name: 'Uranus', distance: 19.2 },
+    { no: 8, name: 'Neptune', distance: 30.1 },
     ];
 
-    listControlObject3.rows(data);
+    listControlObject3.rows(data3);
 
     var button3 = $('<button>toggle view</button>');
     root3.append(button3);
@@ -93,22 +102,25 @@ $(function () {
 
     listControlObject4 = new Microsoft.Office.Controls.ListControl(listControlElement4[0]);
     listControlObject4.width(400);
-    listControlObject4.height(300);
+    listControlObject4.height(400);
 
     listControlObject4.addColumns([
+    { data: 'No.', field: 'no', table: { width: 100 }, },
     { data: 'Name', field: 'name', table: { width: 100 }, },
-    { data: 'Age', field: 'age', table: { width: 100 }, }]);
+    { data: 'Distance from Sun(AU)', field: 'distance', table: { width: 200 }, }]);
 
-    data = [
-    { name: 'test1', age: 25 },
-    { name: 'test2', age: 23 },
-    { name: 'test3', age: 12 },
-    { name: 'test4', age: 42 },
-    { name: 'test5', age: 26 },
-    { name: 'test6', age: 36 },
+    data4 = [
+    { no: 1, name: 'Mercury', distance: 0.4 },
+    { no: 2, name: 'Venus', distance: 0.7 },
+    { no: 3, name: 'Earth', distance: 1 },
+    { no: 4, name: 'Mars', distance: 1.5 },
+    { no: 5, name: 'Jupiter', distance: 5.2 },
+    { no: 6, name: 'Saturn', distance: 9.5 },
+    { no: 7, name: 'Uranus', distance: 19.2 },
+    { no: 8, name: 'Neptune', distance: 30.1 },
     ];
 
-    listControlObject4.rows(data);
+    listControlObject4.rows(data4);
 
 
     /// 5. theme example
@@ -118,22 +130,25 @@ $(function () {
 
     listControlObject5 = new Microsoft.Office.Controls.ListControl(listControlElement5[0]);
     listControlObject5.width(400);
-    listControlObject5.height(300);
+    listControlObject5.height(400);
 
     listControlObject5.addColumns([
+    { data: 'No.', field: 'no', table: { width: 100 }, },
     { data: 'Name', field: 'name', table: { width: 100 }, },
-    { data: 'Age', field: 'age', table: { width: 100 }, }]);
+    { data: 'Distance from Sun(AU)', field: 'distance', table: { width: 200 }, }]);
 
-    data = [
-    { name: 'test1', age: 25 },
-    { name: 'test2', age: 23 },
-    { name: 'test3', age: 12 },
-    { name: 'test4', age: 42 },
-    { name: 'test5', age: 26 },
-    { name: 'test6', age: 36 },
+    data5 = [
+    { no: 1, name: 'Mercury', distance: 0.4 },
+    { no: 2, name: 'Venus', distance: 0.7 },
+    { no: 3, name: 'Earth', distance: 1 },
+    { no: 4, name: 'Mars', distance: 1.5 },
+    { no: 5, name: 'Jupiter', distance: 5.2 },
+    { no: 6, name: 'Saturn', distance: 9.5 },
+    { no: 7, name: 'Uranus', distance: 19.2 },
+    { no: 8, name: 'Neptune', distance: 30.1 },
     ];
 
-    listControlObject5.rows(data);
+    listControlObject5.rows(data5);
 
     var button = $('<button>toggle theme</button>');
     root5.append(button);

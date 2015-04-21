@@ -91,7 +91,7 @@ module.exports = function(grunt) {
                     {
                         expand: true,
                         cwd: 'src/demo',
-                        src: ['js/**/*'],
+                        src: ['js/**/*', 'css/**/*'],
                         dest: path.join(installDir, 'demo'),
                         filter: 'isFile'
                     },

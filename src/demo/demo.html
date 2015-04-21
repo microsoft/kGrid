@@ -6,6 +6,7 @@
     <link type="text/css" rel="stylesheet" href="./lib/jquery-ui.css">
     <link type="text/css" rel="stylesheet" href="./lib/bootstrap.min.css">
     <link type="text/css" rel="stylesheet" href="./lib/bootstrap-theme.min.css">
+    <link type="text/css" rel="stylesheet" href="./demo/css/demo.css">
     <script type="text/javascript" src="./lib/jquery/jquery.js"></script>
     <script type="text/javascript" src="./lib/jquery-ui/jquery-ui.js"></script>
     <script type="text/javascript" src="js/bootstrap.js"></script>
@@ -16,9 +17,9 @@
 <body>
     <div style="width:1200px; margin: auto;">
         <div id="start" style="height:1000px">
-            <h1 style="margin-top: 0" class="ng-scope">Getting started</h1>
+            <h1 style="margin-top: 0">Getting started</h1>
             <div id="get_started">
-                <div style="float: left; width:550px">
+                <div class="left-column">
                     <ol>
                         <li>
                             "Add references to jQuery and jQueryUI"
@@ -68,7 +69,7 @@ listControlObject.rows([
                         </li>
                     </ol>
                 </div>
-                <div style="float: right; width:550px">
+                <div class="right-column">
                     <script src="https://gist.github.com/frehunter/cdaa1622e2b1d0350f48.js"></script>
                 </div>
             </div>
@@ -76,16 +77,16 @@ listControlObject.rows([
         <div id="example">
             <div id="basic_example" style="height:550px">
                 <h1 style="margin-top: 0">Basic Example</h1>
-                <div style="float: left; width:550px">
-                    <div id="basic" style=" margin-left: auto; border: 1px solid rgb(212,212,212); width: 550px; height: 300px; margin-top: 20px; "></div>
+                <div class="left-column">
+                    <div id="basic" class="left-demo-pane"></div>
 </div>
-                <div style="float: right;  width:550px">
+                <div class="right-column">
                     <script src="https://gist.github.com/frehunter/03bd715cd87de1450c12.js"></script>
                 </div>
             </div>
             <div id="rtl_example" style="height:700px">
                 <h1 style="margin-top: 0">Rghit to Left edit</h1>
-                <div style="float: left; width:550px">
+                <div class="left-column">
                     <ol>
                         <li>
                             Set property <code>rtl</code> to <code>true</code>;
@@ -97,15 +98,15 @@ listControlObject.rows([
                         </li>
                         
                     </ol>
-                    <div id="rtl" style=" margin-left: auto; border: 1px solid rgb(212,212,212); width: 550px; height: 300px; margin-top: 20px; "></div>
+                    <div id="rtl" class="left-demo-pane"></div>
                 </div>
-                <div style="float: right; width:550px">
+                <div class="right-column">
                     <script src="https://gist.github.com/frehunter/a76af21e76b666cc3da0.js"></script>
                 </div>
             </div>
             <div id="stack_example" style="height:800px">
                 <h1 style="margin-top: 0">Stack View</h1>
-                <div style="float: left; width:550px">
+                <div class="left-column">
                     <ol>
                         <li>
                             Set property <code>viewType</code> to <code>Stack </code> or <code>Table </code>;
@@ -117,24 +118,24 @@ listControlObject.rows([
                         </li>
 
                     </ol>
-                    <div id="stackview" style=" margin-left: auto; border: 1px solid rgb(212,212,212); width: 550px; height: 300px; margin-top: 20px; "></div>
+                    <div id="stackview" class="left-demo-pane"></div>
                 </div>
-                <div style="float: right; width:550px">
+                <div class="right-column">
                     <script src="https://gist.github.com/frehunter/ed96afaa44ff931afc50.js"></script>
                 </div>
             </div>
             <div id="select_example" style="height:700px">
                 <h1 style="margin-top: 0">Selection(TODO)</h1>
-                <div style="float: left; width:550px">
-                    <div id="select" style=" margin-left: auto; border: 1px solid rgb(212,212,212); width: 550px; height: 300px; margin-top: 20px; "></div>
+                <div class="left-column">
+                    <div id="select" class="left-demo-pane"></div>
                 </div>
-                <div style="float: right;  width:550px">
+                <div class="right-column">
                     <script src="https://gist.github.com/frehunter/03bd715cd87de1450c12.js"></script>
                 </div>
             </div>
             <div id="theme_example" style="height:1400px">
                 <h1 style="margin-top: 0">Theme</h1>
-                <div style="float: left; width:550px">
+                <div class="left-column">
                     <ol>
                         <li>
                             Create your theme object;
@@ -152,9 +153,9 @@ var theme = {
                             <pre>listControlObject.theme(thme);</pre>
                         </li>
 
-                    </ol> <div id="theme" style=" margin-left: auto; border: 1px solid rgb(212,212,212); width: 550px; height: 300px; margin-top: 20px; "></div>
+                    </ol> <div id="theme" class="left-demo-pane"></div>
                 </div>
-                <div style="float: right;  width:550px">
+                <div class="right-column">
                     <script src="https://gist.github.com/frehunter/83d78e4d8c51b2300694.js"></script>
                 </div>
             </div>
