@@ -118,6 +118,7 @@ export class ListControl implements Support.IDisposable {
                 }
 
                 this._options.rowCount = rows.length = args.newValue.length;
+                this._runtime.selection.rowCount(this._options.rowCount);
                 args.newValue = args.newValue.slice();
             },
         });
