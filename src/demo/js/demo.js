@@ -256,3 +256,32 @@ $(function () {
 
     listControlObject.rows(data);
 })
+
+$(document).ready(function () {
+    $('#example_button').click(function () {
+        showTag('example_button', 'demo_page');
+        hideTag('api_page_button', 'api_page');
+        // hideTag(dowload);  TO DO;
+    });
+    $('#api_page_button').click(function () {
+        showTag('api_page_button', 'api_page');
+        hideTag('example_button', 'demo_page');
+        // hideTag(dowload);  TO DO;
+    });
+
+    var navmenu = $('#navmenu');
+    navmenu.css({ "left": $('#demo_page').position().left + 1200 });
+    navmenu.append("<div>Hi, It me</div>")
+});
+
+var showTag = function (button, page) {
+    $('#' + button).addClass("tag-down");
+    $('#' + button).removeClass("tag-up");
+    $('#' + page).show();
+}
+
+var hideTag = function (button, page) {
+    $('#' + button).addClass("tag-up");
+    $('#' + button).removeClass("tag-down");
+    $('#' + page).hide();
+}

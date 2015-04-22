@@ -1,6 +1,17 @@
+.demo-page-header {
+    height: 200px;
+    background-color: #9fb6db;
+}
+.nav-menu {
+    position: fixed;
+    top: 300px;
+    border: 1px solid rgb(212,212,212); 
+    width: 300px;
+    height: 300px; 
+}
 .left-column {
     float: left;
-    width:550px;
+    width: 550px;
 }
 .right-column {
     float: right;
@@ -15,4 +26,22 @@
 }
 .button-indent {
     margin-left: 30px;
+}
+.tag-up {
+    background: #ccc;
+    cursor: pointer;
+    border-top: solid 2px #eaeaea;
+    border-left: solid 2px #eaeaea;
+    border-bottom: solid 2px #777;
+    border-right: solid 2px #777;
+    padding: 5px 5px;
+}
+.tag-down {
+    background: #bbb;   
+    cursor: pointer;
+    border-top: solid 2px #777;
+    border-left: solid 2px #777;
+    border-bottom: solid 2px #eaeaea;
+    border-right: solid 2px #eaeaea;
+    padding: 5px 5px;
 }
