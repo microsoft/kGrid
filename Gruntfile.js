@@ -11,10 +11,6 @@ module.exports = function(grunt) {
                 files: ['<%= concat.debug.src %>'],
                 tasks: ['concat:debug']
             },
-            ts_listcontrol_debug: {
-                files: ['<%= ts.listcontrol_debug.src %>'],
-                tasks: ['ts:listcontrol_debug']
-            },
             ts_debug: {
                 files: ['<%= ts.debug.src %>'],
                 tasks: ['ts:debug']
