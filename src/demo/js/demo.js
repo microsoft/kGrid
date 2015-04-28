@@ -119,6 +119,35 @@ $(function () {
     ];
 
     listControlObject4.rows(data4);
+   
+    var button4 = $('#select_button'); 
+    button4.text('toggle selection mode:SingleRow');
+
+    button4.on('click', function () {
+        var selectionMode;
+
+        switch (listControlObject4.selectionMode()) {
+            case Microsoft.Office.Controls.SelectionMode.SingleRow:
+                selectionMode = Microsoft.Office.Controls.SelectionMode.MultipleRows;
+                break;
+
+            case Microsoft.Office.Controls.SelectionMode.MultipleRows:
+                selectionMode = Microsoft.Office.Controls.SelectionMode.Range;
+                break;
+
+            case Microsoft.Office.Controls.SelectionMode.Range:
+                selectionMode = Microsoft.Office.Controls.SelectionMode.Cell;
+                break;
+
+            case Microsoft.Office.Controls.SelectionMode.Cell:
+                selectionMode = Microsoft.Office.Controls.SelectionMode.SingleRow;
+                break;
+        }
+
+        listControlObject4.selectionMode(selectionMode);
+        listControlObject4.invalidate();
+    $(event.target).text('toggle selection mode:' + Microsoft.Office.Controls.SelectionMode[selectionMode]);
+});
 
 
     /// 5. theme example
