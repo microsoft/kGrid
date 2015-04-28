@@ -258,30 +258,32 @@ $(function () {
 })
 
 $(document).ready(function () {
-    $('#example_button').click(function () {
-        showTag('example_button', 'demo_page');
-        hideTag('api_page_button', 'api_page');
-        // hideTag(dowload);  TO DO;
+    $('#example_tab').click(function () {
+        showTag('example_tab', 'demo_page');
+        hideTag('API_tab', 'api_page');
     });
-    $('#api_page_button').click(function () {
-        showTag('api_page_button', 'api_page');
-        hideTag('example_button', 'demo_page');
-        // hideTag(dowload);  TO DO;
+    $('#API_tab').click(function () {
+        showTag('API_tab', 'api_page');
+        hideTag('example_tab', 'demo_page');
     });
 
     var navmenu = $('#navmenu');
-    navmenu.css({ "left": $('#demo_page').position().left + 1200 });
-    navmenu.append("<div>Hi, It me</div>")
+    var menulist = $('<ul></ul>');
+    menulist.append('<li><a href="#get_started">Get Started</li>');
+    menulist.append('<li><a href="#basic_example">Basic</li>');
+    menulist.append('<li><a href="#rtl_example">Right to left</li>');
+    menulist.append('<li><a href="#stack_example">Stack View</li>');
+    menulist.append('<li><a href="#select_example">Selection</li>');
+    menulist.append('<li><a href="#theme_example">Theme</li>');
+    navmenu.append(menulist);
 });
 
 var showTag = function (button, page) {
-    $('#' + button).addClass("tag-down");
-    $('#' + button).removeClass("tag-up");
+    $('#' + button).addClass("active");
     $('#' + page).show();
 }
 
 var hideTag = function (button, page) {
-    $('#' + button).addClass("tag-up");
-    $('#' + button).removeClass("tag-down");
+    $('#' + button).removeClass("active");
     $('#' + page).hide();
 }
