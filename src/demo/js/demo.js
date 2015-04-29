@@ -298,13 +298,43 @@ $(document).ready(function () {
 
     var navmenu = $('#navmenu');
     var menulist = $('<ul></ul>');
-    menulist.append('<li><a href="#get_started">Get Started</li>');
-    menulist.append('<li><a href="#basic_example">Basic</li>');
-    menulist.append('<li><a href="#rtl_example">Right to left</li>');
-    menulist.append('<li><a href="#stack_example">Stack View</li>');
-    menulist.append('<li><a href="#select_example">Selection</li>');
-    menulist.append('<li><a href="#theme_example">Theme</li>');
+
+    function adjustNav() {
+        var lis = menulist.find('>li');
+        var foundLi = lis.eq(0);
+
+        $.each(navs, function(index, nav) {
+            nav = $(nav);
+            if (nav.offset().top <= $(document).scrollTop()) {
+                foundLi = lis.eq(index);
+            }
+        });
+
+        lis.removeClass('active');
+        foundLi.addClass('active');
+
+    }
+
+    var navs = $('div[data-nav-text]');
+
+    $.each(navs, function(index, nav) {
+        nav = $(nav);
+        var li = $('<li class="nav"><a href="#' + nav.attr('id') + '">' + nav.attr('data-nav-text') + '</li>');
+        menulist.append(li);
+    });
+
     navmenu.append(menulist);
+    adjustNav();
+
+    $(document).on('scroll', function() {
+        adjustNav();
+        navmenu.css('position', '');
+            navmenu.css('top', '');
+        if (navmenu.offset().top < $(document).scrollTop() + 20) {
+            navmenu.css('position', 'fixed');
+            navmenu.css('top', '20px');
+        }
+    });
 });
 
 var showTag = function (button, page) {

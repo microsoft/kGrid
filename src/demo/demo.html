@@ -30,33 +30,31 @@
 <body>
     <header class="navbar navbar-static-top demo-page-header">
         <div class="container">
-            <div class="container-fluid">
-                <div class="navbar-header">
-                    <a class="navbar-brand" href="#">
-                        <!-- <img alt="Brand" src="..."> -->
-                        <span class="tittle"><span class="tittle-bold">K</span>Grid</span>
-                    </a>
+            <div class="row banner">
+                <div class="col-xs-12">
+                    <!-- <img alt="Brand" src="..."> -->
+                    <span class="title"><b>K</b>Grid</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-offset-1 col-xs-11">
+                    <ul class="nav nav-tabs">
+                        <li role="presentation" id="example_tab" class="active"><a href="#">Examples</a></li>
+                        <li role="presentation" id="API_tab"><a href="#">API</a></li>
+                        <li role="presentation" id="dowload_tab"><a href="#">Download</a></li>
+                    </ul>
                 </div>
             </div>
         </div>
     </header>
     <div class="container">
         <div class="row">
-            <div class="col-xs-offset-1 col-xs-11">
-                <ul class="nav nav-tabs">
-                    <li role="presentation" id="example_tab" class="active"><a href="#">Examples</a></li>
-                    <li role="presentation" id="API_tab"><a href="#">API</a></li>
-                    <li role="presentation" id="dowload_tab"><a href="#">Download</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="row">
             <div id="demo_page">
                 <div class="col-xs-2">
                     <div id="navmenu" class="nav nav-menu"></div>
                 </div>
                 <div class="col-xs-10">
-                    <div id="get_started">
+                    <div id="get_started" data-nav-text="Get Started">
                         <h1>Getting started</h1>
                         <div>
                             <ol>
@@ -104,21 +102,21 @@
                                 </li>
                             </ol>
                         </div>
-                        <div>
+                        <div class="script-pane">
                             <script src="https://gist.github.com/frehunter/cdaa1622e2b1d0350f48.js"></script>
                         </div>
                     </div>
                     <div>
-                        <div id="basic_example">
+                        <div id="basic_example" data-nav-text="Basic Example">
                             <h1>Basic Example</h1>
                             <div>
-                                <div id="basic" class="indent demo-pane"></div>
+                                <div id="basic" class="demo-pane"></div>
                             </div>
                             <div class="script-pane">
                                 <script src="https://gist.github.com/frehunter/03bd715cd87de1450c12.js"></script>
                             </div>
                         </div>
-                        <div id="rtl_example">
+                        <div id="rtl_example" data-nav-text="RTL example">
                             <h1>Right to Left edit</h1>
                             <div>
                                 <ol>
@@ -132,14 +130,16 @@
                                     </li>
 
                                 </ol>
-                                <div id="rtl" class="indent demo-pane"></div>
-                                <button id="rtl_button" class="indent btn btn-default">toggle rtl</button>
+                                <div class="button-pane">
+                                    <button id="rtl_button" class="btn btn-default">toggle rtl</button>
+                                </div>
+                                <div id="rtl" class="demo-pane"></div>
                             </div>
                             <div class="script-pane">
                                 <script src="https://gist.github.com/frehunter/a76af21e76b666cc3da0.js"></script>
                             </div>
                         </div>
-                        <div id="stack_example">
+                        <div id="stack_example" data-nav-text="Stack Example">
                             <h1>Stack View</h1>
                             <div>
                                 <ol>
@@ -153,14 +153,16 @@
                                     </li>
 
                                 </ol>
-                                <div id="stackview" class="indent demo-pane"></div>
-                                <button id="view_button" class="indent btn btn-default">toggle view</button>
+                                <div class="button-pane">
+                                    <button id="view_button" class="btn btn-default">toggle view</button>
+                                </div>
+                                <div id="stackview" class="demo-pane"></div>
                             </div>
                             <div class="script-pane">
                                 <script src="https://gist.github.com/frehunter/ed96afaa44ff931afc50.js"></script>
                             </div>
                         </div>
-                        <div id="select_example">
+                        <div id="selection_example" data-nav-text="Selection Example">
                             <h1>Selection</h1>
                             <ol>
                                 <li>
@@ -174,14 +176,16 @@
 
                             </ol>
                             <div>
-                                <div id="select" class="indent demo-pane"></div>
-                                <button id="select_button" class="indent btn btn-default">toggle view</button>
+                                <div class="button-pane">
+                                    <button id="select_button" class="btn btn-default">toggle view</button>
+                                </div>
+                                <div id="select" class="demo-pane"></div>
                             </div>
                             <div class="script-pane">
                                 <script src="https://gist.github.com/frehunter/56519a72ffd1846a0c70.js"></script>
                             </div>
                         </div>
-                        <div id="theme_example">
+                        <div id="theme_example" data-nav-text="Theme Example">
                             <h1>Theme</h1>
                             <div>
                                 <ol>
@@ -202,9 +206,11 @@
                                     </li>
 
                                 </ol>
-                                <div id="theme" class="indent demo-pane"></div>                             
-                                <button id="theme_button" class="indent btn btn-default">toggle theme</button>
-                                <button id="customize_theme_button" class="btn btn-default">customize theme</button>
+                                <div class="button-pane">
+                                    <button id="theme_button" class="btn btn-default">toggle theme</button>
+                                    <button id="customize_theme_button" class="btn btn-default">customize theme</button>
+                                </div>
+                                <div id="theme" class="demo-pane"></div>
                             </div>
                             <div class="script-pane">
                                 <script src="https://gist.github.com/frehunter/83d78e4d8c51b2300694.js"></script>
