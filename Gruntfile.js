@@ -66,6 +66,13 @@ module.exports = function(grunt) {
                     },
                     {
                         expand: true,
+                        cwd: 'lib/bootstrap',
+                        src: ['**/*'],
+                        dest: path.join(installDir, 'lib/bootstrap'),
+                        filter: 'isFile'
+                    },
+                    {
+                        expand: true,
                         src: ['test/**/*.js'],
                         dest: path.join(installDir, 'js'),
                         filter: 'isFile'

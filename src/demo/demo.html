@@ -4,13 +4,13 @@
     <title>Getting Started With kGrid Example</title>
     <link type="text/css" rel="stylesheet" href="./assets/css/listcontrol.css">
     <link type="text/css" rel="stylesheet" href="./lib/jquery-ui.css">
-    <link type="text/css" rel="stylesheet" href="./lib/bootstrap.min.css">
-    <link type="text/css" rel="stylesheet" href="./lib/bootstrap-theme.min.css">
+    <link type="text/css" rel="stylesheet" href="./lib/bootstrap/css/bootstrap.min.css">
+    <link type="text/css" rel="stylesheet" href="./lib/bootstrap/css/bootstrap-theme.min.css">
     <link type="text/css" rel="stylesheet" href="./demo/css/demo.css">
     <script type="text/javascript" src="./lib/jquery/jquery.js"></script>
     <script type="text/javascript" src="./lib/jquery-ui/jquery-ui.js"></script>
-    <script type="text/javascript" src="js/bootstrap.js"></script>
-    <script type="text/javascript" src="./lib/bootstrap.min.js"></script>
+    <script type="text/javascript" src="./js/bootstrap.js"></script>
+    <script type="text/javascript" src="./lib/bootstrap/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="./js/listcontrol.js"></script>
     <script type="text/javascript" src="./demo/js/demo.js"></script>
     <script type="text/javascript">
@@ -36,12 +36,12 @@
                     <span class="title"><b>K</b>Grid</span>
                 </div>
             </div>
-            <div class="row">
+            <div class="row" style="margin-bottom: 10px">
                 <div class="col-xs-offset-1 col-xs-11">
-                    <ul class="nav nav-tabs">
+                    <ul class="nav nav-pills">
                         <li role="presentation" id="example_tab" class="active"><a href="#">Examples</a></li>
                         <li role="presentation" id="API_tab"><a href="#">API</a></li>
-                        <li role="presentation" id="dowload_tab"><a href="#">Download</a></li>
+                        <li role="presentation" id="download" class="disabled"><a href="#"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span>&nbsp;&nbsp;Download</a></li>
                     </ul>
                 </div>
             </div>
@@ -116,7 +116,7 @@
                                 <script src="https://gist.github.com/frehunter/03bd715cd87de1450c12.js"></script>
                             </div>
                         </div>
-                        <div id="rtl_example" data-nav-text="RTL example">
+                        <div id="rtl_example" data-nav-text="RTL Example">
                             <h1>Right to Left edit</h1>
                             <div>
                                 <ol>
@@ -220,11 +220,47 @@
                 </div>
             </div>
             <div id="api_page" style="display:none">
-                <h1 style="margin-top: 0">API List</h1>
-                <h2 style="margin-top: 0">Methods</h2>
-                <div id="api_table" style="height:1800px"></div>
-                <h2 style="margin-top: 0">Events</h2>
-                <div id="events_table"></div>
+                <h2>Class</h2>
+                <hr/>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <td>name</td><td>description</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Microsoft.Office.Controls.ListControl</td><td></td>
+                        </tr>
+                        <tr>
+                            <td>Microsoft.Office.Controls.SelectionMode</td><td></td>
+                        </tr>
+                        <tr>
+                            <td>Microsoft.Office.Controls.Theme</td><td></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <h2>Methods on ListControl</h2>
+                <hr/>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <td>name</td><td>parameter</td><td>description</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Microsoft.Office.Controls.ListControl</td><td></td><td></td>
+                        </tr>
+                        <tr>
+                            <td>Microsoft.Office.Controls.SelectionMode</td><td></td><td></td>
+                        </tr>
+                        <tr>
+                            <td>Microsoft.Office.Controls.Theme</td><td></td><td></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <h2>Events</h2>
             </div>
         </div>
     </div>

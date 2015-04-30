@@ -54,3 +54,8 @@ script
     font-weight: bold;
 }
 
+#api_page table
+{
+    width: 95%;
+    margin: 0px auto 0px auto;
+}

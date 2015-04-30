@@ -224,66 +224,6 @@ $(function () {
             }
         });
     });
-
-
-    /// API list
-
-    var root = $('#api_table');
-    var listControlElement = $('<div style="position: relative;"></div>');
-    root.append(listControlElement);
-
-    listControlObject = new Microsoft.Office.Controls.ListControl(listControlElement[0]);
-
-    listControlObject.addColumns([
-    { data: 'API', field: 'API', table: { width: 200 }, },
-    { data: 'Arguments', field: 'arguments', table: { width: 200 }, },
-    { data: 'return', field: 'apiName', table: { width: 200 }, },
-    { data: 'Definition', field: 'apiName', table: { width: 400 }, },
-    ]);
-
-    data = [
-    { API: 'viewType', Arguments: 25 },
-    { API: 'width', Arguments: 23 },
-    { API: 'height', Arguments: 23 },
-    { API: 'rowCount', Arguments: 23 },
-    { API: 'rows', Arguments: 23 },
-    { API: 'getRowById', Arguments: 23 },
-    { API: 'getRowsByIndex', Arguments: 23 },
-    { API: 'updateRowById', Arguments: 23 },
-    { API: 'updateRowsByIndex', Arguments: 23 },
-    { API: 'removeRowById', Arguments: 23 },
-    { API: 'removeRowByIndex', Arguments: 23 },
-    { API: 'removeRowsByIndex', Arguments: 23 },
-    { API: 'insertRowById', Arguments: 23 },
-    { API: 'insertRowByIndex', Arguments: 23 },
-    { API: 'theme', Arguments: 23 },
-    { API: 'selectedRanges', Arguments: 23 },
-    { API: 'selectionMode', Arguments: 23 },
-    { API: 'cursor', Arguments: 23 },
-    { API: 'select', Arguments: 23 },
-    { API: 'deselect', Arguments: 23 },
-    { API: 'selectedRangeOfPosition', Arguments: 23 },
-    { API: 'selectedRangeOfCursor', Arguments: 23 },
-    { API: 'rtl', Arguments: 23 },
-    { API: 'addColumns', Arguments: 23 },
-    { API: 'updateUI', Arguments: 23 },
-    { API: 'viewProperty', Arguments: 23 },
-    { API: 'on', Arguments: 23 },
-    { API: 'off', Arguments: 23 },
-    { API: 'invalidateRow', Arguments: 23 },
-    { API: 'invalidateHeaderRange', Arguments: 23 },
-    { API: 'invalidateHeaderCell', Arguments: 23 },
-    { API: 'invalidate', Arguments: 23 },
-    { API: 'invalidateRange', Arguments: 23 },
-    { API: 'getColumnById', Arguments: 23 },
-    { API: 'getColumnIdByIndex', Arguments: 23 },
-    { API: 'getColumnIndexById', Arguments: 23 },
-    { API: 'scrollTo', Arguments: 23 },
-    { API: 'getOperationName', Arguments: 23 },
-    { API: 'stopOperation', Arguments: 23 },
-    ];
-
-    listControlObject.rows(data);
 })
 
 $(document).ready(function () {
@@ -329,10 +269,10 @@ $(document).ready(function () {
     $(document).on('scroll', function() {
         adjustNav();
         navmenu.css('position', '');
-            navmenu.css('top', '');
+        navmenu.css('top', '');
         if (navmenu.offset().top < $(document).scrollTop() + 20) {
-            navmenu.css('position', 'fixed');
             navmenu.css('top', '20px');
+            navmenu.css('position', 'fixed');
         }
     });
 });
