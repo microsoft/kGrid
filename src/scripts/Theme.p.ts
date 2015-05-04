@@ -162,8 +162,8 @@ export class Theme {
         'table.headerCellFontFamily': '"Segoe UI Semibold", "Segoe UI Web Semibold", "Segoe UI Web Semilight", "Segoe UI Semilight", "Segoe WP Semilight", "Segoe UI", "Segoe WP", Tahoma, Arial, sans-serif',
         'table.headerRowHeight': 32,
         'table.rowHeight': 34,
-        'table.canvasEndMargin': 300,
-        'table.canvasBottomMargin': 300,
+        'table.canvasEndMargin': 0,
+        'table.canvasBottomMargin': 0,
     });
 
     public static Zebra = new Theme({

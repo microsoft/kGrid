@@ -6,23 +6,26 @@ $(function () {
     root1.append(listControlElement1);
 
     listControlObject1 = new Microsoft.Office.Controls.ListControl(listControlElement1[0]);
-    listControlObject1.width(400);
-    listControlObject1.height(300);
+    listControlObject1.width(548);
+    listControlObject1.height(398);
 
     listControlObject1.addColumns([
+    { data: 'No.', field: 'no', table: { width: 100 }, },
     { data: 'Name', field: 'name', table: { width: 100 }, },
-    { data: 'Age', field: 'age', table: { width: 100 }, }]);
+    { data: 'Distance from Sun (AU)', field: 'distance', table: { width: 200 }, }]);
 
-    data = [
-    { name: 'test1', age: 25 },
-    { name: 'test2', age: 23 },
-    { name: 'test3', age: 12 },
-    { name: 'test4', age: 42 },
-    { name: 'test5', age: 26 },
-    { name: 'test6', age: 36 },
+    data1 = [
+    { no: 1, name: 'Mercury', distance: 0.4 },
+    { no: 2, name: 'Venus', distance: 0.7 },
+    { no: 3, name: 'Earth', distance: 1 },
+    { no: 4, name: 'Mars', distance: 1.5 },
+    { no: 5, name: 'Jupiter', distance: 5.2 },
+    { no: 6, name: 'Saturn', distance: 9.5 },
+    { no: 7, name: 'Uranus', distance: 19.2 },
+    { no: 8, name: 'Neptune', distance: 30.1 },
     ];
 
-    listControlObject1.rows(data);
+    listControlObject1.rows(data1);
 
     /// 2 . rtl example
     var root2 = $('#rtl');
@@ -30,25 +33,27 @@ $(function () {
     root2.append(listControlElement2);
 
     listControlObject2 = new Microsoft.Office.Controls.ListControl(listControlElement2[0]);
-    listControlObject2.width(400);
-    listControlObject2.height(300);
+    listControlObject2.width(548);
+    listControlObject2.height(398);
 
     listControlObject2.addColumns([
+    { data: 'No.', field: 'no', table: { width: 100 }, },
     { data: 'Name', field: 'name', table: { width: 100 }, },
-    { data: 'Age', field: 'age', table: { width: 100 }, }]);
+    { data: 'Distance from Sun (AU)', field: 'distance', table: { width: 200 }, }]);
 
-    data = [
-    { name: 'test1', age: 25 },
-    { name: 'test2', age: 23 },
-    { name: 'test3', age: 12 },
-    { name: 'test4', age: 42 },
-    { name: 'test5', age: 26 },
-    { name: 'test6', age: 36 },
+    data2 = [
+    { no: 1, name: 'Mercury', distance: 0.4 },
+    { no: 2, name: 'Venus', distance: 0.7 },
+    { no: 3, name: 'Earth', distance: 1 },
+    { no: 4, name: 'Mars', distance: 1.5 },
+    { no: 5, name: 'Jupiter', distance: 5.2 },
+    { no: 6, name: 'Saturn', distance: 9.5 },
+    { no: 7, name: 'Uranus', distance: 19.2 },
+    { no: 8, name: 'Neptune', distance: 30.1 },
     ];
-    listControlObject2.rows(data);
+    listControlObject2.rows(data2);
 
-    var button2 = $('<button>toggle rtl</button>');
-    root2.append(button2);
+    var button2 = $('#rtl_button');
     button2.on('click', function () {
         listControlObject2.rtl(!listControlObject2.rtl());
         listControlObject2.updateUI();
@@ -61,26 +66,28 @@ $(function () {
     root3.append(listControlElement3);
 
     listControlObject3 = new Microsoft.Office.Controls.ListControl(listControlElement3[0]);
-    listControlObject3.width(400);
-    listControlObject3.height(300);
+    listControlObject3.width(548);
+    listControlObject3.height(398);
 
     listControlObject3.addColumns([
+    { data: 'No.', field: 'no', table: { width: 100 }, },
     { data: 'Name', field: 'name', table: { width: 100 }, },
-    { data: 'Age', field: 'age', table: { width: 100 }, }]);
+    { data: 'Distance from Sun (AU)', field: 'distance', table: { width: 200 }, }]);
 
-    data = [
-    { name: 'test1', age: 25 },
-    { name: 'test2', age: 23 },
-    { name: 'test3', age: 12 },
-    { name: 'test4', age: 42 },
-    { name: 'test5', age: 26 },
-    { name: 'test6', age: 36 },
+    data3 = [
+    { no: 1, name: 'Mercury', distance: 0.4 },
+    { no: 2, name: 'Venus', distance: 0.7 },
+    { no: 3, name: 'Earth', distance: 1 },
+    { no: 4, name: 'Mars', distance: 1.5 },
+    { no: 5, name: 'Jupiter', distance: 5.2 },
+    { no: 6, name: 'Saturn', distance: 9.5 },
+    { no: 7, name: 'Uranus', distance: 19.2 },
+    { no: 8, name: 'Neptune', distance: 30.1 },
     ];
 
-    listControlObject3.rows(data);
+    listControlObject3.rows(data3);
 
-    var button3 = $('<button>toggle view</button>');
-    root3.append(button3);
+    var button3 = $('#view_button');
     button3.on('click', function () {
         listControlObject3.viewType(listControlObject3.viewType() == Microsoft.Office.Controls.ViewType.Stack ? Microsoft.Office.Controls.ViewType.Table : Microsoft.Office.Controls.ViewType.Stack);
         listControlObject3.updateUI();
@@ -92,23 +99,55 @@ $(function () {
     root4.append(listControlElement4);
 
     listControlObject4 = new Microsoft.Office.Controls.ListControl(listControlElement4[0]);
-    listControlObject4.width(400);
-    listControlObject4.height(300);
+    listControlObject4.width(548);
+    listControlObject4.height(398);
 
     listControlObject4.addColumns([
+    { data: 'No.', field: 'no', table: { width: 100 }, },
     { data: 'Name', field: 'name', table: { width: 100 }, },
-    { data: 'Age', field: 'age', table: { width: 100 }, }]);
+    { data: 'Distance from Sun (AU)', field: 'distance', table: { width: 200 }, }]);
 
-    data = [
-    { name: 'test1', age: 25 },
-    { name: 'test2', age: 23 },
-    { name: 'test3', age: 12 },
-    { name: 'test4', age: 42 },
-    { name: 'test5', age: 26 },
-    { name: 'test6', age: 36 },
+    data4 = [
+    { no: 1, name: 'Mercury', distance: 0.4 },
+    { no: 2, name: 'Venus', distance: 0.7 },
+    { no: 3, name: 'Earth', distance: 1 },
+    { no: 4, name: 'Mars', distance: 1.5 },
+    { no: 5, name: 'Jupiter', distance: 5.2 },
+    { no: 6, name: 'Saturn', distance: 9.5 },
+    { no: 7, name: 'Uranus', distance: 19.2 },
+    { no: 8, name: 'Neptune', distance: 30.1 },
     ];
 
-    listControlObject4.rows(data);
+    listControlObject4.rows(data4);
+   
+    var button4 = $('#select_button'); 
+    button4.text('toggle selection mode:SingleRow');
+
+    button4.on('click', function () {
+        var selectionMode;
+
+        switch (listControlObject4.selectionMode()) {
+            case Microsoft.Office.Controls.SelectionMode.SingleRow:
+                selectionMode = Microsoft.Office.Controls.SelectionMode.MultipleRows;
+                break;
+
+            case Microsoft.Office.Controls.SelectionMode.MultipleRows:
+                selectionMode = Microsoft.Office.Controls.SelectionMode.Range;
+                break;
+
+            case Microsoft.Office.Controls.SelectionMode.Range:
+                selectionMode = Microsoft.Office.Controls.SelectionMode.Cell;
+                break;
+
+            case Microsoft.Office.Controls.SelectionMode.Cell:
+                selectionMode = Microsoft.Office.Controls.SelectionMode.SingleRow;
+                break;
+        }
+
+        listControlObject4.selectionMode(selectionMode);
+        listControlObject4.invalidate();
+    $(event.target).text('toggle selection mode:' + Microsoft.Office.Controls.SelectionMode[selectionMode]);
+});
 
 
     /// 5. theme example
@@ -117,26 +156,28 @@ $(function () {
     root5.append(listControlElement5);
 
     listControlObject5 = new Microsoft.Office.Controls.ListControl(listControlElement5[0]);
-    listControlObject5.width(400);
-    listControlObject5.height(300);
+    listControlObject5.width(548);
+    listControlObject5.height(398);
 
     listControlObject5.addColumns([
+    { data: 'No.', field: 'no', table: { width: 100 }, },
     { data: 'Name', field: 'name', table: { width: 100 }, },
-    { data: 'Age', field: 'age', table: { width: 100 }, }]);
+    { data: 'Distance from Sun (AU)', field: 'distance', table: { width: 200 }, }]);
 
-    data = [
-    { name: 'test1', age: 25 },
-    { name: 'test2', age: 23 },
-    { name: 'test3', age: 12 },
-    { name: 'test4', age: 42 },
-    { name: 'test5', age: 26 },
-    { name: 'test6', age: 36 },
+    data5 = [
+    { no: 1, name: 'Mercury', distance: 0.4 },
+    { no: 2, name: 'Venus', distance: 0.7 },
+    { no: 3, name: 'Earth', distance: 1 },
+    { no: 4, name: 'Mars', distance: 1.5 },
+    { no: 5, name: 'Jupiter', distance: 5.2 },
+    { no: 6, name: 'Saturn', distance: 9.5 },
+    { no: 7, name: 'Uranus', distance: 19.2 },
+    { no: 8, name: 'Neptune', distance: 30.1 },
     ];
 
-    listControlObject5.rows(data);
+    listControlObject5.rows(data5);
 
-    var button = $('<button>toggle theme</button>');
-    root5.append(button);
+    var button = $('#theme_button');
     button.on('click', function () {
         var theme;
 
@@ -152,8 +193,7 @@ $(function () {
         listControlObject5.updateUI();
     });
 
-    var button = $('<button>customize theme</button>');
-    root5.append(button);
+    var button = $('#customize_theme_button');
     var dialog;
 
     button.on('click', function () {
@@ -184,64 +224,65 @@ $(function () {
             }
         });
     });
-
-
-    /// API list
-
-    var root = $('#api_table');
-    var listControlElement = $('<div style="position: relative;"></div>');
-    root.append(listControlElement);
-
-    listControlObject = new Microsoft.Office.Controls.ListControl(listControlElement[0]);
-
-    listControlObject.addColumns([
-    { data: 'API', field: 'API', table: { width: 200 }, },
-    { data: 'Arguments', field: 'arguments', table: { width: 200 }, },
-    { data: 'return', field: 'apiName', table: { width: 200 }, },
-    { data: 'Definition', field: 'apiName', table: { width: 400 }, },
-    ]);
-
-    data = [
-    { API: 'viewType', Arguments: 25 },
-    { API: 'width', Arguments: 23 },
-    { API: 'height', Arguments: 23 },
-    { API: 'rowCount', Arguments: 23 },
-    { API: 'rows', Arguments: 23 },
-    { API: 'getRowById', Arguments: 23 },
-    { API: 'getRowsByIndex', Arguments: 23 },
-    { API: 'updateRowById', Arguments: 23 },
-    { API: 'updateRowsByIndex', Arguments: 23 },
-    { API: 'removeRowById', Arguments: 23 },
-    { API: 'removeRowByIndex', Arguments: 23 },
-    { API: 'removeRowsByIndex', Arguments: 23 },
-    { API: 'insertRowById', Arguments: 23 },
-    { API: 'insertRowByIndex', Arguments: 23 },
-    { API: 'theme', Arguments: 23 },
-    { API: 'selectedRanges', Arguments: 23 },
-    { API: 'selectionMode', Arguments: 23 },
-    { API: 'cursor', Arguments: 23 },
-    { API: 'select', Arguments: 23 },
-    { API: 'deselect', Arguments: 23 },
-    { API: 'selectedRangeOfPosition', Arguments: 23 },
-    { API: 'selectedRangeOfCursor', Arguments: 23 },
-    { API: 'rtl', Arguments: 23 },
-    { API: 'addColumns', Arguments: 23 },
-    { API: 'updateUI', Arguments: 23 },
-    { API: 'viewProperty', Arguments: 23 },
-    { API: 'on', Arguments: 23 },
-    { API: 'off', Arguments: 23 },
-    { API: 'invalidateRow', Arguments: 23 },
-    { API: 'invalidateHeaderRange', Arguments: 23 },
-    { API: 'invalidateHeaderCell', Arguments: 23 },
-    { API: 'invalidate', Arguments: 23 },
-    { API: 'invalidateRange', Arguments: 23 },
-    { API: 'getColumnById', Arguments: 23 },
-    { API: 'getColumnIdByIndex', Arguments: 23 },
-    { API: 'getColumnIndexById', Arguments: 23 },
-    { API: 'scrollTo', Arguments: 23 },
-    { API: 'getOperationName', Arguments: 23 },
-    { API: 'stopOperation', Arguments: 23 },
-    ];
-
-    listControlObject.rows(data);
 })
+
+$(document).ready(function () {
+    // $('#example_tab').click(function () {
+    //     showTag('example_tab', 'demo_page');
+    //     hideTag('API_tab', 'api_page');
+    // });
+    // $('#API_tab').click(function () {
+    //     showTag('API_tab', 'api_page');
+    //     hideTag('example_tab', 'demo_page');
+    // });
+
+    var navmenu = $('#navmenu');
+    var menulist = $('<ul class="nav-menu"></ul>');
+
+    function adjustNav() {
+        var lis = menulist.find('>li');
+        var foundLi = lis.eq(0);
+
+        $.each(navs, function(index, nav) {
+            nav = $(nav);
+            if (nav.offset().top <= $(document).scrollTop()) {
+                foundLi = lis.eq(index);
+            }
+        });
+
+        lis.removeClass('active');
+        foundLi.addClass('active');
+
+    }
+
+    var navs = $('div[data-nav-text]');
+
+    $.each(navs, function(index, nav) {
+        nav = $(nav);
+        var li = $('<li class="nav"><a href="#' + nav.attr('id') + '">' + nav.attr('data-nav-text') + '</li>');
+        menulist.append(li);
+    });
+
+    navmenu.append(menulist);
+    adjustNav();
+
+    $(document).on('scroll', function() {
+        adjustNav();
+        navmenu.css('position', '');
+        navmenu.css('top', '');
+        if (navmenu.offset().top < $(document).scrollTop() + 20) {
+            navmenu.css('top', '20px');
+            navmenu.css('position', 'fixed');
+        }
+    });
+});
+
+var showTag = function (button, page) {
+    $('#' + button).addClass("active");
+    $('#' + page).show();
+}
+
+var hideTag = function (button, page) {
+    $('#' + button).removeClass("active");
+    $('#' + page).hide();
+}
