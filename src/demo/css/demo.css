@@ -59,3 +59,9 @@ script
     width: 95%;
     margin: 0px auto 0px auto;
 }
+
+.nav-menu li
+{
+    height: 30px;
+    line-height: 30px;
+}
