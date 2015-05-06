@@ -7,7 +7,7 @@ kGrid is a grid control based on jQuery.  The control can show your data elegant
 4. Easy to integrate. Developers can quickly integrate the control to the web page by well-defined APIs.
 5. Right-to-left support. kGrid supports right-to-left direction in right-to-left environment.
 
-See [demo page](http://kgrid.azurewebsites.net/demo.html) for more details information.
+More information in [demo page](http://kgrid.azurewebsites.net/demo.html).
 
 # Build
 
