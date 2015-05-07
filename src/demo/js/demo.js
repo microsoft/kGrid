@@ -227,14 +227,14 @@ $(function () {
 })
 
 $(document).ready(function () {
-    // $('#example_tab').click(function () {
-    //     showTag('example_tab', 'demo_page');
-    //     hideTag('API_tab', 'api_page');
-    // });
-    // $('#API_tab').click(function () {
-    //     showTag('API_tab', 'api_page');
-    //     hideTag('example_tab', 'demo_page');
-    // });
+    $('#example_tab').click(function () {
+        showTag('example_tab', 'demo_page');
+        hideTag('API_tab', 'api_page');
+    });
+    $('#API_tab').click(function () {
+        showTag('API_tab', 'api_page');
+        hideTag('example_tab', 'demo_page');
+    });
 
     var navmenu = $('#navmenu');
     var menulist = $('<ul class="nav-menu"></ul>');

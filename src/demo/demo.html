@@ -44,6 +44,7 @@
                     <ul class="nav nav-pills">
                         <li role="presentation" id="example_tab" class="active"><a href="#">Examples</a></li>
                         <li role="presentation" id="API_tab"><a href="#">API</a></li>
+                        <li role="presentation" id="github"><a href="https://github.com/Microsoft/kGrid" target="_self">github</a></li>
                         <li role="presentation" id="download"><a href="http://az751507.vo.msecnd.net/cdn/kGrid.0.5.zip" target="_blank" onclick="javscript:trackDownload()"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span>&nbsp;&nbsp;Download</a></li>
                     </ul>
                 </div>
@@ -228,18 +229,18 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <td>name</td><td>description</td>
+                            <td>name</td><td>type</td><td>description</td>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td>Microsoft.Office.Controls.ListControl</td><td></td>
+                            <td>Microsoft.Office.Controls.ListControl</td><td>class</td><td>Used to create a grid object</td>
                         </tr>
                         <tr>
-                            <td>Microsoft.Office.Controls.SelectionMode</td><td></td>
+                            <td>Microsoft.Office.Controls.SelectionMode</td><td>enum</td><td>Values: SingleRow, MultipleRows, Cell, Range</td>
                         </tr>
                         <tr>
-                            <td>Microsoft.Office.Controls.Theme</td><td></td>
+                            <td>Microsoft.Office.Controls.Theme</td><td>class</td><td>Used to create a theme object from json</td>
                         </tr>
                     </tbody>
                 </table>
@@ -248,22 +249,106 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <td>name</td><td>parameter</td><td>description</td>
+                            <td>signature</td><td>description</td>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td>Microsoft.Office.Controls.ListControl</td><td></td><td></td>
+                            <td>height(height[optional])</td><td>set/get the height of list control</td>
                         </tr>
                         <tr>
-                            <td>Microsoft.Office.Controls.SelectionMode</td><td></td><td></td>
+                            <td>width(width[optional])</td><td>set/get the width of list control</td>
                         </tr>
                         <tr>
-                            <td>Microsoft.Office.Controls.Theme</td><td></td><td></td>
+                            <td>rowCount(rowCount[optional])</td><td>set/get the rowCount of list control</td>
+                        </tr>
+                        <tr>
+                            <td>rows(rows[optional])</td><td>set/get the rows of list control, rows is an array of json object</td>
+                        </tr>
+                        <tr>
+                            <td>theme(theme[optional])</td><td>set/get the theme of list control, theme is object of Microsoft.Office.Controls.Theme</td>
+                        </tr>
+                        <tr>
+                            <td>selectionMode(selectionMode[optional])</td><td>set/get the selectionMode of list control, selectionMode is object of Microsoft.Office.Controls.SelectionMode</td>
+                        </tr>
+                        <tr>
+                            <td>getRowById(rowId)<br/>getRowByIndex(rowIndex)<br/>getRowsByIndex(topRowIndex, count)</td><td>get the specified row(s) from list control</td>
+                        </tr>
+                        <tr>
+                            <td>updateRowById(row, rowId)<br/>updateRowByIndex(row, rowIndex)<br/>updateRowsByIndex(rows, topRowIndex, count[optional])</td><td>update the specified row(s) from list control</td>
+                        </tr>
+                        <tr>
+                            <td>removeRowById(rowId)<br/>removeRowByIndex(rowIndex)<br/>removeRowsByIndex(topRowIndex, count)</td><td>remove the specified row(s) from list control</td>
+                        </tr>
+                        <tr>
+                            <td>insertRowById(row, rowId)<br/>insertRowByIndex(row, rowIndex)<br/>insertRowsByIndex(rows, topRowIndex, count[optional])</td><td>insert the specified row(s) from list control</td>
+                        </tr>
+                        <tr>
+                            <td>selectedRanges()</td><td>get the current selected ranges</td>
+                        </tr>
+                        <tr>
+                            <td>cursor(position[optional])</td><td>get/set the cursor position</td>
+                        </tr>
+                        <tr>
+                            <td>select(range, keepSelectedRange)</td><td>select a specifed range</td>
+                        </tr>
+                        <tr>
+                            <td>deselect(range)</td><td>deselect a specifed range</td>
+                        </tr>
+                        <tr>
+                            <td>rtl(rtl[optional])</td><td>set/get the state of rtl</td>
+                        </tr>
+                        <tr>
+                            <td>addColumn(column)</td><td>add a column definition into list control</td>
+                        </tr>
+                        <tr>
+                            <td>on(eventName, handler)<br/>off(eventName, handler)</td><td>add/remove event handler</td>
+                        </tr>
+                        <tr>
+                            <td>scrollTo(top, front)</td><td>scroll the list control viewport to a given position</td>
                         </tr>
                     </tbody>
                 </table>
                 <h2>Events</h2>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <td>eventName</td><td>description</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>beforeRender</td><td>fire when user scrolls viewport to a area and list control  will render it. Used for lazy data loading from server side.</td>
+                        </tr>
+                        <tr>
+                            <td>rowClick</td><td>fire when users click on a row</td>
+                        </tr>
+                        <tr>
+                            <td>headerRowClick</td><td>fire when user clicks on a header row</td>
+                        </tr>
+                        <tr>
+                            <td>headerRowContextMenu</td><td>fire when user right clicks on a header row</td>
+                        </tr>
+                        <tr>
+                            <td>beforeColumnReorder</td><td>fire before user reorders a column from UI</td>
+                        </tr>
+                        <tr>
+                            <td>beforeCursorChange</td><td>fire before user changes cursor position from UI</td>
+                        </tr>
+                        <tr>
+                            <td>beforeSelect</td><td>fire before user selects range from UI</td>
+                        </tr>
+                        <tr>
+                            <td>beforeDeselect</td><td>fire before user deselects range from UI</td>
+                        </tr>
+                        <tr>
+                            <td>cursorChange</td><td>fire after user changes cursor position from UI</td>
+                        </tr>
+                        <tr>
+                            <td>selectionChange</td><td>fire after user selects/deselects range from UI</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
