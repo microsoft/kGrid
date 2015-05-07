@@ -1,13 +1,13 @@
 # kGrid
-kGrid is a grid control based on jQuery.  The control can show your data elegantly in different devices. Below are some highlights of the control:
+kGrid (keyGrid) is a grid control based on jQuery.  The control can show your data elegantly in different devices. Below are some highlights of the control:
 
 1. Fast. kGrid supports UI rendering, cell by cell for large data set, not only for rows but also for columns.
 2. Responsive. kGrid changes view for narrow screen devices. 
 3. Easy to Customize. Developers can easily change theme for the control.  One can also use different templates for headers or cells. 
 4. Easy to integrate. Developers can quickly integrate the control to the web page by well-defined APIs.
-5. Accessible. kGrid supports RTL and keyboard operations.
+5. Right-to-left support. kGrid supports right-to-left direction in right-to-left environment.
 
-See [demo page](http://kgrid.azurewebsites.net/demo.html)
+More information in [demo page](http://kgrid.azurewebsites.net/demo.html).
 
 # Build
 
