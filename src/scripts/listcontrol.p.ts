@@ -1,7 +1,7 @@
 ﻿/// <summary>
 /// List control class
 /// </summary>
-export class ListControl implements Support.IDisposable {
+export class ListControl {
     public disposer;
     private _id;
     private _elements;
@@ -10,7 +10,6 @@ export class ListControl implements Support.IDisposable {
     private _options;
     private _views;
     private _updaters;
-    private _resources;
     private _dynamicStylesheetUpdater;
     private _lastColumnUniqueId;
     private _lastRowUniqueId;
@@ -20,12 +19,11 @@ export class ListControl implements Support.IDisposable {
     private _pendingUpdateUI;
 
     constructor(parent) {
-        this.disposer = new Support.Disposer(() => {
+        this.disposer = new Fundamental.Disposer(() => {
             this._elements.root.remove();
             this._options = null;
             this._runtime = null;
             this._elements = null;
-            this._resources.dispose();
         });
         this._initialize(parent);
     }
@@ -468,7 +466,6 @@ export class ListControl implements Support.IDisposable {
         this._rowMap = {};
         this._rows = [];
         this._id = (new Date()).valueOf();
-        this._resources = new Support.ResourceGroup();
         this._options = new Support.PropertyBag({
             columns: [],
             rows: [],
@@ -572,18 +569,18 @@ export class ListControl implements Support.IDisposable {
         this._elements.canvas = this._elements.root.find('.msoc-list-canvas');
         this._elements.screenReader = this._elements.root.find('> .msoc-list-screen-reader');
 
-        this._resources.add(this._updaters = new Support.UpdaterGroup());
-        this._resources.add(this._runtime.operator = new Operator());
-        this._resources.add(this._runtime.events = new Support.EventSite());
-        this._resources.add(this._options.events = new Support.EventSite());
-        this._resources.add(this._dynamicStylesheetUpdater = new Support.DynamicStylesheetUpdater(this._runtime.id));
+        this.disposer.addDisposable(this._updaters = new Support.UpdaterGroup());
+        this.disposer.addDisposable(this._runtime.operator = new Operator());
+        this.disposer.addDisposable(this._runtime.events = new Support.EventSite());
+        this.disposer.addDisposable(this._options.events = new Support.EventSite());
+        this.disposer.addDisposable(this._dynamicStylesheetUpdater = new Support.DynamicStylesheetUpdater(this._runtime.id));
         this._dynamicStylesheetUpdater.add(() => this._getStylesheet());
 
         this._updaters.add(this._dynamicStylesheetUpdater.getUpdater());
 
         this._views = {};
-        this._resources.add(this._views[ViewType.Table] = new TableView(this._runtime));
-        this._resources.add(this._views[ViewType.Stack] = new StackView(this._runtime));
+        this.disposer.addDisposable(this._views[ViewType.Table] = new TableView(this._runtime));
+        this.disposer.addDisposable(this._views[ViewType.Stack] = new StackView(this._runtime));
 
         for (var viewType in this._views) {
             var view = this._views[viewType];
@@ -778,7 +775,7 @@ export class ListControl implements Support.IDisposable {
     }
 
     private _attachProxyEvent(sourceName, targetName, argsTransformer?) {
-        this._resources.add(
+        this.disposer.addDisposable(
             new Support.EventAttacher(
                 this._runtime.events,
                 sourceName,
@@ -809,14 +806,14 @@ export class ListControl implements Support.IDisposable {
             this.updateUI();
         }, 50); // 50 = 16.67 * 3, 20 fps
 
-        this._resources.add(new Support.EventAttacher(this._elements.viewport, 'scroll',  (event) => {
+        this.disposer.addDisposable(new Support.EventAttacher(this._elements.viewport, 'scroll',  (event) => {
             this._runtime.viewportScrollLeft = this._elements.viewport[0].scrollLeft;
             this._runtime.viewportScrollCoordinate = Support.CoordinateFactory.scrollFromElement(this._runtime.direction.rtl(), this._elements.viewport);
             this._runtime.events.emit('viewportScroll', this, null);
             scrollHandler.invoke();
         }));
 
-        this._resources.add(new Support.EventAttacher(this._elements.root, 'keydown', (event) => {
+        this.disposer.addDisposable(new Support.EventAttacher(this._elements.root, 'keydown', (event) => {
             if (event.keyCode == 27) {
                 this._runtime.operator.stop();
             }
@@ -828,7 +825,7 @@ export class ListControl implements Support.IDisposable {
         // There is an exceptional case, we'll handle the focus in differnt way in edit mode, so we emit
         // an event to make sure we can cancel it in edit mode
         // FIXME: We should handle the case when user use keyboard to focus list control
-        this._resources.add(new Support.EventAttacher(this._elements.root, 'mousedown',  (event) => {
+        this.disposer.addDisposable(new Support.EventAttacher(this._elements.root, 'mousedown',  (event) => {
             // Focus fix for IE, IE can focus on the cell element even if the tabindex of it is empty
             if (document.activeElement != this._runtime.elements.root[0] || event.target != this._runtime.elements.root[0]) {
                 var args = {
@@ -848,10 +845,10 @@ export class ListControl implements Support.IDisposable {
                 }
             }
         }));
-        this._resources.add(new Support.EventAttacher(this._runtime.selection, 'cursorChange', (sender, args) => {
+        this.disposer.addDisposable(new Support.EventAttacher(this._runtime.selection, 'cursorChange', (sender, args) => {
             this._runtime.events.emit('cursorChange', this, args);
         }));
-        this._resources.add(new Support.EventAttacher(this._runtime.selection, 'selectionChange', (sender, args) => {
+        this.disposer.addDisposable(new Support.EventAttacher(this._runtime.selection, 'selectionChange', (sender, args) => {
             this._runtime.events.emit('selectionChange', this, args);
         }));
         this._attachProxyEvent('table.beforeRender stack.beforeRender', 'beforeRender');

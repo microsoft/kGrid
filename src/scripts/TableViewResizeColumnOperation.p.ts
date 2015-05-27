@@ -1,7 +1,6 @@
 class TableViewResizeColumnOperation implements IOperation {
     public disposer;
     private _deferred;
-    private _resources;
     private _tableView: TableView;
     private _runtime;
     private _resizeColumnUniqueId;
@@ -23,7 +22,7 @@ class TableViewResizeColumnOperation implements IOperation {
     private _headerCellElement;
 
     constructor() {
-        this.disposer = new Support.Disposer(() => {
+        this.disposer = new Fundamental.Disposer(() => {
             this._selectionStylesheet.content(this._selectionStylesheetText);
             this._splitters[0].remove();
             this._splitters[1].remove();
@@ -32,12 +31,10 @@ class TableViewResizeColumnOperation implements IOperation {
             // this._runtime.scrollTo(NaN, this._baseScrollCoordinate.front());
             this._headerCellElement.removeClass('msoc-list-table-header-cell-resizing');
             this._headerCellElement.attr('style', '');
-            this._resources.dispose();
         });
     }
 
     public start(tableView: TableView, runtime, columnUniqueId, isTouch, pointerId, pointers, initialFront, initialWidth, selectionStylesheet): JQueryPromise<any> {
-        this._resources = new Support.ResourceGroup();
         this._deferred = $.Deferred();
         this._tableView = tableView;
         this._runtime = runtime;
@@ -57,8 +54,8 @@ class TableViewResizeColumnOperation implements IOperation {
         this._headerCellElement.addClass('msoc-list-table-header-cell-resizing');
         this._selectionStylesheetText = this._selectionStylesheet.content();
         this._selectionStylesheet.content('');
-        this._resources.add(new Support.EventAttacher($(window), this._isTouch ? 'touchend' : 'mouseup', (event) => this._onPointerUp(event)));
-        this._resources.add(new Support.EventAttacher($(window), this._isTouch ? 'touchmove' : 'mousemove', (event) => this._onPointerMove(event)));
+        this.disposer.addDisposable(new Support.EventAttacher($(window), this._isTouch ? 'touchend' : 'mouseup', (event) => this._onPointerUp(event)));
+        this.disposer.addDisposable(new Support.EventAttacher($(window), this._isTouch ? 'touchmove' : 'mousemove', (event) => this._onPointerMove(event)));
         this._splitters = [$('<div class="msoc-list-table-resizer"></div>'), $('<div class="msoc-list-table-resizer"></div>')];
         this._runtime.elements.headerCanvas.eq(TableView.CursorCanvasIndex).append(this._splitters[0]);
         this._runtime.elements.canvas.eq(TableView.CursorCanvasIndex).append(this._splitters[1]);

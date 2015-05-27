@@ -1,14 +1,11 @@
 export class Selection {
     public disposer;
     private _options;
-    private _resources;
     private _updaters;
     private _events;
 
     constructor(selectionMode: SelectionMode = SelectionMode.SingleRow) {
-        this.disposer = new Support.Disposer(() => {
-            this._resources.dispose();
-        });
+        this.disposer = new Fundamental.Disposer();
         this._options = new Support.PropertyBag({
             ranges: [],
             rowCount: 0,
@@ -16,9 +13,8 @@ export class Selection {
             selectionMode: selectionMode,
             cursor: Position.Null,
         });
-        this._resources = new Support.ResourceGroup();
-        this._resources.add(this._events = new Support.EventSite());
-        this._resources.add(this._updaters = new Support.UpdaterGroup());
+        this.disposer.addDisposable(this._events = new Support.EventSite());
+        this.disposer.addDisposable(this._updaters = new Support.UpdaterGroup());
         this._updaters.add(this._getSelectionChangeUpdater());
         this._updaters.add(this._getCursorChangeUpdater());
         this._updaters.update();

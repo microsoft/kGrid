@@ -146,6 +146,11 @@ module.exports = function(grunt) {
         concat: {
             debug: {
                 src: [
+                    'src/scripts/copyright.p.ts',
+                    'src/scripts/fundamental/head.p.ts',
+                    'src/scripts/fundamental/lifecycle/IDisposable.p.ts',
+                    'src/scripts/fundamental/lifecycle/Disposer.p.ts',
+                    'src/scripts/fundamental/tail.p.ts',
                     'src/scripts/head.p.ts',
                     'src/scripts/support.p.ts',
                     'src/scripts/definitions.p.ts',
@@ -196,6 +201,16 @@ module.exports = function(grunt) {
                 files: {
                     'build/js/listcontrol.min.js': ['build/js/listcontrol.js'],
                 },
+            },
+        },
+        jsdoc: {
+            dist: {
+                src: ['build/js/listcontrol.js'],
+                options: {
+                    destination: 'doc',
+                    readme: 'README.md',
+                    configure: 'jsdoc.config.js',
+                }
             },
         },
     });

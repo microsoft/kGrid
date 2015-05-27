@@ -3,7 +3,6 @@ class TableViewMouseSelectOperation implements IOperation {
     private _tableView: TableView;
     private _visibleColumnMap;
     private _runtime;
-    private _resources;
     private _cellElement;
     private _selectionUpdater;
     private _deferred;
@@ -17,10 +16,9 @@ class TableViewMouseSelectOperation implements IOperation {
     private _rtl;
 
     constructor() {
-        this.disposer = new Support.Disposer(() => {
+        this.disposer = new Fundamental.Disposer(() => {
             this._runtime.selection = this._oldSelection;
             this._selectionUpdater.update();
-            this._resources.dispose();
         });
     }
 
@@ -30,7 +28,6 @@ class TableViewMouseSelectOperation implements IOperation {
         this._runtime = runtime;
         this._oldSelection = this._runtime.selection;
         this._selectionUpdater = selectionUpdater;
-        this._resources = new Support.ResourceGroup();
         this._cellElement = $(event.target).closest('.msoc-list-table-cell');
         this._rtl = this._runtime.direction.rtl();
         this._deferred = $.Deferred();
@@ -55,8 +52,8 @@ class TableViewMouseSelectOperation implements IOperation {
 
         this._selectionMode = this._runtime.selection.selectionMode();
 
-        this._resources.add(new Support.EventAttacher($(window), 'mouseup', (event) => this._onMouseUp(event)));
-        this._resources.add(new Support.EventAttacher($(window), 'mousemove', (event) => this._onMouseMove(event)));
+        this.disposer.addDisposable(new Support.EventAttacher($(window), 'mouseup', (event) => this._onMouseUp(event)));
+        this.disposer.addDisposable(new Support.EventAttacher($(window), 'mousemove', (event) => this._onMouseMove(event)));
         return this._deferred.promise();
     }
 

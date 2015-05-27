@@ -3,10 +3,9 @@ class TableViewKeySelectOperation implements IOperation {
     private _tableView: TableView;
     private _visibleColumnMap;
     private _runtime;
-    private _resources;
 
     constructor() {
-        this.disposer = new Support.Disposer(() => {
+        this.disposer = new Fundamental.Disposer(() => {
         });
     }
 
@@ -14,7 +13,6 @@ class TableViewKeySelectOperation implements IOperation {
         this._tableView = tableView;
         this._visibleColumnMap = this._tableView.visibleColumnMap();
         this._runtime = runtime;
-        this._resources = new Support.ResourceGroup();
 
         var shiftKey = event.shiftKey,
             deferred = $.Deferred();

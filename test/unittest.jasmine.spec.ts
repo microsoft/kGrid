@@ -942,65 +942,53 @@ describe('Basic Functionality', function () {
         });
     });
 
-    it('Disposer', function () {
-        var disposer;
-        var called = false;
+    describe('Disposer', function () {
+        it('dispose', function () {
+            var disposer;
+            var called = false;
 
-        expect(typeof(MSOC.Support.Disposer)).toBe('function');
-        disposer = new MSOC.Support.Disposer(() => called = true);
+            expect(typeof(MSOC.Fundamental.Disposer)).toBe('function');
+            disposer = new MSOC.Fundamental.Disposer(() => called = true);
 
-        expect(typeof(disposer)).toBe('object');
-        expect(disposer.isDisposed).toBe(false);
-        expect(called).toBe(false);
+            expect(typeof(disposer)).toBe('object');
+            expect(disposer.isDisposed).toBe(false);
+            expect(called).toBe(false);
 
-        disposer.dispose();
+            disposer.dispose();
 
-        expect(disposer.isDisposed).toBe(true);
-        expect(called).toBe(true);
+            expect(disposer.isDisposed).toBe(true);
+            expect(called).toBe(true);
 
-        called = false;
+            called = false;
 
-        disposer.dispose();
+            disposer.dispose();
 
-        expect(disposer.isDisposed).toBe(true);
-        expect(called).toBe(false);
-    });
-
-    it('ResourceGroup', function () {
-        var resourceGroup;
-        var disposed;
-        var disposer;
-
-        expect(typeof(MSOC.Support.ResourceGroup)).toBe('function');
-        resourceGroup = new MSOC.Support.ResourceGroup();
-
-        expect(typeof(resourceGroup)).toBe('object');
-
-        disposed = false;
-        disposer = new MSOC.Support.Disposer(() => disposed = true);
-
-        resourceGroup.add(disposer);
-        expect(disposed).toBe(false);
-
-        resourceGroup.dispose();
-        expect(disposed).toBe(true);
-
-        resourceGroup = new MSOC.Support.ResourceGroup();
-
-        disposed = false;
-        var disposeCalled = false;
-        disposer = new MSOC.Support.Disposer(() => disposed = true);
-
-        resourceGroup.add({
-            dispose: () => 1,
-            disposer: disposer,
+            expect(disposer.isDisposed).toBe(true);
+            expect(called).toBe(false);
         });
-        expect(disposeCalled).toBe(false);
-        expect(disposed).toBe(false);
 
-        resourceGroup.dispose();
-        expect(disposeCalled).toBe(false);
-        expect(disposed).toBe(true);
+        it('addDisposable', function () {
+            var owner;
+            var disposeCount;
+            var disposer;
+
+            owner = new MSOC.Fundamental.Disposer();
+
+            disposeCount = 0;
+            disposer = new MSOC.Fundamental.Disposer(() => disposeCount++);
+
+            owner.addDisposable({
+                disposer: disposer,
+            });
+
+            owner.addDisposable({
+                dispose: () => disposeCount++,
+            });
+            expect(disposeCount).toBe(0);
+
+            owner.dispose();
+            expect(disposeCount).toBe(2);
+        });
     });
 });
 

@@ -1,11 +1,11 @@
-export class Operator implements Support.IDisposable {
+export class Operator {
     public disposer;
     private _operation: IOperation;
     private _deferred: JQueryDeferred<any>;
     private _name;
 
     constructor() {
-        this.disposer = new Support.Disposer(() => this.stop());
+        this.disposer = new Fundamental.Disposer(() => this.stop());
     }
 
     public start(name, operation: IOperation): JQueryPromise<any> {
@@ -21,7 +21,7 @@ export class Operator implements Support.IDisposable {
         this._operation = operation;
         this._name = name;
         this._operation.start.apply(this._operation, args)
-            .always(() => this._operation && this._operation.dispose())
+            .always(() => this._operation && this._operation.disposer.dispose())
             .done(() => deferred.resolve.apply(deferred, arguments))
             .fail(() => deferred.reject.apply(deferred, arguments))
             .always(() => this.stop());
@@ -34,7 +34,7 @@ export class Operator implements Support.IDisposable {
             var operation = this._operation;
 
             this._operation = null;
-            operation.dispose();
+            operation.disposer.dispose();
 
             if (this._deferred) {
                 this._deferred.reject();

@@ -3,8 +3,9 @@ class Constants {
     public static OperationScrollNumber = 20;
 }
 
-export interface IOperation extends Support.IDisposable {
+export interface IOperation {
     start(...args): JQueryPromise<any>;
+    disposer: Microsoft.Office.Controls.Fundamental.Disposer;
 }
 
 export enum SelectionMode {
@@ -40,7 +41,7 @@ export enum ViewType {
     Stack,
 }
 
-export interface IListView extends Support.IDisposable {
+export interface IListView {
     name(): string;
     type(): ViewType;
     activate(): void;

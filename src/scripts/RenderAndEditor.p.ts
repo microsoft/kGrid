@@ -91,7 +91,7 @@ export class SimpleTextCellEditor implements IEditor {
             row = args.row,
             cellData = args.cellData,
             rtl = args.rtl,
-            resources = new Support.ResourceGroup();
+            disposer = new Fundamental.Disposer();
 
         var input = $('<input style="position:absolute; left: 0px; top: 0px; width: 100%; height: 100%; border: 0px; outline: 0px;"></input>');
 
@@ -99,14 +99,14 @@ export class SimpleTextCellEditor implements IEditor {
         input.val(cellData);
         input.focus();
 
-        resources.add(new Support.EventAttacher(input, 'focusout', () => {
-            resources.dispose();
+        disposer.addDisposable(new Support.EventAttacher(input, 'focusout', () => {
+            disposer.dispose();
             accept(input.val());
         }));
 
-        resources.add(new Support.EventAttacher(input, 'keydown', (event) => {
+        disposer.addDisposable(new Support.EventAttacher(input, 'keydown', (event) => {
             if (event.which == 27) {
-                resources.dispose();
+                disposer.dispose();
                 reject();
             }
         }));

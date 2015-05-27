@@ -1,6 +1,7 @@
 **/node_modules/*
 **/bower_components/*
 build/*
+doc/*
 install/*
 reports/*
 .tscache/*
@@ -14,5 +15,7 @@ build.log
 build.prf
 build.trc
 buildd.trc
+npm-debug.log
 **/obj/**
 **/objd/**
+

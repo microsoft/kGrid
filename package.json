@@ -22,6 +22,7 @@
     "grunt-contrib-uglify": "^0.9.1",
     "grunt-contrib-watch": "^0.6.1",
     "grunt-jasmine-node": "^0.2.1",
+    "grunt-jsdoc": "^0.6.4",
     "grunt-karma": "^0.9.0",
     "grunt-ts": "^1.11.13",
     "jsdom": "^3.0.3",

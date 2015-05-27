@@ -3,7 +3,6 @@ class TableViewEditOperation implements IOperation {
     private _runtime;
     private _tableView: TableView;
     private _row;
-    private _resources;
     private _rowIndex;
     private _columnUniqueId;
     private _columnIndex;
@@ -14,14 +13,12 @@ class TableViewEditOperation implements IOperation {
     private _stylesheet;
 
     constructor() {
-        this.disposer = new Support.Disposer(() => {
+        this.disposer = new Fundamental.Disposer(() => {
             this._events.emit('close', this, null);
 
             if (this._deferred.state() == 'pending') {
                 this._deferred.reject();
             }
-
-            this._resources.dispose();
 
             if (this._editElement) {
                 this._editElement.remove();
@@ -32,11 +29,10 @@ class TableViewEditOperation implements IOperation {
     public start(tableView, runtime, rowIndex, columnIndex) {
         this._tableView = tableView;
         this._runtime = runtime;
-        this._resources = new Support.ResourceGroup();
         this._rowIndex = rowIndex;
         this._columnUniqueId = tableView.visibleColumnMap()[columnIndex];
         this._columnIndex = columnIndex;
-        this._resources.add(this._events = new Support.EventSite());
+        this.disposer.addDisposable(this._events = new Support.EventSite());
         this._deferred = $.Deferred();
         var column = this._runtime.options.columns[this._columnUniqueId];
 
@@ -57,7 +53,7 @@ class TableViewEditOperation implements IOperation {
 
         this._runtime.elements.canvas.eq(TableView.CursorCanvasIndex).append(this._editElement);
 
-        this._resources.add(
+        this.disposer.addDisposable(
             new Support.EventAttacher(
                 this._runtime.events,
                 'beforeMouseDownFocus',
@@ -69,7 +65,7 @@ class TableViewEditOperation implements IOperation {
                     }
                 }));
 
-        this._resources.add(this._stylesheet = new Support.DynamicStylesheet(this._runtime.id + '_edit'));
+        this.disposer.addDisposable(this._stylesheet = new Support.DynamicStylesheet(this._runtime.id + '_edit'));
 
         var cssText = new Support.CssTextBuilder(),
             row = this._runtime.getRowByIndex(rowIndex);
@@ -104,8 +100,8 @@ class TableViewEditOperation implements IOperation {
             cellData: cellData,
         });
 
-        this._resources.add(new Support.EventAttacher(this._events, 'accept', (sender, args) => this._deferred.resolve(args)));
-        this._resources.add(new Support.EventAttacher(this._events, 'reject', () => this._deferred.reject()));
+        this.disposer.addDisposable(new Support.EventAttacher(this._events, 'accept', (sender, args) => this._deferred.resolve(args)));
+        this.disposer.addDisposable(new Support.EventAttacher(this._events, 'reject', () => this._deferred.reject()));
 
         return this._deferred.promise();
     }

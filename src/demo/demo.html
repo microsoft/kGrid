@@ -14,18 +14,20 @@
     <script type="text/javascript" src="./js/listcontrol.js"></script>
     <script type="text/javascript" src="./demo/js/demo.js"></script>
     <script type="text/javascript">
-        var appInsights=window.appInsights||function(config){
-            function s(config){t[config]=function(){var i=arguments;t.queue.push(function(){t[config].apply(t,i)})}}var t={config:config},r=document,f=window,e="script",o=r.createElement(e),i,u;for(o.src=config.url||"//az416426.vo.msecnd.net/scripts/a/ai.0.js",r.getElementsByTagName(e)[0].parentNode.appendChild(o),t.cookie=r.cookie,t.queue=[],i=["Event","Exception","Metric","PageView","Trace"];i.length;)s("track"+i.pop());return config.disableExceptionTracking||(i="onerror",s("_"+i),u=f[i],f[i]=function(config,r,f,e,o){var s=u&&u(config,r,f,e,o);return s!==!0&&t["_"+i](config,r,f,e,o),s}),t
-        }({
-            instrumentationKey:"7a6b9169-264b-4fdc-89cd-5b7c9b2a5838"
-        });
+        if (window.location.protocol != 'file:') {
+            var appInsights=window.appInsights||function(config){
+                function s(config){t[config]=function(){var i=arguments;t.queue.push(function(){t[config].apply(t,i)})}}var t={config:config},r=document,f=window,e="script",o=r.createElement(e),i,u;for(o.src=config.url||"//az416426.vo.msecnd.net/scripts/a/ai.0.js",r.getElementsByTagName(e)[0].parentNode.appendChild(o),t.cookie=r.cookie,t.queue=[],i=["Event","Exception","Metric","PageView","Trace"];i.length;)s("track"+i.pop());return config.disableExceptionTracking||(i="onerror",s("_"+i),u=f[i],f[i]=function(config,r,f,e,o){var s=u&&u(config,r,f,e,o);return s!==!0&&t["_"+i](config,r,f,e,o),s}),t
+            }({
+                instrumentationKey:"7a6b9169-264b-4fdc-89cd-5b7c9b2a5838"
+            });
 
-        window.appInsights=appInsights;
-        appInsights.trackPageView();
+            window.appInsights=appInsights;
+            appInsights.trackPageView();
 
-        function trackDownload() {
-            if (window.appInsights) {
-                window.appInsights.trackEvent('download');
+            function trackDownload() {
+                if (window.appInsights) {
+                    window.appInsights.trackEvent('download');
+                }
             }
         }
     </script>

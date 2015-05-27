@@ -3,10 +3,6 @@ export module Support {
         return new Error(number + ': [' + name + '] ' + message);
     }
 
-    export interface IDisposable {
-        dispose();
-    }
-
     export class TextDirection {
         public static RTL = 1;
         public static LTR = 0;
@@ -248,7 +244,7 @@ export module Support {
 
         constructor() {
             this._updaters = [];
-            this.disposer = new Disposer(() => {
+            this.disposer = new Fundamental.Disposer(() => {
                 this._updaters = null;
             });
         }
@@ -329,7 +325,7 @@ export module Support {
 
                     this._stylesheet.content(newValue)
                 });
-            this.disposer = new Disposer(() => {
+            this.disposer = new Fundamental.Disposer(() => {
                 this._generators = null;
                 this._updater = null;
             });
@@ -367,7 +363,7 @@ export module Support {
 
         constructor() {
             this._sites = {};
-            this.disposer = new Disposer(() => this._sites = null);
+            this.disposer = new Fundamental.Disposer(() => this._sites = null);
         }
 
         public on(event, callback) {
@@ -481,7 +477,7 @@ export module Support {
 
         constructor(element, events, callback) {
             events = events.split(' ');
-            this.disposer = new Disposer(() => {
+            this.disposer = new Fundamental.Disposer(() => {
                 for (var i = 0; i < events.length; i++) {
                     element.off(events[i], callback);
                 }
@@ -507,7 +503,7 @@ export module Support {
 
             $(document.head).append(this._element);
             this._stylesheetText = '';
-            this.disposer = new Disposer(() => {
+            this.disposer = new Fundamental.Disposer(() => {
                 this._element.remove();
                 this._element = null;
                 this._stylesheetText = null;
@@ -600,60 +596,6 @@ export module Support {
         }
     }
 
-    export class Disposer {
-        public isDisposed;
-        public isDisposing;
-        private _disposeCallback;
-
-        constructor(disposeCallback) {
-            this.isDisposed = false;
-            this.isDisposing = false;
-            this._disposeCallback = disposeCallback;
-        }
-
-        public dispose() {
-            if (this.isDisposed || this.isDisposing) {
-                return;
-            }
-
-            this.isDisposing = true;
-            this._disposeCallback();
-            this.isDisposed = true;
-        }
-    }
-
-    export class ResourceGroup {
-        public disposer;
-        private _resources;
-
-        constructor() {
-            this._resources = [];
-            this.disposer = new Disposer(() => {
-                for (var i = 0; i < this._resources.length; i++) {
-                    if (this._resources[i].disposer) {
-                        this._resources[i].disposer.dispose();
-                    } else if (this._resources[i].dispose) {
-                        this._resources[i].dispose();
-                    }
-                }
-
-                this._resources = null;
-            });
-        }
-
-        public add(resource) {
-            if (this.disposer.isDisposed) {
-                return;
-            }
-
-            this._resources.push(resource);
-        }
-
-        public dispose() {
-            this.disposer.dispose();
-        }
-    }
-
     export class BrowserDetector {
         public static requestAnimationFrame;
         public static now;
@@ -722,7 +664,7 @@ export module Support {
         constructor(callback, timeout) {
             this._timeout = timeout;
             this._callback = callback;
-            this.disposer = new Support.Disposer(() => {
+            this.disposer = new Fundamental.Disposer(() => {
                 if (this._handler) {
                     window.clearTimeout(this._handler);
                     this._handler = null;
@@ -1053,7 +995,7 @@ export module Support {
             this._workerThreshold = RenderingScheduler.InitialWorkerThreshold;
             this._recentInvokeTime = []
             this._creationTime = Support.BrowserDetector.now();
-            this.disposer = new Support.Disposer(() => {
+            this.disposer = new Fundamental.Disposer(() => {
                 this._state = RenderingSchedulerState.Stopped;
                 this._workers = null;
             });

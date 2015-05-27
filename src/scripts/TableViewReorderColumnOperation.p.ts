@@ -1,9 +1,8 @@
 class TableViewReorderColumnOperation implements IOperation {
-    public disposer: Support.Disposer;
+    public disposer: Fundamental.Disposer;
     private _deferred;
     private _tableView: TableView;
     private _runtime;
-    private _resources;
     private _rtl;
     private _headerCellElement;
     private _headerCellCoverElement;
@@ -24,7 +23,7 @@ class TableViewReorderColumnOperation implements IOperation {
     private _started;
 
     constructor() {
-        this.disposer = new Support.Disposer(() => {
+        this.disposer = new Fundamental.Disposer(() => {
             this._runtime.elements.root.removeClass('msoc-list-table-operation-ReorderColumn');
             this._runtime.elements.canvas.eq(TableView.CursorCanvasIndex).show();
             this._selectionStylesheet.content(this._selectionStylesheetText);
@@ -33,13 +32,10 @@ class TableViewReorderColumnOperation implements IOperation {
             if (this._headerCellCoverElement) {
                 this._headerCellCoverElement.remove();
             }
-
-            this._resources.dispose();
         });
     }
 
     public start(tableView, runtime, headerCellElement, isTouch, pointerId, pointerDownCoordinate, selectionStylesheet): JQueryPromise<any> {
-        this._resources = new Support.ResourceGroup();
         this._deferred = $.Deferred();
         this._tableView = tableView;
         this._runtime = runtime;
@@ -70,9 +66,9 @@ class TableViewReorderColumnOperation implements IOperation {
             return this._deferred.promise();
         }
 
-        this._resources.add(this._transitionStylesheet = new Support.DynamicStylesheet(this._runtime.id + '_moving_column_transition'));
-        this._resources.add(this._movingStylesheet = new Support.DynamicStylesheet(this._runtime.id + '_moving_column'));
-        this._resources.add(this._currentColumnStylesheet = new Support.DynamicStylesheet(this._runtime.id + '_moving_current_column'));
+        this.disposer.addDisposable(this._transitionStylesheet = new Support.DynamicStylesheet(this._runtime.id + '_moving_column_transition'));
+        this.disposer.addDisposable(this._movingStylesheet = new Support.DynamicStylesheet(this._runtime.id + '_moving_column'));
+        this.disposer.addDisposable(this._currentColumnStylesheet = new Support.DynamicStylesheet(this._runtime.id + '_moving_current_column'));
         this._runtime.elements.canvas.eq(TableView.CursorCanvasIndex).hide();
         this._lastNewPlaceIndex = -1;
 
@@ -96,8 +92,8 @@ class TableViewReorderColumnOperation implements IOperation {
 
         this._transitionStylesheet.content(cssText.toString());
 
-        this._resources.add(new Support.EventAttacher($(window), this._isTouch ? 'touchend' : 'mouseup', (event) => this._onPointerUp(event)));
-        this._resources.add(new Support.EventAttacher($(window), this._isTouch ? 'touchmove' : 'mousemove', (event) => this._onPointerMove(event)));
+        this.disposer.addDisposable(new Support.EventAttacher($(window), this._isTouch ? 'touchend' : 'mouseup', (event) => this._onPointerUp(event)));
+        this.disposer.addDisposable(new Support.EventAttacher($(window), this._isTouch ? 'touchmove' : 'mousemove', (event) => this._onPointerMove(event)));
 
         this._headerViewportCoordinate = Support.CoordinateFactory.fromElement(this._rtl, this._runtime.elements.headerViewport);
         return this._deferred.promise();

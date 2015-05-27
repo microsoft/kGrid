@@ -11,7 +11,6 @@ class StackView implements IListView {
     private _selectionStylesheetUpdater;
     private _layoutStylesheetUpdater;
     private _updaters;
-    private _resources;
     private _isActivate;
     private _renderRange;
     private _renderingScheduler;
@@ -20,9 +19,8 @@ class StackView implements IListView {
     private _layoutUpdater;
 
     constructor(runtime) {
-        this.disposer = new Support.Disposer(() => {
+        this.disposer = new Fundamental.Disposer(() => {
             this._isActivate = false;
-            this._resources.dispose();
             this._elements = null;
         });
         this._isActivate = false;
@@ -31,16 +29,15 @@ class StackView implements IListView {
             selectionIndicator: false,
         });
         this._visibleColumnMap = [];
-        this._resources = new Support.ResourceGroup();
         this._runtime = runtime;
         this._options = this._runtime.options;
         this._elements = this._runtime.elements;
         this._updaters = new Support.UpdaterGroup();
-        this._resources.add(this._updaters);
-        this._resources.add(this._rowTopStylesheetUpdater = new Support.DynamicStylesheetUpdater(this._runtime.id + '_stack_render_row'));
-        this._resources.add(this._selectionStylesheetUpdater = new Support.DynamicStylesheetUpdater(this._runtime.id + '_stack_selection'));
-        this._resources.add(this._layoutStylesheetUpdater = new Support.DynamicStylesheetUpdater(this._runtime.id + '_stack_root'));
-        this._resources.add(this._renderingScheduler = new Support.RenderingScheduler());
+        this.disposer.addDisposable(this._updaters);
+        this.disposer.addDisposable(this._rowTopStylesheetUpdater = new Support.DynamicStylesheetUpdater(this._runtime.id + '_stack_render_row'));
+        this.disposer.addDisposable(this._selectionStylesheetUpdater = new Support.DynamicStylesheetUpdater(this._runtime.id + '_stack_selection'));
+        this.disposer.addDisposable(this._layoutStylesheetUpdater = new Support.DynamicStylesheetUpdater(this._runtime.id + '_stack_root'));
+        this.disposer.addDisposable(this._renderingScheduler = new Support.RenderingScheduler());
         this._renderContext = {
             renderedRows: [],
         };
@@ -256,7 +253,7 @@ class StackView implements IListView {
             };
         }
 
-        this._resources.add(new Support.EventAttacher(site, name, actualCallback));
+        this.disposer.addDisposable(new Support.EventAttacher(site, name, actualCallback));
     }
 
     private _attachEvents() {
