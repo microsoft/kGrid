@@ -54,8 +54,8 @@ class TableViewResizeColumnOperation implements IOperation {
         this._headerCellElement.addClass('msoc-list-table-header-cell-resizing');
         this._selectionStylesheetText = this._selectionStylesheet.content();
         this._selectionStylesheet.content('');
-        this.disposer.addDisposable(new Support.EventAttacher($(window), this._isTouch ? 'touchend' : 'mouseup', (event) => this._onPointerUp(event)));
-        this.disposer.addDisposable(new Support.EventAttacher($(window), this._isTouch ? 'touchmove' : 'mousemove', (event) => this._onPointerMove(event)));
+        this.disposer.addDisposable(new Fundamental.EventAttacher($(window), this._isTouch ? 'touchend' : 'mouseup', (event) => this._onPointerUp(event)));
+        this.disposer.addDisposable(new Fundamental.EventAttacher($(window), this._isTouch ? 'touchmove' : 'mousemove', (event) => this._onPointerMove(event)));
         this._splitters = [$('<div class="msoc-list-table-resizer"></div>'), $('<div class="msoc-list-table-resizer"></div>')];
         this._runtime.elements.headerCanvas.eq(TableView.CursorCanvasIndex).append(this._splitters[0]);
         this._runtime.elements.canvas.eq(TableView.CursorCanvasIndex).append(this._splitters[1]);

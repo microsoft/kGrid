@@ -253,7 +253,7 @@ class StackView implements IListView {
             };
         }
 
-        this.disposer.addDisposable(new Support.EventAttacher(site, name, actualCallback));
+        this.disposer.addDisposable(new Fundamental.EventAttacher(site, name, actualCallback));
     }
 
     private _attachEvents() {

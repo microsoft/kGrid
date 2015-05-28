@@ -13,7 +13,7 @@ export class Selection {
             selectionMode: selectionMode,
             cursor: Position.Null,
         });
-        this.disposer.addDisposable(this._events = new Support.EventSite());
+        this.disposer.addDisposable(this._events = new Fundamental.EventSite());
         this.disposer.addDisposable(this._updaters = new Support.UpdaterGroup());
         this._updaters.add(this._getSelectionChangeUpdater());
         this._updaters.add(this._getCursorChangeUpdater());

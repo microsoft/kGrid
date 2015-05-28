@@ -32,7 +32,7 @@ class TableViewEditOperation implements IOperation {
         this._rowIndex = rowIndex;
         this._columnUniqueId = tableView.visibleColumnMap()[columnIndex];
         this._columnIndex = columnIndex;
-        this.disposer.addDisposable(this._events = new Support.EventSite());
+        this.disposer.addDisposable(this._events = new Fundamental.EventSite());
         this._deferred = $.Deferred();
         var column = this._runtime.options.columns[this._columnUniqueId];
 
@@ -54,7 +54,7 @@ class TableViewEditOperation implements IOperation {
         this._runtime.elements.canvas.eq(TableView.CursorCanvasIndex).append(this._editElement);
 
         this.disposer.addDisposable(
-            new Support.EventAttacher(
+            new Fundamental.EventAttacher(
                 this._runtime.events,
                 'beforeMouseDownFocus',
                 (sender, args) => {
@@ -100,8 +100,8 @@ class TableViewEditOperation implements IOperation {
             cellData: cellData,
         });
 
-        this.disposer.addDisposable(new Support.EventAttacher(this._events, 'accept', (sender, args) => this._deferred.resolve(args)));
-        this.disposer.addDisposable(new Support.EventAttacher(this._events, 'reject', () => this._deferred.reject()));
+        this.disposer.addDisposable(new Fundamental.EventAttacher(this._events, 'accept', (sender, args) => this._deferred.resolve(args)));
+        this.disposer.addDisposable(new Fundamental.EventAttacher(this._events, 'reject', () => this._deferred.reject()));
 
         return this._deferred.promise();
     }

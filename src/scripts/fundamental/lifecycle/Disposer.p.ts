@@ -39,18 +39,28 @@ export class Disposer {
      * logic close to the constructor and easy to find what didn't do in disposing
      *
      * @constructor Microsoft.Office.Controls.Fundamental.Disposer
-     * @param {Microsoft.Office.Controls.Fundamental.Disposer~DisposeCallback=} disposeCallback - a callback will be called in disposing
+     * @param {Microsoft.Office.Controls.Fundamental.Disposer~DisposeCallback=} disposeCallback - A callback will be called in disposing
      */
     constructor(disposeCallback?) {
+        /**
+         * Indicates if the object is disposed
+         * @member {boolean} Microsoft.Office.Controls.Fundamental.Disposer#isDisposed
+         */
         this.isDisposed = false;
+
+        /**
+         * Indicates if the object is disposing
+         * @member {boolean} Microsoft.Office.Controls.Fundamental.Disposer#isDisposing
+         */
         this.isDisposing = false;
+
         this._disposeCallback = disposeCallback;
         this._disposables = [];
     }
 
     /**
      * @method Microsoft.Office.Controls.Fundamental.Disposer#addDisposable
-     * @param {object} disposable - an object which will be disposed when "this" is disposed. The object should implement {@link Microsoft.Office.Controls.Fundamental.IDisposable} or expose dispose function
+     * @param {object} disposable - An object which will be disposed when "this" is disposed. The object should implement {@link Microsoft.Office.Controls.Fundamental.IDisposable} or expose dispose function
      */
     public addDisposable(disposable) {
         if (this.isDisposed || this.isDisposing) {

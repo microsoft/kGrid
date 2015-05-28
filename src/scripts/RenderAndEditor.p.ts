@@ -99,12 +99,12 @@ export class SimpleTextCellEditor implements IEditor {
         input.val(cellData);
         input.focus();
 
-        disposer.addDisposable(new Support.EventAttacher(input, 'focusout', () => {
+        disposer.addDisposable(new Fundamental.EventAttacher(input, 'focusout', () => {
             disposer.dispose();
             accept(input.val());
         }));
 
-        disposer.addDisposable(new Support.EventAttacher(input, 'keydown', (event) => {
+        disposer.addDisposable(new Fundamental.EventAttacher(input, 'keydown', (event) => {
             if (event.which == 27) {
                 disposer.dispose();
                 reject();

@@ -150,6 +150,8 @@ module.exports = function(grunt) {
                     'src/scripts/fundamental/head.p.ts',
                     'src/scripts/fundamental/lifecycle/IDisposable.p.ts',
                     'src/scripts/fundamental/lifecycle/Disposer.p.ts',
+                    'src/scripts/fundamental/event/EventSite.p.ts',
+                    'src/scripts/fundamental/event/EventAttacher.p.ts',
                     'src/scripts/fundamental/tail.p.ts',
                     'src/scripts/head.p.ts',
                     'src/scripts/support.p.ts',

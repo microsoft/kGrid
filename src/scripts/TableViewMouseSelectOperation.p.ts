@@ -52,8 +52,8 @@ class TableViewMouseSelectOperation implements IOperation {
 
         this._selectionMode = this._runtime.selection.selectionMode();
 
-        this.disposer.addDisposable(new Support.EventAttacher($(window), 'mouseup', (event) => this._onMouseUp(event)));
-        this.disposer.addDisposable(new Support.EventAttacher($(window), 'mousemove', (event) => this._onMouseMove(event)));
+        this.disposer.addDisposable(new Fundamental.EventAttacher($(window), 'mouseup', (event) => this._onMouseUp(event)));
+        this.disposer.addDisposable(new Fundamental.EventAttacher($(window), 'mousemove', (event) => this._onMouseMove(event)));
         return this._deferred.promise();
     }
 

@@ -357,58 +357,6 @@ export module Support {
         }
     }
 
-    export class EventSite {
-        public disposer;
-        private _sites;
-
-        constructor() {
-            this._sites = {};
-            this.disposer = new Fundamental.Disposer(() => this._sites = null);
-        }
-
-        public on(event, callback) {
-            if (this.disposer.isDisposed) {
-                return;
-            }
-
-            var site = this._sites[event];
-
-            if (!site) {
-                this._sites[event] = site = [];
-            }
-
-            site.push(callback);
-        }
-
-        public off(event, callback) {
-            if (this.disposer.isDisposed) {
-                return;
-            }
-
-            if (!this._sites[event]) {
-                return;
-            }
-
-            this._sites[event] = $.grep(this._sites[event], (c) => c != callback);
-        }
-
-        public emit(event, sender, args) {
-            if (this.disposer.isDisposed) {
-                return;
-            }
-
-            var site = this._sites[event];
-
-            if (!site) {
-                return;
-            }
-
-            for (var i = 0; i < site.length; i++) {
-                site[i](sender, args);
-            }
-        }
-    }
-
     export class Calculator {
         public static calculateScrollTopAfterSwitchView(oldCanvasHeight, newCanvasHeight, oldViewportHeight, newViewportHeight, oldViewportScrollTop) {
             var oldCanvasViewportHeight = oldCanvasHeight - oldViewportHeight;
@@ -468,23 +416,6 @@ export module Support {
                     lower: Math.min(firstLower, secondLower),
                     upper: Math.max(firstUpper, secondUpper),
                 };
-            }
-        }
-    }
-
-    export class EventAttacher {
-        public disposer;
-
-        constructor(element, events, callback) {
-            events = events.split(' ');
-            this.disposer = new Fundamental.Disposer(() => {
-                for (var i = 0; i < events.length; i++) {
-                    element.off(events[i], callback);
-                }
-            });
-
-            for (var i = 0; i < events.length; i++) {
-                element.on(events[i], callback);
             }
         }
     }
