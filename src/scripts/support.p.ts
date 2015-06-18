@@ -218,12 +218,12 @@ export module Support {
 
     export class DynamicStylesheetUpdater {
         public disposer;
-        private _stylesheet: DynamicStylesheet;
+        private _stylesheet: Microsoft.Office.Controls.Fundamental.DynamicStylesheet;
         private _updater: Updater;
         private _generators = [];
 
         constructor(id) {
-            this._stylesheet = new DynamicStylesheet(id);
+            this._stylesheet = new Microsoft.Office.Controls.Fundamental.DynamicStylesheet(id);
             this._generators = [];
             this._updater = new Updater(
                 () => {
@@ -331,52 +331,6 @@ export module Support {
                     lower: Math.min(firstLower, secondLower),
                     upper: Math.max(firstUpper, secondUpper),
                 };
-            }
-        }
-    }
-
-    export class DynamicStylesheet {
-        public disposer;
-        private _element;
-        private _stylesheetText;
-
-        constructor(id) {
-            this._element = $('<style type="text/css"></style>');
-
-            if (id) {
-                this._element.attr('id', id);
-            }
-
-            $(document.head).append(this._element);
-            this._stylesheetText = '';
-            this.disposer = new Fundamental.Disposer(() => {
-                this._element.remove();
-                this._element = null;
-                this._stylesheetText = null;
-            });
-        }
-
-        public content(stylesheetText) {
-            if (this.disposer.isDisposed) {
-                return;
-            }
-
-            if (arguments.length == 0) {
-                return this._stylesheetText;
-            } else {
-                if (!stylesheetText) {
-                    stylesheetText = '';
-                }
-
-                if (this._stylesheetText != stylesheetText) {
-                    this._stylesheetText = stylesheetText;
-
-                    if (this._element[0].styleSheet && !this._element[0].sheet) {
-                        this._element[0].styleSheet.cssText = this._stylesheetText;
-                    } else {
-                        this._element.html(this._stylesheetText);
-                    }
-                }
             }
         }
     }

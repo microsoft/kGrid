@@ -186,6 +186,7 @@ module.exports = function(grunt) {
                     'src/scripts/fundamental/EventAttacher.p.ts',
                     'src/scripts/fundamental/PropertyBag.p.ts',
                     'src/scripts/fundamental/TextDirection.p.ts',
+                    'src/scripts/fundamental/DynamicStylesheet.p.ts',
                     'src/scripts/fundamental/tail.p.ts',
                     'src/scripts/head.p.ts',
                     'src/scripts/support.p.ts',

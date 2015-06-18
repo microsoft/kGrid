@@ -65,7 +65,7 @@ class TableViewEditOperation implements IOperation {
                     }
                 }));
 
-        this.disposer.addDisposable(this._stylesheet = new Support.DynamicStylesheet(this._runtime.id + '_edit'));
+        this.disposer.addDisposable(this._stylesheet = new Microsoft.Office.Controls.Fundamental.DynamicStylesheet(this._runtime.id + '_edit'));
 
         var cssText = new Support.CssTextBuilder(),
             row = this._runtime.getRowByIndex(rowIndex);

@@ -37,7 +37,7 @@ class TableView implements IListView {
 
         this.disposer.addDisposable(this._dynamicStylesheetUpdater = new Support.DynamicStylesheetUpdater(this._runtime.id + '_table_root'));
         this.disposer.addDisposable(this._rowTopStylesheetUpdater = new Support.DynamicStylesheetUpdater(this._runtime.id + '_table_render_row'));
-        this.disposer.addDisposable(this._selectionStylesheet = new Support.DynamicStylesheet(this._runtime.id + '_table_selection'));
+        this.disposer.addDisposable(this._selectionStylesheet = new Microsoft.Office.Controls.Fundamental.DynamicStylesheet(this._runtime.id + '_table_selection'));
         this.disposer.addDisposable(this._updaters = new Support.UpdaterGroup());
         this.disposer.addDisposable(this._renderingScheduler = new Support.RenderingScheduler());
 

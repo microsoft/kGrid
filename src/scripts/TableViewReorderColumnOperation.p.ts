@@ -66,9 +66,9 @@ class TableViewReorderColumnOperation implements IOperation {
             return this._deferred.promise();
         }
 
-        this.disposer.addDisposable(this._transitionStylesheet = new Support.DynamicStylesheet(this._runtime.id + '_moving_column_transition'));
-        this.disposer.addDisposable(this._movingStylesheet = new Support.DynamicStylesheet(this._runtime.id + '_moving_column'));
-        this.disposer.addDisposable(this._currentColumnStylesheet = new Support.DynamicStylesheet(this._runtime.id + '_moving_current_column'));
+        this.disposer.addDisposable(this._transitionStylesheet = new Microsoft.Office.Controls.Fundamental.DynamicStylesheet(this._runtime.id + '_moving_column_transition'));
+        this.disposer.addDisposable(this._movingStylesheet = new Microsoft.Office.Controls.Fundamental.DynamicStylesheet(this._runtime.id + '_moving_column'));
+        this.disposer.addDisposable(this._currentColumnStylesheet = new Microsoft.Office.Controls.Fundamental.DynamicStylesheet(this._runtime.id + '_moving_current_column'));
         this._runtime.elements.canvas.eq(TableView.CursorCanvasIndex).hide();
         this._lastNewPlaceIndex = -1;
 
