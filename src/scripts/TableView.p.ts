@@ -31,7 +31,7 @@ class TableView implements IListView {
         });
 
         this._isActivate = false;
-        this._properties = new Support.PropertyBag();
+        this._properties = new Fundamental.PropertyBag();
         this._visibleColumnMap = [];
         this._renderRange = new Range(RangeType.Range, NaN, NaN, NaN, NaN);
 

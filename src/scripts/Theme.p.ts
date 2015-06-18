@@ -212,7 +212,7 @@ export class Theme {
     private _options;
 
     constructor(options) {
-        this._options = new Support.PropertyBag(options);
+        this._options = new Fundamental.PropertyBag(options);
 
         this._inherit();
         this._check();

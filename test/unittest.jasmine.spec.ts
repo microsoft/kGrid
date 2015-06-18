@@ -182,15 +182,15 @@ describe('Basic Functionality', function () {
 
     describe('PropertyBag', function () {
         it('Existance', function () {
-            expect(typeof(MSOC.Support.PropertyBag)).toBe('function');
+            expect(typeof(MSOC.Fundamental.PropertyBag)).toBe('function');
         });
 
         it('Create', function () {
-            expect(typeof(new MSOC.Support.PropertyBag())).toBe('object');
+            expect(typeof(new MSOC.Fundamental.PropertyBag())).toBe('object');
         });
 
         it('Change Value', function () {
-            var propertyBag = new MSOC.Support.PropertyBag();
+            var propertyBag = new MSOC.Fundamental.PropertyBag();
 
             expect(propertyBag.$property({ name:'test', args: [0] })).toBe(0);
             expect(propertyBag['test']).toBe(0);
@@ -203,7 +203,7 @@ describe('Basic Functionality', function () {
         it('Event', function () {
             var propertyBag, beforeChange, afterChange;
 
-            propertyBag = new MSOC.Support.PropertyBag();
+            propertyBag = new MSOC.Fundamental.PropertyBag();
             beforeChange = jasmine.createSpy('beforeChange');
             afterChange = jasmine.createSpy('beforeChange');
 
@@ -228,7 +228,7 @@ describe('Basic Functionality', function () {
             beforeChange.reset();
             afterChange.reset();
 
-            propertyBag = new MSOC.Support.PropertyBag();
+            propertyBag = new MSOC.Fundamental.PropertyBag();
 
             propertyBag.$property({
                 name: 'test',
@@ -261,7 +261,7 @@ describe('Basic Functionality', function () {
             beforeChange.reset();
             afterChange.reset();
 
-            propertyBag = new MSOC.Support.PropertyBag();
+            propertyBag = new MSOC.Fundamental.PropertyBag();
 
             propertyBag.$property({
                 name: 'test',
@@ -289,7 +289,7 @@ describe('Basic Functionality', function () {
             beforeChange.reset();
             afterChange.reset();
 
-            propertyBag = new MSOC.Support.PropertyBag();
+            propertyBag = new MSOC.Fundamental.PropertyBag();
 
             propertyBag.$property({
                 name: 'test',

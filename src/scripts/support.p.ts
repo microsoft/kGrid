@@ -3,91 +3,6 @@ export module Support {
         return new Error(number + ': [' + name + '] ' + message);
     }
 
-    export class TextDirection {
-        public static RTL = 1;
-        public static LTR = 0;
-        private static _staticInitialized = false;
-        private static _zeroEnd;
-        private static _scrollFrontDirection;
-        private options;
-
-        constructor(rtl) {
-            this.options = new Support.PropertyBag();
-            this.rtl(rtl);
-        }
-
-        private static _staticInitialize() {
-            if (TextDirection._staticInitialized) {
-                return;
-            }
-
-            var div = $('<div style="direction: rtl; posistion:absolute; left: 0px; right: 0px; width: 50px; height: 50px; overflow: auto"><div style="posistion:absolute; left: 0px; right: 0px; width: 51px; height: 50px"></div></div>');
-
-            $(document.body).append(div);
-
-            TextDirection._zeroEnd = div.scrollLeft() == 0 ? 'front' : 'end';
-
-            div.scrollLeft(1);
-
-            if (div.scrollLeft() == 1) {
-                TextDirection._scrollFrontDirection = 1;
-            } else {
-                TextDirection._scrollFrontDirection = -1;
-            }
-
-            div.remove();
-
-            TextDirection._staticInitialized = true;
-        }
-
-        public static zeroEnd() {
-            TextDirection._staticInitialize();
-            return TextDirection._zeroEnd;
-        }
-
-        public static scrollFrontDirection() {
-            TextDirection._staticInitialize();
-            return TextDirection._scrollFrontDirection;
-        }
-
-        public rtl(value = undefined) {
-            return this.options.$property({
-                name: 'rtl',
-                args: arguments,
-                afterChange: (sender, args) => {
-                    if (args.newValue) {
-                        this.front('right');
-                        this.end('left');
-                    } else {
-                        this.front('left');
-                        this.end('right');
-                    }
-                },
-            });
-        }
-
-        public front(value = undefined) {
-            return this.options.$property({
-                name: 'front',
-                args: arguments,
-            });
-        }
-
-        public end(value = undefined) {
-            return this.options.$property({
-                name: 'end',
-                args: arguments,
-            });
-        }
-
-        public clone() {
-            var clonedObject = new Support.TextDirection(this.rtl());
-
-            clonedObject.options = $.extend(true, new Support.PropertyBag(), this.options);
-            return clonedObject;
-        }
-    }
-
     export class CssTextBuilder {
         // Per http://jsperf.com/array-join-vs-string-connect
         // use string is faster than array join
@@ -466,67 +381,6 @@ export module Support {
         }
     }
 
-    export class PropertyBag {
-        constructor(base0 = {}, base1 = {}) {
-            $.extend(true, this, base0, base1);
-        }
-
-        public $property(options) {
-            options.target = this;
-
-            return PropertyBag.property(options);
-        }
-
-        public static property(options) {
-            var target = options.target,
-                name = options.name,
-                args = options.args,
-                afterRead = options.afterRead,
-                beforeChange = options.beforeChange,
-                afterChange = options.afterChange;
-
-            if (args.length > 0) {
-                var oldValue = target[name], newValue = args[0];
-
-                if (oldValue == newValue || (typeof(oldValue) == 'number' && isNaN(oldValue) && isNaN(newValue))) {
-                    return newValue;
-                }
-
-                if (beforeChange) {
-                    var beforeChangeArgs = { name: name, newValue: newValue, oldValue: oldValue, cancel: false };
-
-                    beforeChange(target, beforeChangeArgs);
-
-                    if (beforeChangeArgs.cancel) {
-                        return;
-                    }
-
-                    newValue = beforeChangeArgs.newValue;
-                    oldValue = beforeChangeArgs.oldValue;
-                }
-
-                target[name] = newValue;
-
-                if (afterChange) {
-                    var afterChangeArgs = { name: name, newValue: newValue, oldValue: oldValue };
-
-                    afterChange(target, afterChangeArgs);
-                    return afterChange.newValue;
-                }
-
-                return target[name];
-            } else {
-                var afterReadArgs = { name: name, newValue: target[name] };
-
-                if (afterRead) {
-                    afterRead(target, afterReadArgs);
-                }
-
-                return afterReadArgs.newValue;
-            }
-        }
-    }
-
     export class BrowserDetector {
         public static requestAnimationFrame;
         public static now;
@@ -645,7 +499,7 @@ export module Support {
                 throw createError('0', 'Coordinate', 'width must be greater or equal than zero');
             }
 
-            this._options = new Support.PropertyBag({
+            this._options = new Fundamental.PropertyBag({
                 type: type,
                 x: x,
                 y: y,
@@ -875,15 +729,15 @@ export module Support {
 
             if (rtl) {
                 // scrollFront = scrollOverflowWidth - scrollLeft;
-                if (TextDirection.zeroEnd() == 'front' && TextDirection.scrollFrontDirection() == 1) {
+                if (Fundamental.TextDirection.zeroEnd() == 'front' && Fundamental.TextDirection.scrollFrontDirection() == 1) {
                     scrollFront = scrollLeft;
-                } else if (TextDirection.zeroEnd() == 'front' && TextDirection.scrollFrontDirection() == -1) {
+                } else if (Fundamental.TextDirection.zeroEnd() == 'front' && Fundamental.TextDirection.scrollFrontDirection() == -1) {
                     // FireFox
                     scrollFront = -scrollLeft;
-                } else if (TextDirection.zeroEnd() == 'end' && TextDirection.scrollFrontDirection() == 1) {
+                } else if (Fundamental.TextDirection.zeroEnd() == 'end' && Fundamental.TextDirection.scrollFrontDirection() == 1) {
                     // Chrome
                     scrollFront = Math.max(0, scrollOverflowWidth - scrollLeft);
-                } else if (TextDirection.zeroEnd() == 'end' && TextDirection.scrollFrontDirection() == -1) {
+                } else if (Fundamental.TextDirection.zeroEnd() == 'end' && Fundamental.TextDirection.scrollFrontDirection() == -1) {
                     // Unknown
                     scrollFront = Math.max(0, scrollLeft - scrollOverflowWidth);
                 }

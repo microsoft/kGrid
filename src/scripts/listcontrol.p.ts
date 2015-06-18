@@ -466,7 +466,7 @@ export class ListControl {
         this._rowMap = {};
         this._rows = [];
         this._id = (new Date()).valueOf();
-        this._options = new Support.PropertyBag({
+        this._options = new Fundamental.PropertyBag({
             columns: [],
             rows: [],
             rowCount: 0,
@@ -492,7 +492,7 @@ export class ListControl {
             viewType: NaN,
             operator: null,
             updateUI: () => this.updateUI.apply(this, arguments),
-            direction: new Support.TextDirection(Support.TextDirection.LTR),
+            direction: new Fundamental.TextDirection(Fundamental.TextDirection.LTR),
             updateSize: () => this._updateSize.apply(this, arguments),
             selection: new Selection(),
             scroll: () => this._scroll.apply(this, arguments),
@@ -712,13 +712,13 @@ export class ListControl {
             front = Math.max(0, Math.min(front, scrollWidth));
 
             if (this._runtime.direction.rtl()) {
-                if (Support.TextDirection.zeroEnd() == 'front' && Support.TextDirection.scrollFrontDirection() == -1) {
+                if (Fundamental.TextDirection.zeroEnd() == 'front' && Fundamental.TextDirection.scrollFrontDirection() == -1) {
                     // FireFox
                     this._elements.viewport.scrollLeft(-front);
-                } else if (Support.TextDirection.zeroEnd() == 'end' && Support.TextDirection.scrollFrontDirection() == 1) {
+                } else if (Fundamental.TextDirection.zeroEnd() == 'end' && Fundamental.TextDirection.scrollFrontDirection() == 1) {
                     // Chrome
                     this._elements.viewport.scrollLeft(scrollWidth - clientWidth - front);
-                } else if (Support.TextDirection.zeroEnd() == 'front' && Support.TextDirection.scrollFrontDirection() == 1) {
+                } else if (Fundamental.TextDirection.zeroEnd() == 'front' && Fundamental.TextDirection.scrollFrontDirection() == 1) {
                     // IE
                     this._elements.viewport.scrollLeft(front);
                 } else {
@@ -739,8 +739,8 @@ export class ListControl {
         if (!!frontOffset) {
             if (this._runtime.direction.rtl()) {
                 // FireFox & Chrome
-                if (Support.TextDirection.zeroEnd() == 'front' && Support.TextDirection.scrollFrontDirection() == -1 ||
-                    Support.TextDirection.zeroEnd() == 'end' && Support.TextDirection.scrollFrontDirection() == 1) {
+                if (Fundamental.TextDirection.zeroEnd() == 'front' && Fundamental.TextDirection.scrollFrontDirection() == -1 ||
+                    Fundamental.TextDirection.zeroEnd() == 'end' && Fundamental.TextDirection.scrollFrontDirection() == 1) {
                     frontOffset = -frontOffset;
                 }
             }

@@ -6,7 +6,7 @@ export class Selection {
 
     constructor(selectionMode: SelectionMode = SelectionMode.SingleRow) {
         this.disposer = new Fundamental.Disposer();
-        this._options = new Support.PropertyBag({
+        this._options = new Fundamental.PropertyBag({
             ranges: [],
             rowCount: 0,
             columnCount: 0,

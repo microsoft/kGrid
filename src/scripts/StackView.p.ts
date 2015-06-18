@@ -24,7 +24,7 @@ class StackView implements IListView {
             this._elements = null;
         });
         this._isActivate = false;
-        this._properties = new Support.PropertyBag({
+        this._properties = new Fundamental.PropertyBag({
             headerWidth: 100,
             selectionIndicator: false,
         });

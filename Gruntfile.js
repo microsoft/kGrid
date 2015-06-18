@@ -11,9 +11,9 @@ module.exports = function(grunt) {
                 files: ['<%= concat.debug.src %>'],
                 tasks: ['concat:debug']
             },
-            ts_debug: {
-                files: ['<%= ts.debug.src %>'],
-                tasks: ['ts:debug']
+            ts_dev: {
+                files: ['<%= ts.dev.src %>'],
+                tasks: ['ts:dev']
             },
             ts_test: {
                 files: ['<%= ts.test.src %>'],
@@ -23,15 +23,28 @@ module.exports = function(grunt) {
                 files: ['src/assets/less/listcontrol.less'],
                 tasks: ['less:debug']
             },
-            copy: {
+            copy_dev: {
                 files: [
                     'src/htmls/**/*',
                     'lib/**/*',
-                    'build/js/**/*.js',
+                    'build/js/dev/**/*.js',
                     'build/assets/css/**/*.css',
                     'src/demo/**/*',
                 ],
-                tasks: ['copy:install', 'jasmine_node']
+                tasks: ['copy:dev_install', 'test:jasmine']
+            },
+            copy_test: {
+                files: [
+                    'test/**/*.js',
+                    'build/js/test/**/*.js',
+                ],
+                tasks: ['copy:test_install', 'test:jasmine']
+            },
+            jsdoc: {
+                files: [
+                    'build/js/dev/**/*.js',
+                ],
+                tasks: ['jsdoc'],
             },
             configFiles: {
                 files: ['Gruntfile.js'],
@@ -41,7 +54,7 @@ module.exports = function(grunt) {
             },
         },
         copy: {
-            install: {
+            dev_install: {
                 files: [
                     {
                         expand: true,
@@ -73,14 +86,15 @@ module.exports = function(grunt) {
                     },
                     {
                         expand: true,
-                        src: ['test/**/*.js'],
+                        cwd: 'build/js/dev',
+                        src: ['**/*.js'],
                         dest: path.join(installDir, 'js'),
                         filter: 'isFile'
                     },
                     {
                         expand: true,
                         cwd: 'build',
-                        src: ['js/**/*.js', 'assets/css/**/*.css'],
+                        src: ['assets/css/**/*.css'],
                         dest: path.join(installDir),
                         filter: 'isFile'
                     },
@@ -98,8 +112,26 @@ module.exports = function(grunt) {
                         dest: path.join(installDir, 'demo'),
                         filter: 'isFile'
                     },
-                ]
-            }
+                ],
+            },
+            test_install: {
+                files: [
+                    {
+                        expand: true,
+                        cwd: 'test',
+                        src: ['**/*.js'],
+                        dest: path.join(installDir, 'js/test'),
+                        filter: 'isFile'
+                    },
+                    {
+                        expand: true,
+                        cwd: 'build/js/test',
+                        src: ['**/*.js'],
+                        dest: path.join(installDir, 'js/test'),
+                        filter: 'isFile'
+                    },
+                ],
+            },
         },
         bower: {
             install: {
@@ -131,7 +163,7 @@ module.exports = function(grunt) {
                     consolidate: true
                 }
             },
-            all: ['install/js/test/']
+            all: ['install/js/']
         },
         less: {
             debug: {
@@ -152,6 +184,8 @@ module.exports = function(grunt) {
                     'src/scripts/fundamental/lifecycle/Disposer.p.ts',
                     'src/scripts/fundamental/event/EventSite.p.ts',
                     'src/scripts/fundamental/event/EventAttacher.p.ts',
+                    'src/scripts/fundamental/propertybag/PropertyBag.p.ts',
+                    'src/scripts/fundamental/textdirection/TextDirection.p.ts',
                     'src/scripts/fundamental/tail.p.ts',
                     'src/scripts/head.p.ts',
                     'src/scripts/support.p.ts',
@@ -177,9 +211,9 @@ module.exports = function(grunt) {
             },
         },
         ts: {
-            debug: {
+            dev: {
                 src: ['build/ts/listcontrol.ts', 'inc/*.d.ts'],
-                outDir: ['build/js'],
+                outDir: ['build/js/dev'],
                 options: {
                     target: 'es5',
                     // module: 'amd',
@@ -201,13 +235,13 @@ module.exports = function(grunt) {
         uglify: {
             ship: {
                 files: {
-                    'build/js/listcontrol.min.js': ['build/js/listcontrol.js'],
+                    'build/js/dev/listcontrol.min.js': ['build/js/dev/listcontrol.js'],
                 },
             },
         },
         jsdoc: {
             dist: {
-                src: ['build/js/listcontrol.js'],
+                src: ['build/js/dev/listcontrol.js'],
                 options: {
                     destination: 'doc',
                     readme: 'README.md',
@@ -218,15 +252,19 @@ module.exports = function(grunt) {
     });
 
     grunt.registerTask('prepare', ['bower:install']);
-    grunt.registerTask('install', ['copy:install']);
-    grunt.registerTask('build:debug', ['less:debug', 'concat:debug', 'ts:debug', 'install']);
-    grunt.registerTask('build:ship', ['less:debug', 'concat:debug', 'ts:debug', 'uglify', 'install']);
+    grunt.registerTask('build:debug', ['less:debug', 'concat:debug', 'ts:dev']);
+    grunt.registerTask('build:ship', ['less:debug', 'concat:debug', 'ts:dev', 'uglify']);
     grunt.registerTask('build', 'build:debug');
-    grunt.registerTask('test:karma', ['ts:test', 'install', 'karma']);
-    grunt.registerTask('test:jasmine', ['ts:test', 'install', 'jasmine_node']);
-    grunt.registerTask('test', ['ts:test', 'install', 'jasmine_node', 'karma']);
-    grunt.registerTask('all:debug', ['clean', 'prepare', 'less:debug', 'concat:debug', 'ts:debug', 'ts:test', 'install', 'jasmine_node', 'karma']);
-    grunt.registerTask('all:ship', ['clean', 'prepare', 'less:debug', 'concat:debug', 'ts:debug', 'uglify', 'ts:test', 'install', 'jasmine_node', 'karma']);
+    grunt.registerTask('install:debug', 'copy:dev_install');
+    grunt.registerTask('install:ship', 'copy:dev_install');
+    grunt.registerTask('install:test', 'copy:test_install');
+    grunt.registerTask('install', 'install:debug');
+    grunt.registerTask('build:test', ['ts:test']);
+    grunt.registerTask('test:karma', ['karma']);
+    grunt.registerTask('test:jasmine', ['jasmine_node']);
+    grunt.registerTask('test', ['jasmine_node', 'karma']);
+    grunt.registerTask('all:debug', ['clean', 'build:debug', 'build:test', 'install:debug', 'install:test', 'test']);
+    grunt.registerTask('all:ship', ['clean', 'build:ship', 'build:test', 'install:ship', 'install:test', 'test', 'jsdoc']);
     grunt.registerTask('all', 'all:debug');
     grunt.registerTask('default', function () {
         console.log('Use grunt build to build');

@@ -30,7 +30,6 @@ require.config({
         angular: 'lib/angular/angular',
         ngRoute: 'lib/angular-route/angular-route',
         css: 'lib/require-css/css',
-        PeoplePicker: 'https://cdn.controls.firstpartyappssandbox.oappseperate.com/controls/0.9/peoplepicker/Office.Controls.PeoplePicker.debug',
     },
     shim: {
         jquery: {
