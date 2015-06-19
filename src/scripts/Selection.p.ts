@@ -14,7 +14,7 @@ export class Selection {
             cursor: Position.Null,
         });
         this.disposer.addDisposable(this._events = new Fundamental.EventSite());
-        this.disposer.addDisposable(this._updaters = new Support.UpdaterGroup());
+        this.disposer.addDisposable(this._updaters = new Microsoft.Office.Controls.Fundamental.UpdaterGroup());
         this._updaters.add(this._getSelectionChangeUpdater());
         this._updaters.add(this._getCursorChangeUpdater());
         this._updaters.update();
@@ -233,7 +233,7 @@ export class Selection {
     public deselect(range: Range) {
         if (this._options.selectionMode == SelectionMode.SingleRow ||
             this._options.selectionMode == SelectionMode.Cell) {
-            throw Support.createError(0, 'Selection', 'Deny to deselect in current mode, move cursor instead');
+            throw Microsoft.Office.Controls.Fundamental.createError(0, 'Selection', 'Deny to deselect in current mode, move cursor instead');
         }
         if (this._options.ranges.length == 0) {
             return;
@@ -285,7 +285,7 @@ export class Selection {
     public select(range: Range, keepSelectedRanges = true) {
         if (this._options.selectionMode == SelectionMode.SingleRow ||
             this._options.selectionMode == SelectionMode.Cell) {
-            throw Support.createError(0, 'Selection', 'Deny to select in current mode, move cursor instead');
+            throw Microsoft.Office.Controls.Fundamental.createError(0, 'Selection', 'Deny to select in current mode, move cursor instead');
         }
         var ranges = this._normalize([range]);
 
@@ -302,7 +302,7 @@ export class Selection {
         switch (this._options.selectionMode) {
             case SelectionMode.MultipleRows:
                 if (range.type() != RangeType.Row) {
-                    throw Support.createError(0, 'Selection', 'invilidate range type [' + RangeType[range.type()]+ ']');
+                    throw Microsoft.Office.Controls.Fundamental.createError(0, 'Selection', 'invilidate range type [' + RangeType[range.type()]+ ']');
                 }
 
                 this._merge(range);
@@ -318,11 +318,11 @@ export class Selection {
 
             case SelectionMode.Cell:
                 if (range.type() != RangeType.Range) {
-                    throw Support.createError(0, 'Selection', 'invilidate range type [' + RangeType[range.type()]+ ']');
+                    throw Microsoft.Office.Controls.Fundamental.createError(0, 'Selection', 'invilidate range type [' + RangeType[range.type()]+ ']');
                 }
 
                 if (range.rowCount() != 1 || range.columnCount() != 1) {
-                    throw Support.createError(0, 'Selection', 'cannot select more than 1 cell');
+                    throw Microsoft.Office.Controls.Fundamental.createError(0, 'Selection', 'cannot select more than 1 cell');
                 }
 
                 this._options.ranges = [range];
@@ -422,7 +422,7 @@ export class Selection {
                     } else if (rangeBottom > removeBottom) {
                         result.push(new Range(range.type(), removeTop, rangeBottom - count, range.front(), range.end()));
                     } else {
-                        throw Support.createError(0, 'Selection', 'error code path');
+                        throw Microsoft.Office.Controls.Fundamental.createError(0, 'Selection', 'error code path');
                     }
                 }
             }
@@ -480,7 +480,7 @@ export class Selection {
                     } else if (rangeEnd > removeEnd) {
                         result.push(new Range(range.type(), range.top(), range.bottom(), removeEnd + 1, rangeEnd));
                     } else {
-                        throw Support.createError(0, 'Selection', 'error code path');
+                        throw Microsoft.Office.Controls.Fundamental.createError(0, 'Selection', 'error code path');
                     }
                 }
             }
@@ -527,7 +527,7 @@ export class Selection {
                     } else if (rangeTop < insertTop && rangeBottom >= insertTop) {
                         result.push(new Range(RangeType.Row, rangeTop, rangeBottom + count, range.front(), range.end()));
                     } else {
-                        throw Support.createError(0, 'Selection', 'error code path');
+                        throw Microsoft.Office.Controls.Fundamental.createError(0, 'Selection', 'error code path');
                     }
                 }
             }
@@ -573,7 +573,7 @@ export class Selection {
                     } else if (rangeFront < insertFront && rangeEnd >= insertFront) {
                         result.push(new Range(RangeType.Column, range.top(), range.bottom(), rangeFront, rangeEnd + count));
                     } else {
-                        throw Support.createError(0, 'Selection', 'error code path');
+                        throw Microsoft.Office.Controls.Fundamental.createError(0, 'Selection', 'error code path');
                     }
                 }
             }
@@ -585,7 +585,7 @@ export class Selection {
 
     private _deselectRow(range) {
         if (range.type() != RangeType.Row) {
-            throw Support.createError(0, 'Selection', 'cannot deselect range with type [' + RangeType[range.type()] + ']');
+            throw Microsoft.Office.Controls.Fundamental.createError(0, 'Selection', 'cannot deselect range with type [' + RangeType[range.type()] + ']');
         }
 
         var result = [],
@@ -610,7 +610,7 @@ export class Selection {
             } else if (rangeBottom > deselectBottom) {
                 result.push(new Range(RangeType.Row, deselectBottom + 1, rangeBottom, NaN, NaN));
             } else {
-                throw Support.createError(0, 'Selection', 'error code path');
+                throw Microsoft.Office.Controls.Fundamental.createError(0, 'Selection', 'error code path');
             }
         }
 
@@ -619,7 +619,7 @@ export class Selection {
 
     private _deselectColumn(range) {
         if (range.type() != RangeType.Column) {
-            throw Support.createError(0, 'Selection', 'cannot deselect range with type [' + RangeType[range.type()] + ']');
+            throw Microsoft.Office.Controls.Fundamental.createError(0, 'Selection', 'cannot deselect range with type [' + RangeType[range.type()] + ']');
         }
 
         var result = [],
@@ -644,7 +644,7 @@ export class Selection {
             } else if (rangeEnd > deselectEnd) {
                 result.push(new Range(RangeType.Column, NaN, NaN, deselectEnd + 1, rangeEnd));
             } else {
-                throw Support.createError(0, 'Selection', 'error code path');
+                throw Microsoft.Office.Controls.Fundamental.createError(0, 'Selection', 'error code path');
             }
         }
 
@@ -755,7 +755,7 @@ export class Selection {
     }
 
     private _getSelectionChangeUpdater() {
-        return new Support.Updater(
+        return new Microsoft.Office.Controls.Fundamental.Updater(
             () => {
                 return this._options.ranges;
             },
@@ -765,7 +765,7 @@ export class Selection {
     }
 
     private _getCursorChangeUpdater() {
-        return new Support.Updater(
+        return new Microsoft.Office.Controls.Fundamental.Updater(
             () => {
                 return this._options.cursor;
             },

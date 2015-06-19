@@ -99,7 +99,7 @@ export class ListControl {
                 if (args.newValue == null || typeof(args.newValue) == 'undefined') {
                     args.newValue = [];
                 } else if (!$.isArray(args.newValue)) {
-                    throw Support.createError(0, 'ListControl', 'rows must be an array');
+                    throw Microsoft.Office.Controls.Fundamental.createError(0, 'ListControl', 'rows must be an array');
                 }
 
                 var rows = [];
@@ -487,7 +487,7 @@ export class ListControl {
             width: 0,
             height: 0,
             viewportScrollLeft: 0,
-            viewportScrollCoordinate: new Support.Coordinate(Support.CoordinateType.ViewportRelative, 0, 0),
+            viewportScrollCoordinate: new Microsoft.Office.Controls.Fundamental.Coordinate(Microsoft.Office.Controls.Fundamental.CoordinateType.ViewportRelative, 0, 0),
             events: null,
             viewType: NaN,
             operator: null,
@@ -502,7 +502,7 @@ export class ListControl {
                 this._elements.root.attr('aria-label', text);
                 this._elements.screenReader.text(text);
             },
-            buildCssRootSelector: (builder: Support.CssTextBuilder, additinalSelector: string) => {
+            buildCssRootSelector: (builder: Microsoft.Office.Controls.Fundamental.CssTextBuilder, additinalSelector: string) => {
                 builder.push('.');
                 builder.push(this._runtime.rootClass);
                 builder.push('.msoc-list-view-');
@@ -569,11 +569,11 @@ export class ListControl {
         this._elements.canvas = this._elements.root.find('.msoc-list-canvas');
         this._elements.screenReader = this._elements.root.find('> .msoc-list-screen-reader');
 
-        this.disposer.addDisposable(this._updaters = new Support.UpdaterGroup());
+        this.disposer.addDisposable(this._updaters = new Microsoft.Office.Controls.Fundamental.UpdaterGroup());
         this.disposer.addDisposable(this._runtime.operator = new Operator());
         this.disposer.addDisposable(this._runtime.events = new Fundamental.EventSite());
         this.disposer.addDisposable(this._options.events = new Fundamental.EventSite());
-        this.disposer.addDisposable(this._dynamicStylesheetUpdater = new Support.DynamicStylesheetUpdater(this._runtime.id));
+        this.disposer.addDisposable(this._dynamicStylesheetUpdater = new Microsoft.Office.Controls.Fundamental.DynamicStylesheetUpdater(this._runtime.id));
         this._dynamicStylesheetUpdater.add(() => this._getStylesheet());
 
         this._updaters.add(this._dynamicStylesheetUpdater.getUpdater());
@@ -754,7 +754,7 @@ export class ListControl {
     }
 
     private _getStylesheet() {
-        var cssText = new Support.CssTextBuilder();
+        var cssText = new Microsoft.Office.Controls.Fundamental.CssTextBuilder();
 
         cssText.push('.');
         cssText.push(this._runtime.rootClass);
@@ -802,13 +802,13 @@ export class ListControl {
     }
 
     private _attachEvents() {
-        var scrollHandler = new Support.AccumulateTimeoutInvoker(() => {
+        var scrollHandler = new Microsoft.Office.Controls.Fundamental.AccumulateTimeoutInvoker(() => {
             this.updateUI();
         }, 50); // 50 = 16.67 * 3, 20 fps
 
         this.disposer.addDisposable(new Fundamental.EventAttacher(this._elements.viewport, 'scroll',  (event) => {
             this._runtime.viewportScrollLeft = this._elements.viewport[0].scrollLeft;
-            this._runtime.viewportScrollCoordinate = Support.CoordinateFactory.scrollFromElement(this._runtime.direction.rtl(), this._elements.viewport);
+            this._runtime.viewportScrollCoordinate = Microsoft.Office.Controls.Fundamental.CoordinateFactory.scrollFromElement(this._runtime.direction.rtl(), this._elements.viewport);
             this._runtime.events.emit('viewportScroll', this, null);
             scrollHandler.invoke();
         }));

@@ -41,6 +41,5 @@
 //
 // (css);
 // export module Microsoft.Office.Controls {
-//     export module Support {
 module Microsoft.Office.Controls {
 

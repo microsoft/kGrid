@@ -101,7 +101,7 @@ module.exports = function(grunt) {
                     {
                         expand: true,
                         cwd: 'src/demo',
-                        src: ['**/*.html'],
+                        src: ['**/*.html', '**/*.htm'],
                         dest: path.join(installDir),
                         filter: 'isFile'
                     },
@@ -172,24 +172,35 @@ module.exports = function(grunt) {
                 },
                 files: {
                     'build/assets/css/listcontrol.css' : 'src/assets/less/listcontrol.less',
+                    'build/assets/css/enhancedlistcontrol.css' : 'src/assets/less/enhancedlistcontrol.less',
                 }
             },
         },
         concat: {
-            debug: {
+            listcontrol: {
                 src: [
                     'src/scripts/copyright.p.ts',
                     'src/scripts/fundamental/head.p.ts',
-                    'src/scripts/fundamental/IDisposable.p.ts',
+                    'src/scripts/fundamental/AccumulateTimeoutInvoker.p.ts',
+                    'src/scripts/fundamental/BrowserDetector.p.ts',
+                    'src/scripts/fundamental/Calculator.p.ts',
+                    'src/scripts/fundamental/Coordinate.p.ts',
+                    'src/scripts/fundamental/CssTextBuilder.p.ts',
                     'src/scripts/fundamental/Disposer.p.ts',
-                    'src/scripts/fundamental/EventSite.p.ts',
-                    'src/scripts/fundamental/EventAttacher.p.ts',
-                    'src/scripts/fundamental/PropertyBag.p.ts',
-                    'src/scripts/fundamental/TextDirection.p.ts',
                     'src/scripts/fundamental/DynamicStylesheet.p.ts',
+                    'src/scripts/fundamental/DynamicStylesheetUpdater.p.ts',
+                    'src/scripts/fundamental/ErrorUtil.p.ts',
+                    'src/scripts/fundamental/EventAttacher.p.ts',
+                    'src/scripts/fundamental/EventSite.p.ts',
+                    'src/scripts/fundamental/IDisposable.p.ts',
+                    'src/scripts/fundamental/PropertyBag.p.ts',
+                    'src/scripts/fundamental/RenderingScheduler.p.ts',
+                    'src/scripts/fundamental/StringBuilder.p.ts',
+                    'src/scripts/fundamental/TextDirection.p.ts',
+                    'src/scripts/fundamental/Updater.p.ts',
+                    'src/scripts/fundamental/UpdaterGroup.p.ts',
                     'src/scripts/fundamental/tail.p.ts',
                     'src/scripts/head.p.ts',
-                    'src/scripts/support.p.ts',
                     'src/scripts/definitions.p.ts',
                     'src/scripts/TableViewEditOperation.p.ts',
                     'src/scripts/TableViewKeySelectOperation.p.ts',
@@ -210,10 +221,22 @@ module.exports = function(grunt) {
                 ],
                 dest: 'build/ts/listcontrol.ts'
             },
+            bootstrap: {
+                src: [
+                    'src/scripts/bootstrap.ts',
+                ],
+                dest: 'build/ts/bootstrap.ts'
+            },
+            EnhancedListcontrol: {
+                src: [
+                    'src/scripts/EnhancedListcontrol.ts',
+                ],
+                dest: 'build/ts/EnhancedListcontrol.ts'
+            },
         },
         ts: {
             dev: {
-                src: ['build/ts/listcontrol.ts', 'inc/*.d.ts'],
+                src: ['build/ts/listcontrol.ts', 'build/ts/EnhancedListcontrol.ts', 'build/ts/bootstrap.ts', 'inc/*.d.ts'],
                 outDir: ['build/js/dev'],
                 options: {
                     target: 'es5',
@@ -253,8 +276,8 @@ module.exports = function(grunt) {
     });
 
     grunt.registerTask('prepare', ['bower:install']);
-    grunt.registerTask('build:debug', ['less:debug', 'concat:debug', 'ts:dev']);
-    grunt.registerTask('build:ship', ['less:debug', 'concat:debug', 'ts:dev', 'uglify']);
+    grunt.registerTask('build:debug', ['less:debug', 'concat', 'ts:dev']);
+    grunt.registerTask('build:ship', ['less:debug', 'concat', 'ts:dev', 'uglify']);
     grunt.registerTask('build', 'build:debug');
     grunt.registerTask('install:debug', 'copy:dev_install');
     grunt.registerTask('install:ship', 'copy:dev_install');

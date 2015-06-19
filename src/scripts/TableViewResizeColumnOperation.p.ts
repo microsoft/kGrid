@@ -43,14 +43,14 @@ class TableViewResizeColumnOperation implements IOperation {
         this._isTouch = isTouch;
         this._pointerId = pointerId;
         this._rtl = this._runtime.direction.rtl();
-        this._startPointToHeaderViewportCoordinate = Support.CoordinateFactory.fromElement(this._rtl, this._runtime.elements.headerViewport).minus(pointers[pointerId]);
+        this._startPointToHeaderViewportCoordinate = Microsoft.Office.Controls.Fundamental.CoordinateFactory.fromElement(this._rtl, this._runtime.elements.headerViewport).minus(pointers[pointerId]);
         this._startPointToHeaderViewportCoordinate.rtl(this._rtl);
         this._selectionStylesheet = selectionStylesheet;
         this._initialFront = initialFront;
         this._initialWidth = this._lastWidth = initialWidth;
         this._oldCanvasContainerWidth = this._runtime.elements.canvasContainer.css('width');
         this._oldHeaderCanvasContainerWidth = this._runtime.elements.canvasContainer.css('width');
-        this._baseScrollCoordinate = Support.CoordinateFactory.scrollFromElement(this._rtl, this._runtime.elements.viewport);
+        this._baseScrollCoordinate = Microsoft.Office.Controls.Fundamental.CoordinateFactory.scrollFromElement(this._rtl, this._runtime.elements.viewport);
         this._headerCellElement.addClass('msoc-list-table-header-cell-resizing');
         this._selectionStylesheetText = this._selectionStylesheet.content();
         this._selectionStylesheet.content('');
@@ -59,7 +59,7 @@ class TableViewResizeColumnOperation implements IOperation {
         this._splitters = [$('<div class="msoc-list-table-resizer"></div>'), $('<div class="msoc-list-table-resizer"></div>')];
         this._runtime.elements.headerCanvas.eq(TableView.CursorCanvasIndex).append(this._splitters[0]);
         this._runtime.elements.canvas.eq(TableView.CursorCanvasIndex).append(this._splitters[1]);
-        var scrollFrontCoordinate = Support.CoordinateFactory.scrollFromElement(this._rtl, this._runtime.elements.viewport);
+        var scrollFrontCoordinate = Microsoft.Office.Controls.Fundamental.CoordinateFactory.scrollFromElement(this._rtl, this._runtime.elements.viewport);
         var baseResizerCoordinate = scrollFrontCoordinate.add(this._startPointToHeaderViewportCoordinate);
 
         this._splitters[0].css(this._runtime.direction.front(), baseResizerCoordinate.front() + 'px');
@@ -67,7 +67,7 @@ class TableViewResizeColumnOperation implements IOperation {
         this._splitters[1].css(this._runtime.direction.front(), baseResizerCoordinate.front() + 'px');
         this._splitters[1].css('height', this._runtime.elements.canvasContainer.height() + 'px');
         this._headerCanvasWidth = this._runtime.canvasWidth;
-        this._headerViewportCoordinate = Support.CoordinateFactory.fromElement(this._rtl, this._runtime.elements.headerViewport);
+        this._headerViewportCoordinate = Microsoft.Office.Controls.Fundamental.CoordinateFactory.fromElement(this._rtl, this._runtime.elements.headerViewport);
         return this._deferred.promise();
     }
 
@@ -87,8 +87,8 @@ class TableViewResizeColumnOperation implements IOperation {
 
     private _onPointerMove(event) {
         var headerWidth = this._runtime.viewportWidth;
-        var pointerCoordinate = Support.CoordinateFactory.fromEvent(this._rtl, event)[this._pointerId].minus(this._headerViewportCoordinate);
-        var scrollCoordinate = Support.CoordinateFactory.scrollFromElement(this._rtl, this._runtime.elements.headerViewport);
+        var pointerCoordinate = Microsoft.Office.Controls.Fundamental.CoordinateFactory.fromEvent(this._rtl, event)[this._pointerId].minus(this._headerViewportCoordinate);
+        var scrollCoordinate = Microsoft.Office.Controls.Fundamental.CoordinateFactory.scrollFromElement(this._rtl, this._runtime.elements.headerViewport);
 
         if (pointerCoordinate.front() < headerWidth * Constants.RatioToOperationScrollArea) {
             if (scrollCoordinate.front() - Constants.OperationScrollNumber > this._baseScrollCoordinate.front()) {

@@ -89,7 +89,7 @@ class TableViewMouseSelectOperation implements IOperation {
             return;
         }
 
-        var pointerToViewportCoordinate = Support.CoordinateFactory.fromEvent(this._rtl, event)['mouse'].minus(Support.CoordinateFactory.fromElement(this._rtl, this._runtime.elements.headerViewport));
+        var pointerToViewportCoordinate = Microsoft.Office.Controls.Fundamental.CoordinateFactory.fromEvent(this._rtl, event)['mouse'].minus(Microsoft.Office.Controls.Fundamental.CoordinateFactory.fromElement(this._rtl, this._runtime.elements.headerViewport));
         var frontOffset, topOffset;
 
         if (pointerToViewportCoordinate.front() < this._runtime.viewportClientWidth * Constants.RatioToOperationScrollArea) {

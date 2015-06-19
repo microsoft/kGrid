@@ -3,14 +3,14 @@ export class Theme {
         var parts = text.split(' ');
 
         if (parts.length != 4) {
-            throw Support.createError(0, 'Theme', 'cannot parse ' + text + ' as padding');
+            throw Microsoft.Office.Controls.Fundamental.createError(0, 'Theme', 'cannot parse ' + text + ' as padding');
         }
 
         if (!this._checkPixelUnit(parts[0])
             || !this._checkPixelUnit(parts[1])
             || !this._checkPixelUnit(parts[2])
             || !this._checkPixelUnit(parts[3])) {
-            throw Support.createError(0, 'Theme', 'padding can be in pixel only');
+            throw Microsoft.Office.Controls.Fundamental.createError(0, 'Theme', 'padding can be in pixel only');
         }
 
         return {
@@ -30,11 +30,11 @@ export class Theme {
         var parts = text.split(' ');
 
         if (parts.length != 3) {
-            throw Support.createError(0, 'Theme', 'cannot parse ' + text + ' as border');
+            throw Microsoft.Office.Controls.Fundamental.createError(0, 'Theme', 'cannot parse ' + text + ' as border');
         }
 
         if (!/^\d+px$/.test(parts[1])) {
-            throw Support.createError(0, 'Theme', 'border width can be in pixel only');
+            throw Microsoft.Office.Controls.Fundamental.createError(0, 'Theme', 'border width can be in pixel only');
         }
 
         return {
@@ -244,14 +244,14 @@ export class Theme {
                     continue;
                 }
 
-                throw Support.createError(0, 'Theme', name + ' is invalid');
+                throw Microsoft.Office.Controls.Fundamental.createError(0, 'Theme', name + ' is invalid');
             }
         }
 
         for (var i = 0; i < Theme._validValueName.length; i++) {
             var name: any = Theme._validValueName[i];
             if (typeof(this._options[name]) == 'undefined') {
-                throw Support.createError(0, 'Theme', 'missing ' + name);
+                throw Microsoft.Office.Controls.Fundamental.createError(0, 'Theme', 'missing ' + name);
             }
         }
     }

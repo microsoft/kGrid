@@ -35,11 +35,11 @@ class TableView implements IListView {
         this._visibleColumnMap = [];
         this._renderRange = new Range(RangeType.Range, NaN, NaN, NaN, NaN);
 
-        this.disposer.addDisposable(this._dynamicStylesheetUpdater = new Support.DynamicStylesheetUpdater(this._runtime.id + '_table_root'));
-        this.disposer.addDisposable(this._rowTopStylesheetUpdater = new Support.DynamicStylesheetUpdater(this._runtime.id + '_table_render_row'));
+        this.disposer.addDisposable(this._dynamicStylesheetUpdater = new Microsoft.Office.Controls.Fundamental.DynamicStylesheetUpdater(this._runtime.id + '_table_root'));
+        this.disposer.addDisposable(this._rowTopStylesheetUpdater = new Microsoft.Office.Controls.Fundamental.DynamicStylesheetUpdater(this._runtime.id + '_table_render_row'));
         this.disposer.addDisposable(this._selectionStylesheet = new Microsoft.Office.Controls.Fundamental.DynamicStylesheet(this._runtime.id + '_table_selection'));
-        this.disposer.addDisposable(this._updaters = new Support.UpdaterGroup());
-        this.disposer.addDisposable(this._renderingScheduler = new Support.RenderingScheduler());
+        this.disposer.addDisposable(this._updaters = new Microsoft.Office.Controls.Fundamental.UpdaterGroup());
+        this.disposer.addDisposable(this._renderingScheduler = new Microsoft.Office.Controls.Fundamental.RenderingScheduler());
 
         this._renderContext = {
             renderedRows: [],
@@ -267,7 +267,7 @@ class TableView implements IListView {
                     if (isNaN(column.raw.table.width)) {
                         column.table.height = NaN;
                     } else if (column.raw.table.width <= 0) {
-                        throw Support.createError(0, 'TableView', 'invalid width: ' + column.raw.table.width);
+                        throw Microsoft.Office.Controls.Fundamental.createError(0, 'TableView', 'invalid width: ' + column.raw.table.width);
                     } else {
                         column.table.width = column.raw.table.width;
                     }
@@ -317,7 +317,7 @@ class TableView implements IListView {
                 var columnUniqueId = columns[columnIndex].columnId, width = columns[columnIndex].width, column = this._options.columns[columnUniqueId];
 
                 if (!column) {
-                    throw Support.createError(0, 'TableView', 'invalid column id: ' + columnUniqueId);
+                    throw Microsoft.Office.Controls.Fundamental.createError(0, 'TableView', 'invalid column id: ' + columnUniqueId);
                 }
 
                 if (typeof(width) != 'undefined') {
@@ -326,7 +326,7 @@ class TableView implements IListView {
                     if (isNaN(width)) {
                         column.table.width = NaN;
                     } else if (width <= 0) {
-                        throw Support.createError(0, 'TableView', 'invalid width: ' + columns[columnIndex].width);
+                        throw Microsoft.Office.Controls.Fundamental.createError(0, 'TableView', 'invalid width: ' + columns[columnIndex].width);
                     } else {
                         column.table.width = width;
                     }
@@ -362,7 +362,7 @@ class TableView implements IListView {
 
     private _hideColumnByIndex(columnIndex) {
         if (columnIndex < 0 || columnIndex >= this._visibleColumnMap.length) {
-            throw Support.createError(0, 'TableView', 'Invalidate columnIndex:' + columnIndex + ', validate range is [0, ' + this._visibleColumnMap.length + ']');
+            throw Microsoft.Office.Controls.Fundamental.createError(0, 'TableView', 'Invalidate columnIndex:' + columnIndex + ', validate range is [0, ' + this._visibleColumnMap.length + ']');
         }
 
         this._visibleColumnMap.splice(columnIndex, 1);
@@ -374,13 +374,13 @@ class TableView implements IListView {
 
     private _showColumnByIndex(columnIndex, columnUniqueId) {
         if (columnIndex < 0 || columnIndex > this._visibleColumnMap.length) {
-            throw Support.createError(0, 'TableView', 'Invalidate columnIndex:' + columnIndex + ', validate range is [0, ' + this._visibleColumnMap.length + ']');
+            throw Microsoft.Office.Controls.Fundamental.createError(0, 'TableView', 'Invalidate columnIndex:' + columnIndex + ', validate range is [0, ' + this._visibleColumnMap.length + ']');
         }
 
         var column = this._options.columns[columnUniqueId];
 
         if (!column) {
-            throw Support.createError(0, 'TableView', 'Column with id ' + columnUniqueId + ' does not exist');
+            throw Microsoft.Office.Controls.Fundamental.createError(0, 'TableView', 'Column with id ' + columnUniqueId + ' does not exist');
         }
 
         this._visibleColumnMap.splice(columnIndex, 0, columnUniqueId);
@@ -656,7 +656,7 @@ class TableView implements IListView {
             return;
         }
 
-        if (!Support.BrowserDetector.isTouchEvent(event.type) && event.which != 1) {
+        if (!Microsoft.Office.Controls.Fundamental.BrowserDetector.isTouchEvent(event.type) && event.which != 1) {
             // Not mouse left button down or touch down
             return;
         }
@@ -695,9 +695,9 @@ class TableView implements IListView {
     }
 
     private _startResizeColumn(name, columnUniqueId, event) {
-        var isTouch = Support.BrowserDetector.isTouchEvent(event.type);
-        var pointerId = Support.BrowserDetector.getChangedPointerIdentifier(event);
-        var pointers = Support.CoordinateFactory.fromEvent(this._runtime.direction.rtl(), event);
+        var isTouch = Microsoft.Office.Controls.Fundamental.BrowserDetector.isTouchEvent(event.type);
+        var pointerId = Microsoft.Office.Controls.Fundamental.BrowserDetector.getChangedPointerIdentifier(event);
+        var pointers = Microsoft.Office.Controls.Fundamental.CoordinateFactory.fromEvent(this._runtime.direction.rtl(), event);
         var column = this._options.columns[columnUniqueId];
 
         return this._runtime.operator.start(name, new TableViewResizeColumnOperation(), this, this._runtime, columnUniqueId, isTouch, pointerId, pointers, column.table.front, this.getColumnWidth(columnUniqueId), this._selectionStylesheet)
@@ -710,9 +710,9 @@ class TableView implements IListView {
     }
 
     private _startReorderColumn(name, headerCellElement, event) {
-        var isTouch = Support.BrowserDetector.isTouchEvent(event.type);
-        var pointerId = Support.BrowserDetector.getChangedPointerIdentifier(event)[0];
-        var coordinate = Support.CoordinateFactory.fromEvent(this._runtime.direction.rtl(), event)[pointerId];
+        var isTouch = Microsoft.Office.Controls.Fundamental.BrowserDetector.isTouchEvent(event.type);
+        var pointerId = Microsoft.Office.Controls.Fundamental.BrowserDetector.getChangedPointerIdentifier(event)[0];
+        var coordinate = Microsoft.Office.Controls.Fundamental.CoordinateFactory.fromEvent(this._runtime.direction.rtl(), event)[pointerId];
 
         return this._runtime.operator.start(name, new TableViewReorderColumnOperation(), this, this._runtime, headerCellElement, isTouch, pointerId, coordinate, this._selectionStylesheet)
         .done((oldColumnIndex, newColumnIndex) => {
@@ -792,7 +792,7 @@ class TableView implements IListView {
     }
 
     private _getRenderRangeUpdater() {
-        var eventSender = new Support.AccumulateTimeoutInvoker(() => {
+        var eventSender = new Microsoft.Office.Controls.Fundamental.AccumulateTimeoutInvoker(() => {
             if (this._renderRange.isValid()) {
                 this._runtime.events.emit(
                     'table.beforeRender',
@@ -803,7 +803,7 @@ class TableView implements IListView {
             }
         }, 16.67);
 
-        return new Support.Updater(
+        return new Microsoft.Office.Controls.Fundamental.Updater(
             () => {
                 var renderRange = this._getRenderRange();
                 var rowUniqueIds = [];
@@ -861,7 +861,7 @@ class TableView implements IListView {
     }
 
     private _getSelectionUpdater() {
-        return new Support.Updater(
+        return new Microsoft.Office.Controls.Fundamental.Updater(
             () => {
                 var rowUniqueIdMap = {},
                     rowUniqueIds = [],
@@ -911,7 +911,7 @@ class TableView implements IListView {
             },
             (newValue) => {
                 var selectedRanges = newValue.ranges
-                var cssText = new Support.CssTextBuilder();
+                var cssText = new Microsoft.Office.Controls.Fundamental.CssTextBuilder();
                 var color = newValue.color;
 
                 for (var i = 0; i < selectedRanges.length; i++) {
@@ -998,7 +998,7 @@ class TableView implements IListView {
     }
 
     private _getLayoutUpdater() {
-        return new Support.Updater(
+        return new Microsoft.Office.Controls.Fundamental.Updater(
             () => {
                 var lastColumnIndex = this._visibleColumnMap.length - 1,
                     rowHeight = this.getRowHeight(),
@@ -1043,7 +1043,7 @@ class TableView implements IListView {
                 }
 
                 if (newValue == oldValue && this._runtime.canvasHeight) {
-                    var newScrollTop = Support.Calculator.calculateScrollTopAfterSwitchView(this._runtime.canvasHeight, newValue.canvasHeight, this._runtime.viewportClientHeight, this._elements.viewport[0].clientHeight, this._runtime.viewportScrollCoordinate.top());
+                    var newScrollTop = Microsoft.Office.Controls.Fundamental.Calculator.calculateScrollTopAfterSwitchView(this._runtime.canvasHeight, newValue.canvasHeight, this._runtime.viewportClientHeight, this._elements.viewport[0].clientHeight, this._runtime.viewportScrollCoordinate.top());
 
                     this._elements.viewport.scrollTop(newScrollTop);
                     this._runtime.viewportScrollCoordinate.top(this._elements.viewport.scrollTop());
@@ -1074,7 +1074,7 @@ class TableView implements IListView {
     }
 
     private _getRowTopStylesheet() {
-        var renderRange = this._renderRange, cssText = new Support.CssTextBuilder();
+        var renderRange = this._renderRange, cssText = new Microsoft.Office.Controls.Fundamental.CssTextBuilder();
 
         for (var rowIndex = renderRange.top(); rowIndex <= renderRange.bottom(); rowIndex++) {
             var row = this._runtime.getRowByIndex(rowIndex);
@@ -1096,7 +1096,7 @@ class TableView implements IListView {
     }
 
     private _getCursorUpdater() {
-        return new Support.Updater(
+        return new Microsoft.Office.Controls.Fundamental.Updater(
             () => {
                 var cursor = this._runtime.selection.cursor();
 
@@ -1169,7 +1169,7 @@ class TableView implements IListView {
     }
 
     private _getLayoutStylesheet() {
-        var cssText = new Support.CssTextBuilder(),
+        var cssText = new Microsoft.Office.Controls.Fundamental.CssTextBuilder(),
             cellPadding = this._options.theme.value('table.cellPadding'),
             headerCellPadding = this._options.theme.value('table.headerCellPadding'),
             headerCellVBorder = this._options.theme.value('table.headerCellVBorder'),
@@ -1294,7 +1294,7 @@ class TableView implements IListView {
     }
 
     private _getHoverStylesheet() {
-        var cssText = new Support.CssTextBuilder();
+        var cssText = new Microsoft.Office.Controls.Fundamental.CssTextBuilder();
 
         this._runtime.buildCssRootSelector(cssText);
         cssText.push('.msoc-list-row:hover,');
@@ -1429,7 +1429,7 @@ class TableView implements IListView {
     }
 
     private _renderHeaderCellWorker(context) {
-        var html = new Support.StringBuilder(),
+        var html = new Microsoft.Office.Controls.Fundamental.StringBuilder(),
             renderRange = this._renderRange;
 
         if (!renderRange.isValid()) {
@@ -1438,7 +1438,7 @@ class TableView implements IListView {
 
         var headerRowElment = this._elements.headerCanvas.eq(TableView.MainCanvasIndex);
 
-        var html = new Support.StringBuilder();
+        var html = new Microsoft.Office.Controls.Fundamental.StringBuilder();
         var addedColumnUniqueIds = [];
         var front = renderRange.front();
         var end = renderRange.end();
@@ -1510,7 +1510,7 @@ class TableView implements IListView {
     }
 
     private _renderCellWorker(context) {
-        var html = new Support.StringBuilder(),
+        var html = new Microsoft.Office.Controls.Fundamental.StringBuilder(),
             renderRange = this._renderRange;
 
         if (!renderRange.isValid()) {
@@ -1571,7 +1571,7 @@ class TableView implements IListView {
             var front = renderRange.front();
             var end = renderRange.end();
 
-            html = new Support.StringBuilder();
+            html = new Microsoft.Office.Controls.Fundamental.StringBuilder();
             var addedColumnUniqueIds = [];
 
             for (var columnIndex = front; columnIndex <= end; columnIndex++) {

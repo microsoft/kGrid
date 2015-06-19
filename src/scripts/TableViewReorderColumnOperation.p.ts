@@ -45,7 +45,7 @@ class TableViewReorderColumnOperation implements IOperation {
         this._headerCellElement = headerCellElement;
         this._isTouch = isTouch;
         this._pointerId = pointerId;
-        this._startPointToHeaderElement = Support.CoordinateFactory.fromElement(this._rtl, this._headerCellElement).minus(pointerDownCoordinate);
+        this._startPointToHeaderElement = Microsoft.Office.Controls.Fundamental.CoordinateFactory.fromElement(this._rtl, this._headerCellElement).minus(pointerDownCoordinate);
         this._pointerDownCoordinate = pointerDownCoordinate;
         this._startPointToHeaderElement.rtl(this._rtl);
         this._started = false;
@@ -74,7 +74,7 @@ class TableViewReorderColumnOperation implements IOperation {
 
         this._selectionStylesheet.content('');
 
-        var cssText = new Support.CssTextBuilder();
+        var cssText = new Microsoft.Office.Controls.Fundamental.CssTextBuilder();
 
         this._runtime.buildCssRootSelector(cssText, '.msoc-list-table-operation-ReorderColumn');
         cssText.push('.msoc-list-table-header-cell');
@@ -95,12 +95,12 @@ class TableViewReorderColumnOperation implements IOperation {
         this.disposer.addDisposable(new Fundamental.EventAttacher($(window), this._isTouch ? 'touchend' : 'mouseup', (event) => this._onPointerUp(event)));
         this.disposer.addDisposable(new Fundamental.EventAttacher($(window), this._isTouch ? 'touchmove' : 'mousemove', (event) => this._onPointerMove(event)));
 
-        this._headerViewportCoordinate = Support.CoordinateFactory.fromElement(this._rtl, this._runtime.elements.headerViewport);
+        this._headerViewportCoordinate = Microsoft.Office.Controls.Fundamental.CoordinateFactory.fromElement(this._rtl, this._runtime.elements.headerViewport);
         return this._deferred.promise();
     }
 
     private _onPointerUp(event) {
-        if (event.which == 1 || (this._isTouch && Support.BrowserDetector.getChangedPointerIdentifier(event).indexOf(this._pointerId) >= 0)) {
+        if (event.which == 1 || (this._isTouch && Microsoft.Office.Controls.Fundamental.BrowserDetector.getChangedPointerIdentifier(event).indexOf(this._pointerId) >= 0)) {
             if (this._started && this._lastNewPlaceIndex >= 0 && this._lastNewPlaceIndex != this._reorderColumnIndex) {
                 this._deferred.resolve(this._reorderColumnIndex, this._lastNewPlaceIndex);
             } else {
@@ -110,7 +110,7 @@ class TableViewReorderColumnOperation implements IOperation {
     }
 
     private _onPointerMove(event) {
-        var pointerCoordinate = Support.CoordinateFactory.fromEvent(this._rtl, event)[this._pointerId];
+        var pointerCoordinate = Microsoft.Office.Controls.Fundamental.CoordinateFactory.fromEvent(this._rtl, event)[this._pointerId];
 
         if (!this._started) {
             var offsetMovement = pointerCoordinate.minus(this._pointerDownCoordinate);
@@ -145,8 +145,8 @@ class TableViewReorderColumnOperation implements IOperation {
             this._runtime.scroll(0, Constants.OperationScrollNumber);
         }
 
-        var pointerCoordinate = Support.CoordinateFactory.scrollFromElement(this._rtl, this._runtime.elements.headerViewport).add(pointerToHeaderViewCoordinate);
-        var currentColumnCssText = new Support.CssTextBuilder();
+        var pointerCoordinate = Microsoft.Office.Controls.Fundamental.CoordinateFactory.scrollFromElement(this._rtl, this._runtime.elements.headerViewport).add(pointerToHeaderViewCoordinate);
+        var currentColumnCssText = new Microsoft.Office.Controls.Fundamental.CssTextBuilder();
         var headerCellRect = this._tableView.getHeaderCellRect(this._reorderColumnUniqueId);
 
         this._runtime.buildCssRootSelector(currentColumnCssText, '.msoc-list-table-operation-ReorderColumn');
@@ -190,7 +190,7 @@ class TableViewReorderColumnOperation implements IOperation {
                         front += this._tableView.getColumnWidth(this._reorderColumnUniqueId) + this._runtime.options.theme.value('table.cellVBorder').width;
                     }
 
-                    var cssText = new Support.CssTextBuilder();
+                    var cssText = new Microsoft.Office.Controls.Fundamental.CssTextBuilder();
 
                     for (var i = <number>fromIndex; i < toIndex; i++) {
                         if (i == this._reorderColumnIndex) {

@@ -32,12 +32,12 @@ class StackView implements IListView {
         this._runtime = runtime;
         this._options = this._runtime.options;
         this._elements = this._runtime.elements;
-        this._updaters = new Support.UpdaterGroup();
+        this._updaters = new Microsoft.Office.Controls.Fundamental.UpdaterGroup();
         this.disposer.addDisposable(this._updaters);
-        this.disposer.addDisposable(this._rowTopStylesheetUpdater = new Support.DynamicStylesheetUpdater(this._runtime.id + '_stack_render_row'));
-        this.disposer.addDisposable(this._selectionStylesheetUpdater = new Support.DynamicStylesheetUpdater(this._runtime.id + '_stack_selection'));
-        this.disposer.addDisposable(this._layoutStylesheetUpdater = new Support.DynamicStylesheetUpdater(this._runtime.id + '_stack_root'));
-        this.disposer.addDisposable(this._renderingScheduler = new Support.RenderingScheduler());
+        this.disposer.addDisposable(this._rowTopStylesheetUpdater = new Microsoft.Office.Controls.Fundamental.DynamicStylesheetUpdater(this._runtime.id + '_stack_render_row'));
+        this.disposer.addDisposable(this._selectionStylesheetUpdater = new Microsoft.Office.Controls.Fundamental.DynamicStylesheetUpdater(this._runtime.id + '_stack_selection'));
+        this.disposer.addDisposable(this._layoutStylesheetUpdater = new Microsoft.Office.Controls.Fundamental.DynamicStylesheetUpdater(this._runtime.id + '_stack_root'));
+        this.disposer.addDisposable(this._renderingScheduler = new Microsoft.Office.Controls.Fundamental.RenderingScheduler());
         this._renderContext = {
             renderedRows: [],
         };
@@ -276,7 +276,7 @@ class StackView implements IListView {
                     if (isNaN(column.raw.stack.height)) {
                         column.stack.height = NaN;
                     } else if (column.raw.stack.height <= 0) {
-                        throw Support.createError(0, 'StackView', 'invalid height: ' + column.raw.stack.height);
+                        throw Microsoft.Office.Controls.Fundamental.createError(0, 'StackView', 'invalid height: ' + column.raw.stack.height);
                     } else {
                         column.stack.height = column.raw.stack.height;
                     }
@@ -316,7 +316,7 @@ class StackView implements IListView {
                 var columnUniqueId = columns[columnIndex].columnId, height = columns[columnIndex].height, column = this._options.columns[columnUniqueId];
 
                 if (!column) {
-                    throw Support.createError(0, 'StackView', 'invalid column id: ' + columnUniqueId);
+                    throw Microsoft.Office.Controls.Fundamental.createError(0, 'StackView', 'invalid column id: ' + columnUniqueId);
                 }
 
                 if (typeof(height) != 'undefined') {
@@ -325,7 +325,7 @@ class StackView implements IListView {
                     if (isNaN(height)) {
                         column.stack.height = NaN;
                     } else if (height <= 0) {
-                        throw Support.createError(0, 'StackView', 'invalid height: ' + columns[columnIndex].height);
+                        throw Microsoft.Office.Controls.Fundamental.createError(0, 'StackView', 'invalid height: ' + columns[columnIndex].height);
                     } else {
                         column.stack.height = height;
                     }
@@ -358,7 +358,7 @@ class StackView implements IListView {
     // FIXME: we should re-calculate the scroll top after show/hide column
     private _hideColumnByIndex(columnIndex) {
         if (columnIndex < 0 || columnIndex >= this._visibleColumnMap.length) {
-            throw Support.createError(0, 'StackView', 'Invalidate columnIndex:' + columnIndex + ', validate range is [0, ' + this._visibleColumnMap.length + ']');
+            throw Microsoft.Office.Controls.Fundamental.createError(0, 'StackView', 'Invalidate columnIndex:' + columnIndex + ', validate range is [0, ' + this._visibleColumnMap.length + ']');
         }
 
         this._visibleColumnMap.splice(columnIndex, 1);
@@ -368,13 +368,13 @@ class StackView implements IListView {
 
     private _showColumnByIndex(columnIndex, columnUniqueId) {
         if (columnIndex < 0 || columnIndex > this._visibleColumnMap.length) {
-            throw Support.createError(0, 'StackView', 'Invalidate columnIndex:' + columnIndex + ', validate range is [0, ' + this._visibleColumnMap.length + ']');
+            throw Microsoft.Office.Controls.Fundamental.createError(0, 'StackView', 'Invalidate columnIndex:' + columnIndex + ', validate range is [0, ' + this._visibleColumnMap.length + ']');
         }
 
         var column = this._options.columns[columnUniqueId];
 
         if (!column) {
-            throw Support.createError(0, 'StackView', 'Column with id ' + columnUniqueId + ' does not exist');
+            throw Microsoft.Office.Controls.Fundamental.createError(0, 'StackView', 'Column with id ' + columnUniqueId + ' does not exist');
         }
 
         this._visibleColumnMap.splice(columnIndex, 0, columnUniqueId);
@@ -456,7 +456,7 @@ class StackView implements IListView {
     }
 
     private _getRenderRangeUpdater() {
-        var eventSender = new Support.AccumulateTimeoutInvoker(() => {
+        var eventSender = new Microsoft.Office.Controls.Fundamental.AccumulateTimeoutInvoker(() => {
             if (this._renderRange.isValid()) {
                 this._runtime.events.emit(
                     'stack.beforeRender',
@@ -467,7 +467,7 @@ class StackView implements IListView {
             }
         }, 16.67);
 
-        return new Support.Updater(
+        return new Microsoft.Office.Controls.Fundamental.Updater(
             () => {
                 var renderRange = this._getRenderRange();
                 var rowUniqueIds = [];
@@ -556,7 +556,7 @@ class StackView implements IListView {
             return;
         }
 
-        var cssText = new Support.CssTextBuilder(),
+        var cssText = new Microsoft.Office.Controls.Fundamental.CssTextBuilder(),
             selectionBackgroundColor = this._options.theme.value('selectionBackgroundColor'),
             selectionIndicatorWidth = this._options.theme.value('stack.selectionIndicatorWidth'),
             selectionIndicatorPadding = this._options.theme.value('stack.selectionIndicatorPadding');
@@ -595,7 +595,7 @@ class StackView implements IListView {
     }
 
     private _getLayoutStylesheet() {
-        var cssText = new Support.CssTextBuilder(),
+        var cssText = new Microsoft.Office.Controls.Fundamental.CssTextBuilder(),
             headerCellPadding = this._options.theme.value('stack.headerCellPadding'),
             headerEndBorder = this._options.theme.value('stack.headerEndBorder'),
             cellPadding = this._options.theme.value('stack.cellPadding'),
@@ -697,7 +697,7 @@ class StackView implements IListView {
     }
 
     private _getLayoutUpdater() {
-        return new Support.Updater(
+        return new Microsoft.Office.Controls.Fundamental.Updater(
             () => {
                 var viewportWidth = this._runtime.viewportWidth,
                     rowBorder = this._options.theme.value('stack.rowBorder'),
@@ -725,7 +725,7 @@ class StackView implements IListView {
                 this._elements.canvasContainer.css('width', this._elements.viewport[0].clientWidth + 'px');
 
                 if (newValue == oldValue && this._runtime.canvasHeight) {
-                    var newScrollTop = Support.Calculator.calculateScrollTopAfterSwitchView(this._runtime.canvasHeight, newValue.canvasHeight, this._runtime.viewportClientHeight, this._elements.viewport[0].clientHeight, this._runtime.viewportScrollCoordinate.top());
+                    var newScrollTop = Microsoft.Office.Controls.Fundamental.Calculator.calculateScrollTopAfterSwitchView(this._runtime.canvasHeight, newValue.canvasHeight, this._runtime.viewportClientHeight, this._elements.viewport[0].clientHeight, this._runtime.viewportScrollCoordinate.top());
 
                     this._elements.viewport.scrollTop(newScrollTop);
                     this._runtime.viewportScrollCoordinate.top(this._elements.viewport.scrollTop());
@@ -737,7 +737,7 @@ class StackView implements IListView {
 
     private _getRowTopStylesheet() {
         var renderRange = this._renderRange,
-            cssText = new Support.CssTextBuilder(),
+            cssText = new Microsoft.Office.Controls.Fundamental.CssTextBuilder(),
             headerRowWidth = this._properties.headerWidth,
             rowBorder = this._options.theme.value('stack.rowBorder');
 
@@ -892,7 +892,7 @@ class StackView implements IListView {
     }
 
     private _renderCellWorker(context) {
-        var html = new Support.StringBuilder(),
+        var html = new Microsoft.Office.Controls.Fundamental.StringBuilder(),
             renderRange = this._renderRange;
 
         if (!renderRange || !renderRange.isValid()) {
@@ -952,7 +952,7 @@ class StackView implements IListView {
             var front = renderRange.front();
             var end = renderRange.end();
 
-            html = new Support.StringBuilder();
+            html = new Microsoft.Office.Controls.Fundamental.StringBuilder();
             var addedColumnUniqueIds = [];
 
             for (var columnIndex = front; columnIndex <= end; columnIndex++) {

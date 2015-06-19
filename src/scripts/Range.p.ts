@@ -104,13 +104,13 @@ export class Range {
     public static compare(range0, range1) {
         switch (range0.type()) {
             case RangeType.Row:
-                return Support.Calculator.compareValueArray([range0.type(), range0.top(), range0.bottom()], [range1.type(), range1.top(), range1.bottom()]);
+                return Microsoft.Office.Controls.Fundamental.Calculator.compareValueArray([range0.type(), range0.top(), range0.bottom()], [range1.type(), range1.top(), range1.bottom()]);
 
             case RangeType.Column:
-                return Support.Calculator.compareValueArray([range0.type(), range0.front(), range0.end()], [range1.type(), range1.front(), range1.end()]);
+                return Microsoft.Office.Controls.Fundamental.Calculator.compareValueArray([range0.type(), range0.front(), range0.end()], [range1.type(), range1.front(), range1.end()]);
 
             case RangeType.Range:
-                return Support.Calculator.compareValueArray([range0.type(), range0.top(), range0.front(), range0.bottom(), range0.end()], [range1.type(), range0.top(), range1.front(), range1.bottom(), range1.end()]);
+                return Microsoft.Office.Controls.Fundamental.Calculator.compareValueArray([range0.type(), range0.top(), range0.front(), range0.bottom(), range0.end()], [range1.type(), range0.top(), range1.front(), range1.bottom(), range1.end()]);
         }
     }
 
@@ -120,20 +120,20 @@ export class Range {
 
         if (type0 == type1 ) {
             if (type0 == RangeType.Row) {
-                var intersection = Support.Calculator.intersection(range0.top(), range0.bottom(), range1.top(), range1.bottom());
+                var intersection = Microsoft.Office.Controls.Fundamental.Calculator.intersection(range0.top(), range0.bottom(), range1.top(), range1.bottom());
 
                 if (intersection) {
                     return new Range(RangeType.Row, intersection.lower, intersection.upper, NaN, NaN);
                 }
             } else if (type0 == RangeType.Column) {
-                var intersection = Support.Calculator.intersection(range0.front(), range0.end(), range1.front(), range1.end());
+                var intersection = Microsoft.Office.Controls.Fundamental.Calculator.intersection(range0.front(), range0.end(), range1.front(), range1.end());
 
                 if (intersection) {
                     return new Range(RangeType.Column, NaN, NaN, intersection.lower, intersection.upper);
                 }
             } else if (type0 == RangeType.Range) {
-                var intersectionRow = Support.Calculator.intersection(range0.top(), range0.bottom(), range1.top(), range1.bottom());
-                var intersectionColumn = Support.Calculator.intersection(range0.front(), range0.end(), range1.front(), range1.end());
+                var intersectionRow = Microsoft.Office.Controls.Fundamental.Calculator.intersection(range0.top(), range0.bottom(), range1.top(), range1.bottom());
+                var intersectionColumn = Microsoft.Office.Controls.Fundamental.Calculator.intersection(range0.front(), range0.end(), range1.front(), range1.end());
 
                 if (intersectionRow && intersectionColumn) {
                     return new Range(RangeType.Range, intersectionRow.lower, intersectionRow.upper, intersectionColumn.lower, intersectionColumn.upper);
@@ -146,13 +146,13 @@ export class Range {
             }
 
             if (type0 == RangeType.Row) {
-                var intersection = Support.Calculator.intersection(range0.top(), range0.bottom(), range1.top(), range1.bottom());
+                var intersection = Microsoft.Office.Controls.Fundamental.Calculator.intersection(range0.top(), range0.bottom(), range1.top(), range1.bottom());
 
                 if (intersection) {
                     return new Range(RangeType.Range, intersection.lower, intersection.upper, range1.front(), range1.end());
                 }
             } else {
-                var intersection = Support.Calculator.intersection(range0.front(), range0.end(), range1.front(), range1.end());
+                var intersection = Microsoft.Office.Controls.Fundamental.Calculator.intersection(range0.front(), range0.end(), range1.front(), range1.end());
 
                 if (intersection) {
                     return new Range(RangeType.Range, range1.top(), range1.bottom(), intersection.lower, intersection.upper);
@@ -167,13 +167,13 @@ export class Range {
 
         if (type0 == type1 ) {
             if (type0 == RangeType.Row) {
-                var union = Support.Calculator.union(range0.top(), range0.bottom() + 1, range1.top(), range1.bottom() + 1);
+                var union = Microsoft.Office.Controls.Fundamental.Calculator.union(range0.top(), range0.bottom() + 1, range1.top(), range1.bottom() + 1);
 
                 if (union) {
                     return new Range(RangeType.Row, union.lower, union.upper - 1, NaN, NaN);
                 }
             } else if (type0 == RangeType.Column) {
-                var union = Support.Calculator.union(range0.front(), range0.end() + 1, range1.front(), range1.end() + 1);
+                var union = Microsoft.Office.Controls.Fundamental.Calculator.union(range0.front(), range0.end() + 1, range1.front(), range1.end() + 1);
 
                 if (union) {
                     return new Range(RangeType.Column, NaN, NaN, union.lower, union.upper - 1);
