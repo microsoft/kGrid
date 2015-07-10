@@ -117,10 +117,10 @@ export class ColumnsDataContext {
         }
 
         this._visibleColumnIds.splice(columnIndex, 1);
-        this._runtime.selection.remove(new Range(RangeType.Column, NaN, NaN, columnIndex, columnIndex));
-        this._updateColumnPosition();
-        this._invalidateHeader();
-        this._runtime.updateUI(1);
+        // this._runtime.selection.remove(new Range(RangeType.Column, NaN, NaN, columnIndex, columnIndex));
+        // this._updateColumnPosition();
+        // this._invalidateHeader();
+        // this._runtime.updateUI(1);
     }
 
     private showColumnByIndex(columnIndex, columnUniqueId) {
@@ -128,21 +128,34 @@ export class ColumnsDataContext {
             throw Microsoft.Office.Controls.Fundamental.createError(0, 'ColumnsDataContext', 'Invalidate columnIndex:' + columnIndex + ', validate range is [0, ' + this._visibleColumnIds.length + ']');
         }
 
-        var column = this._options.columns[columnUniqueId];
+        var column = this._columns[columnUniqueId];
 
         if (!column) {
             throw Microsoft.Office.Controls.Fundamental.createError(0, 'ColumnsDataContext', 'Column with id ' + columnUniqueId + ' does not exist');
         }
 
         this._visibleColumnIds.splice(columnIndex, 0, columnUniqueId);
-        this._runtime.selection.insert(new Range(RangeType.Column, NaN, NaN, columnIndex, columnIndex));
-        this._updateColumnPosition();
-        this._invalidateHeader();
-        this._runtime.updateUI(1);
+        // this._runtime.selection.insert(new Range(RangeType.Column, NaN, NaN, columnIndex, columnIndex));
+        // this._updateColumnPosition();
+        // this._invalidateHeader();
+        // this._runtime.updateUI(1);
     }
 
     private _generateColumnId() {
         return 'c' + (this._lastColumnId++);
     }
+
+    // private _updateColumnPosition() {
+    //     var cellVBorderWidth = this._options.theme.value('table.cellVBorder').width, accumulateFront = 0;
+
+    //     for (var i = 0; i < this._visibleColumnMap.length; i++) {
+    //         var columnUniqueId = this._visibleColumnMap[i], column = this._options.columns[columnUniqueId];
+
+    //         column.table.front = accumulateFront;
+    //         accumulateFront += this.getColumnWidth(columnUniqueId) + cellVBorderWidth;
+    //     }
+
+    //     this._renderRangeUpdater.update();
+    // }
 }
 
