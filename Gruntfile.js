@@ -79,6 +79,13 @@ module.exports = function(grunt) {
                     },
                     {
                         expand: true,
+                        cwd: 'lib/bootstrap_new',
+                        src: ['**/*'],
+                        dest: path.join(installDir, 'lib/bootstrap_new'),
+                        filter: 'isFile'
+                    },
+                    {
+                        expand: true,
                         cwd: 'lib/bootstrap',
                         src: ['**/*'],
                         dest: path.join(installDir, 'lib/bootstrap'),
@@ -205,6 +212,7 @@ module.exports = function(grunt) {
                     'src/scripts/RowsDataContext.p.ts',
                     'src/scripts/ColumnsDataContext.p.ts',
                     'src/scripts/Grid.p.ts',
+                    'src/scripts/GridRuntime.p.ts',
                     'src/scripts/TableViewEditOperation.p.ts',
                     'src/scripts/TableViewKeySelectOperation.p.ts',
                     'src/scripts/TableViewMouseSelectOperation.p.ts',
@@ -221,8 +229,15 @@ module.exports = function(grunt) {
                     'src/scripts/Selection.p.ts',
                     'src/scripts/listcontrol.p.ts',
                     'src/scripts/tail.p.ts',
+                    'lib/bower/invoker/src/invoker.ts',
                 ],
                 dest: 'build/ts/listcontrol.ts'
+            },
+            bootstrap_new: {
+                src: [
+                    'src/scripts/bootstrap_new.ts',
+                ],
+                dest: 'build/ts/bootstrap_new.ts'
             },
             bootstrap: {
                 src: [
@@ -239,7 +254,7 @@ module.exports = function(grunt) {
         },
         ts: {
             dev: {
-                src: ['build/ts/listcontrol.ts', 'build/ts/EnhancedListcontrol.ts', 'build/ts/bootstrap.ts', 'inc/*.d.ts'],
+                src: ['build/ts/listcontrol.ts', 'build/ts/EnhancedListcontrol.ts', 'build/ts/bootstrap.ts', 'build/ts/bootstrap_new.ts', 'inc/*.d.ts'],
                 outDir: ['build/js/dev'],
                 options: {
                     target: 'es5',
