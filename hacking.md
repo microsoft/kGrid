@@ -11,3 +11,9 @@
     rd /s jasmine-reporters
     npm install jasmine-reporters@0.4.1
 ```
+
+* Hit issue: vector.release(); TypeError: undefined is not a function. See [here](https://github.com/winjs/winjs/issues/922) for more details  
+Replace in file node_modules\grunt-ts\node_modules\typescript\bin\tsc.js
+this.bits.length = 0; ==> this.bits.splice(0, this.bits.length);
+this.vectors.length = 0; ==> this.vectors.splice(0, this.vectors.length);
+
