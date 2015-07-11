@@ -19,6 +19,8 @@ export class RowsDataContext {
         });
 
         this._lastRowId = 0;
+        this._rowIndex2IdMap = [];
+        this._rowId2IndexMap = [];
         this.disposer.addDisposable(this._events = new Fundamental.EventSite());
     }
 
@@ -91,6 +93,14 @@ export class RowsDataContext {
                 this._events.emit('rowCountChange', this, args.newValue);
             },
         });
+    }
+
+    public getRowIdByIndex(rowIndex) {
+        return this._rowId2IndexMap[rowIndex];
+    }
+
+    public getRowIndexById(rowId) {
+        return this._rowIndex2IdMap[rowId];
     }
 
     public getRowById(rowId) {

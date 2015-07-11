@@ -306,7 +306,8 @@ require(['js/listcontrol', 'js/enhancedlistcontrol', /* 'DataPicker' */, 'jquery
 
         var columnIds = columnsDataContext.addColumns([
             {
-                data: { displayName: 'Id', icons: [], },
+                // data: { displayName: 'Id', icons: [], },
+                data: 'Id',
                 field: 'Id',
                 table: { width: 50 },
                 alignToEnd: true,

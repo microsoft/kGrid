@@ -27,6 +27,7 @@ export class Grid {
         this._runtime.elements = {};
         this._runtime.direction = new Fundamental.TextDirection(Fundamental.TextDirection.LTR);
         this._runtime.viewportScrollCoordinate = new Microsoft.Office.Controls.Fundamental.Coordinate(Microsoft.Office.Controls.Fundamental.CoordinateType.ViewportRelative, 0, 0),
+        this.disposer.addDisposable(this._runtime.updaters = new Microsoft.Office.Controls.Fundamental.UpdaterGroup());
         this.disposer.addDisposable(this._runtime.renderingScheduler = new Microsoft.Office.Controls.Fundamental.RenderingScheduler());
 
         // FIXME: initialize the injection
@@ -57,21 +58,24 @@ export class Grid {
         // FIXME: initillize the plug-ins
 
         this._invoke((rootElement) => {
+            var layoutStylesheetUpdater,
+                container = $(this._runtime.container);
+
             this._runtime.rootElement = rootElement;
 
-            var container = $(this._runtime.container);
 
             container.html('');
             container.append(rootElement);
             this._updateElements();
             this._updateUIValues();
-            this.disposer.addDisposable(this._runtime.updaters = new Microsoft.Office.Controls.Fundamental.UpdaterGroup());
-            this.disposer.addDisposable(this._runtime.dynamicStylesheetUpdater = new Microsoft.Office.Controls.Fundamental.DynamicStylesheetUpdater(this._runtime.id));
-            this._runtime.dynamicStylesheetUpdater.add(() => this._getLayoutStylesheet());
-            this._runtime.updaters.add(this._runtime.dynamicStylesheetUpdater.getUpdater());
+            this.disposer.addDisposable(layoutStylesheetUpdater = new Microsoft.Office.Controls.Fundamental.DynamicStylesheetUpdater(this._runtime.id));
+            layoutStylesheetUpdater.add(() => this._getLayoutStylesheet());
+            this._runtime.updaters.add(layoutStylesheetUpdater.getUpdater());
             this._runtime.updaters.add(this._getRenderRangeUpdater());
 
-            var renderContext = {};
+            var renderContext = {
+                headerCells: [],
+            };
 
             this._runtime.renderingScheduler.addWorker((context) => this._renderHeaderCellWorker(context), renderContext, 800);
 
@@ -189,36 +193,41 @@ export class Grid {
     }
 
     private _getRenderRange() {
-        var topRow,
-            bottomRow,
+        var topRowIndex,
+            bottomRowIndex,
             columnFront = 0,
-            visibleColumns = this._runtime.dataContexts.columnsDataContext.visibleColumns(),
-            frontColumn = 0,
+            visibleColumnIds = this._runtime.dataContexts.columnsDataContext.visibleColumnIds(),
+            frontColumnIndex = 0,
             front = 0,
-            endColumn = visibleColumns.length - 1;
+            endColumnIndex = visibleColumnIds.length - 1;
 
-        topRow = Math.floor(this._runtime.viewportScrollCoordinate.top() / (this._getRowHeight() + this._runtime.theme.value('table.cellHBorder').width));
-        topRow = Math.max(0, topRow);
-        bottomRow = Math.floor((this._runtime.viewportScrollCoordinate.top() + this._runtime.elements.content.viewport.height) / (this._getRowHeight() + this._runtime.theme.value('table.cellHBorder').width));
-        bottomRow = Math.min(this._runtime.dataContexts.rowsDataContext.rowCount() - 1, bottomRow);
+        topRowIndex = Math.floor(this._runtime.viewportScrollCoordinate.top() / (this._getRowHeight() + this._runtime.theme.value('table.cellHBorder').width));
+        topRowIndex = Math.max(0, topRowIndex);
+        bottomRowIndex = Math.floor((this._runtime.viewportScrollCoordinate.top() + this._runtime.uiValues.content.viewport.height) / (this._getRowHeight() + this._runtime.theme.value('table.cellHBorder').width));
+        bottomRowIndex = Math.min(this._runtime.dataContexts.rowsDataContext.rowCount() - 1, bottomRowIndex);
 
-        for (var columnIndex = 0; columnIndex < visibleColumns.length; columnIndex++) {
-            var column = this._runtime.dataContexts.columnsDataContext.getColumnIndexById(visibleColumns[columnIndex].columnId);
+        for (var columnIndex = 0; columnIndex < visibleColumnIds.length; columnIndex++) {
+            var column = this._runtime.dataContexts.columnsDataContext.getColumnById(visibleColumnIds[columnIndex]);
 
-            front += column.width;
-
-            if (front <= this._runtime.viewportScrollCoordinate.front()) {
-                frontColumn = columnIndex;
+            if (!isNaN(column.width) && column.width > 0) {
+                front += column.width;
+            } else {
+                // FIXME: default column width
+                front += 50;
             }
 
-            if (front < this._runtime.viewportScrollCoordinate.front() + this._runtime.elements.content.viewport.clientWidth) {
-                endColumn = columnIndex;
+            if (front <= this._runtime.viewportScrollCoordinate.front()) {
+                frontColumnIndex = columnIndex;
+            }
+
+            if (front < this._runtime.viewportScrollCoordinate.front() + this._runtime.uiValues.content.viewport.clientWidth) {
+                endColumnIndex = columnIndex;
             } else {
                 break;
             }
         }
 
-        return new Range(RangeType.Range, topRow, bottomRow, frontColumn, endColumn);
+        return new Range(RangeType.Range, topRowIndex, bottomRowIndex, frontColumnIndex, endColumnIndex);
     }
 
     private _getRenderRangeUpdater() {
@@ -286,26 +295,22 @@ export class Grid {
         var headerMainCanvas = $(this._runtime.elements.header.mainCanvas),
             html = new Microsoft.Office.Controls.Fundamental.StringBuilder(),
             addedColumnIds = [],
-            visibleColumns = this._runtime.dataContexts.columnsDataContext.visibleColumns(),
+            visibleColumnIds = this._runtime.dataContexts.columnsDataContext.visibleColumnIds(),
             front = renderRange.front(),
             end = renderRange.end();
 
         for (var columnIndex = front; columnIndex <= end; columnIndex++) {
-            var columnId = visibleColumns[columnIndex],
+            var columnId = visibleColumnIds[columnIndex],
                 column = this._runtime.dataContexts.columnsDataContext.getColumnById(columnId);
 
-            if (!context.renderedHeaderCells[columnId]) {
-                context.renderedHeaderCells[columnId] = {
+            if (!context.headerCells[columnId]) {
+                context.headerCells[columnId] = {
                     state: RenderState.Initial,
-                    headerCellContentElement: null,
+                    contentElement: null,
                 };
 
                 html.append('<div class="msoc-list-table-header-cell msoc-list-table-header-cell-');
                 html.append(columnId);
-
-                if (columnIndex == 0) {
-                    html.append(' msoc-list-table-header-cell-first');
-                }
 
                 html.append('" data-columnId="');
                 html.append(columnId);
@@ -336,23 +341,29 @@ export class Grid {
             for (var i = 0; i < addedColumnIds.length; i++) {
                 var columnId = addedColumnIds[i];
 
-                context.renderedHeaderCells[columnId].headerCellContentElement = headerCellContentElements[headerCellContentElements.length - addedColumnIds.length + i];
+                context.headerCells[columnId].contentElement = headerCellContentElements[headerCellContentElements.length - addedColumnIds.length + i];
             }
         }
 
         for (var i = <number>renderRange.front(); i<= renderRange.end(); i++) {
-            var columnId = visibleColumns[i].columnId,
+            var columnId = visibleColumnIds[i],
                 column = this._runtime.dataContexts.columnsDataContext.getColumnById(columnId);
 
-            if (context.renderedHeaderCells[columnId].state != RenderState.Painted) {
-                // FIXME: do render
-                // this._runtime.renderHeaderCellContent({
-                //     element: context.renderedHeaderCells[columnId].headerCellContentElement,
-                //     columnId: columnId,
-                //     rect: this.getHeaderCellRect(columnId),
-                // });
+            if (context.headerCells[columnId].state != RenderState.Painted) {
+                var render = column.headerRender || SimpleTextHeaderRender.instance();
 
-                context.renderedHeaderCells[columnId].state = RenderState.Painted;
+                render.render({
+                    columnId: columnId,
+                    column: column.raw,
+                    element: context.headerCells[columnId].contentElement,
+                    data: column.raw.data,
+                    // height: rect.height,
+                    // width: rect.width,
+                    rtl: this._runtime.direction.rtl(),
+                    theme: this._runtime.theme,
+                });
+
+                context.headerCells[columnId].state = RenderState.Painted;
             }
         }
     }

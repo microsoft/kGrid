@@ -42,9 +42,6 @@ export class ColumnsDataContext {
 
             this._columns[columnId] = {
                 columnId: columnId,
-                cellRender: !!columnDefinition.cellRender ? columnDefinition.cellRender : new SimpleTextCellRender(),
-                headerRender: !!columnDefinition.headerRender ? columnDefinition.headerRender : new SimpleTextHeaderRender(),
-                cellEditor: columnDefinition.cellEditor,
                 raw: columnDefinition,
             };
 
@@ -53,6 +50,10 @@ export class ColumnsDataContext {
         }
 
         return columnIds;
+    }
+
+    public getColumnById(columnId) {
+        return this._columns[columnId]
     }
 
     public getColumnIndexById(columnId) {
@@ -67,7 +68,7 @@ export class ColumnsDataContext {
         return columnId;
     }
 
-    public visibleColumns(visibleColumns?: any[]) {
+    public visibleColumnIds(visibleColumns?: any[]) {
         if (arguments.length > 0) {
             this._visibleColumnIds = [];
 
@@ -80,36 +81,24 @@ export class ColumnsDataContext {
                     throw Microsoft.Office.Controls.Fundamental.createError(0, 'ColumnsDataContext', 'invalid column id: ' + columnId);
                 }
 
-                if (typeof(width) != 'undefined') {
-                    width = parseFloat(width);
+                // if (typeof(width) != 'undefined') {
+                //     width = parseFloat(width);
 
-                    if (isNaN(width)) {
-                        column.width = NaN;
-                    } else if (width <= 0) {
-                        throw Microsoft.Office.Controls.Fundamental.createError(0, 'ColumnsDataContext', 'invalid width: ' + columns[columnIndex].width);
-                    } else {
-                        column.width = width;
-                    }
-                }
+                //     if (isNaN(width)) {
+                //         column.width = NaN;
+                //     } else if (width <= 0) {
+                //         throw Microsoft.Office.Controls.Fundamental.createError(0, 'ColumnsDataContext', 'invalid width: ' + columns[columnIndex].width);
+                //     } else {
+                //         column.width = width;
+                //     }
+                // }
 
                 this._visibleColumnIds.push(columnId);
             }
 
             this._events.emit('visibleColumnIdsChange', this, this._visibleColumnIds);
         } else {
-            var columns = [];
-            for (var columnIndex = 0; columnIndex < this._visibleColumnIds.length; columnIndex++) {
-                var columnId = this._visibleColumnIds[columnIndex],
-                    column = this._columns[columnId];
-
-                columns.push({
-                    columnId: columnId,
-                    columnIndex: columnIndex,
-                    width: column.width,
-                });
-            }
-
-            return columns;
+            return this._visibleColumnIds.slice(0);
         }
     }
 

@@ -1,10 +1,19 @@
 export class SimpleTextHeaderRender implements IRender {
+    private static _instance;
     private _alignToEnd;
     private _getter;
 
     constructor(getter = null, alignToEnd = false) {
         this._getter = getter;
         this._alignToEnd = alignToEnd;
+    }
+
+    public static instance() {
+        if (!SimpleTextHeaderRender._instance) {
+            SimpleTextHeaderRender._instance = new SimpleTextHeaderRender();
+        }
+
+        return SimpleTextHeaderRender._instance;
     }
 
     public title(args) {
