@@ -297,17 +297,27 @@ require(['js/listcontrol', 'js/enhancedlistcontrol', /* 'DataPicker' */, 'jquery
     }
 
     function createControl() {
-        listControlObject= new listcontrol.Grid(listControlElement[0]);
+        listControlObject = new listcontrol.Grid(listControlElement[0]);
+        var columnsDataContext = new listcontrol.ColumnsDataContext();
 
-        // idColumnId = uniqueIdOfId = listControlObject.addColumns([new enhancedlistcontrol.EnhancedColumnDefinition({
-        //     data: { displayName: 'Id', icons: [], },
-        //     field: 'Id',
-        //     table: { width: 50 },
-        //     alignToEnd: true,
-        //     filterable: false,
-        //     sortable: false,
-        //     cellRender: new listcontrol.SimpleTextCellRender((args) => args.cellData, true),
-        // })])[0];
+        var columnIds = columnsDataContext.addColumns([
+            {
+                data: { displayName: 'Id', icons: [], },
+                field: 'Id',
+                table: { width: 50 },
+                alignToEnd: true,
+                filterable: false,
+                sortable: false,
+                cellRender: new listcontrol.SimpleTextCellRender((args) => args.cellData, true),
+            }
+        ]);
+
+        var rowsDataContext = new listcontrol.RowsDataContext();
+
+        rowsDataContext.rows(testData);
+        rowsDataContext.rowCount(1000);
+        listControlObject.rowsDataContext(rowsDataContext);
+
         // listControlObject.addColumns([new enhancedlistcontrol.EnhancedColumnDefinition({
         //     data: { displayName: 'Stage', icons: [], },
         //     field: 'Stage',

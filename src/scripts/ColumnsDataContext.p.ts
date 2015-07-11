@@ -15,6 +15,7 @@ export class ColumnsDataContext {
         });
 
         this._visibleColumnIds = [];
+        this._columns = [];
         this._lastColumnId = 0;
         this.disposer.addDisposable(this._events = new Fundamental.EventSite());
     }

@@ -1,7 +1,7 @@
 /// <summary>
 /// List control class
 /// </summary>
-export class GridDataContext {
+export class RowsDataContext {
     public disposer;
     private _rowId2IndexMap;
     private _rowIndex2IdMap;

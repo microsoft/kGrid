@@ -7,9 +7,17 @@ module.exports = function(grunt) {
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
         watch: {
-            concat_debug: {
-                files: ['<%= concat.debug.src %>'],
-                tasks: ['concat:debug']
+            concat_listcontrol: {
+                files: ['<%= concat.listcontrol.src %>'],
+                tasks: ['concat:listcontrol']
+            },
+            concat_bootstrap: {
+                files: ['<%= concat.bootstrap.src %>'],
+                tasks: ['concat:bootstrap']
+            },
+            concat_bootstrap_new: {
+                files: ['<%= concat.bootstrap_new.src %>'],
+                tasks: ['concat:bootstrap_new']
             },
             ts_dev: {
                 files: ['<%= ts.dev.src %>'],

@@ -12,5 +12,11 @@ export class GridRuntime {
     public selectionMode;
     public theme;
     public width;
+    public renderingScheduler;
+    public uiValues;
+    public updaters;
+    public dynamicStylesheetUpdater;
+    public renderRange;
+    public viewportScrollCoordinate;
 }
 
