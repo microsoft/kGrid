@@ -77,6 +77,8 @@ export class Grid {
 
             window.setTimeout(() => {
                 this._runtime.updaters.update();
+                this._runtime.renderingScheduler.start(true);
+
                 // FIXME: [low][1 day] Add a firefox checker
                 // Workaround FireFox bug https://bugzilla.mozilla.org/show_bug.cgi?id=706792
                 // this._elements.canvasContainer.css('width', '1000000px');

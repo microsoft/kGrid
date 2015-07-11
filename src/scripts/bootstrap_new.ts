@@ -299,6 +299,10 @@ require(['js/listcontrol', 'js/enhancedlistcontrol', /* 'DataPicker' */, 'jquery
     function createControl() {
         listControlObject = new listcontrol.Grid(listControlElement[0]);
         var columnsDataContext = new listcontrol.ColumnsDataContext();
+        var rowsDataContext = new listcontrol.RowsDataContext();
+
+        listControlObject.rowsDataContext(rowsDataContext);
+        listControlObject.columnsDataContext(columnsDataContext);
 
         var columnIds = columnsDataContext.addColumns([
             {
@@ -312,11 +316,8 @@ require(['js/listcontrol', 'js/enhancedlistcontrol', /* 'DataPicker' */, 'jquery
             }
         ]);
 
-        var rowsDataContext = new listcontrol.RowsDataContext();
-
         rowsDataContext.rows(testData);
         rowsDataContext.rowCount(1000);
-        listControlObject.rowsDataContext(rowsDataContext);
 
         // listControlObject.addColumns([new enhancedlistcontrol.EnhancedColumnDefinition({
         //     data: { displayName: 'Stage', icons: [], },

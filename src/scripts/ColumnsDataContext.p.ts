@@ -49,6 +49,7 @@ export class ColumnsDataContext {
             };
 
             columnIds.push(columnId);
+            this._visibleColumnIds.push(columnId);
         }
 
         return columnIds;
