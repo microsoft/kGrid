@@ -14,5 +14,16 @@ export class GridRuntime {
     public theme;
 
     public selectionMode;
+
+    public buildCssRootSelector(builder: Fundamental.CssTextBuilder, additinalSelector?: string) {
+        builder.push('.');
+        builder.push(this.rootClass);
+
+        if (additinalSelector) {
+            builder.push(additinalSelector);
+        }
+
+        builder.push(' ');
+    }
 }
 

@@ -59,23 +59,23 @@ require.config({
 require(['js/listcontrol', /* 'js/enhancedlistcontrol' */, /* 'DataPicker' */, 'jqueryui', 'Bootstrap'], function (listcontrol) {
     var columnCount = 1000;
 
-    var testData = [
-        // { Id: 0, Stage: 'Done', Waiting: { status: 'online', name: 'Rachel Falzone' }, Requestor: { status: 'away', name: 'Todd The Builder' }, 'ActiveDate': '2014-09-30', StartDate: '2 days ago', Action: 'Poke' },
-        // { Id: 1, Stage: 'Done', Waiting: { status: 'online', name: 'Rachel Falzone' }, Requestor: { status: 'away', name: 'Todd The Builder' }, 'ActiveDate': '2014-09-30', StartDate: '2 days ago', Action: 'Poke' },
-        // { Id: 2, Stage: 'Waiting', Waiting: { status: 'busy', name: 'Rachel Falzone 2' }, Requestor: { status: 'away', name: 'Todd The Builder' }, 'ActiveDate': '2014-09-30', StartDate: '2 days ago', Action: 'Poke' },
-        // { Id: 3, Stage: 'Waiting', Waiting: { status: 'busy', name: 'Rachel Falzone 2' }, Requestor: { status: 'away', name: 'Todd The Builder' }, 'ActiveDate': '2014-09-30', StartDate: '2 days ago', Action: 'Poke' },
-    ];
-
     // var testData = [
-    //     { Id: 0, Stage: 'Done', Waiting: 'Rachel Falzone', Requestor: 'Todd The Builder', 'ActiveDate': '2014-09-30', StartDate: '2 days ago', Action: 'Poke' },
-    //     { Id: 1, Stage: 'Done', Waiting: 'Rachel Falzone', Requestor: 'Todd The Builder', 'ActiveDate': '2014-09-30', StartDate: '2 days ago', Action: 'Poke' },
-    //     { Id: 2, Stage: 'Waiting', Waiting: 'Rachel Falzone 2', Requestor: 'Todd The Builder', 'ActiveDate': '2014-09-30', StartDate: '2 days ago', Action: 'Poke' },
-    //     { Id: 3, Stage: 'Waiting', Waiting: 'Rachel Falzone 2', Requestor: 'Todd The Builder', 'ActiveDate': '2014-09-30', StartDate: '2 days ago', Action: 'Poke' },
+    //     // { Id: 0, Stage: 'Done', Waiting: { status: 'online', name: 'Rachel Falzone' }, Requestor: { status: 'away', name: 'Todd The Builder' }, 'ActiveDate': '2014-09-30', StartDate: '2 days ago', Action: 'Poke' },
+    //     // { Id: 1, Stage: 'Done', Waiting: { status: 'online', name: 'Rachel Falzone' }, Requestor: { status: 'away', name: 'Todd The Builder' }, 'ActiveDate': '2014-09-30', StartDate: '2 days ago', Action: 'Poke' },
+    //     // { Id: 2, Stage: 'Waiting', Waiting: { status: 'busy', name: 'Rachel Falzone 2' }, Requestor: { status: 'away', name: 'Todd The Builder' }, 'ActiveDate': '2014-09-30', StartDate: '2 days ago', Action: 'Poke' },
+    //     // { Id: 3, Stage: 'Waiting', Waiting: { status: 'busy', name: 'Rachel Falzone 2' }, Requestor: { status: 'away', name: 'Todd The Builder' }, 'ActiveDate': '2014-09-30', StartDate: '2 days ago', Action: 'Poke' },
     // ];
 
-    // for (var i = 0; i < 100; i++) {
-    //     testData.push({ Id: i + 4, Stage: 'Done', Waiting: 'Rachel Falzone ' + i, Requestor: 'Todd The Builder', 'ActiveDate': '2014-09-30', StartDate: '2 days ago', Action: 'Poke', 'test19': 'testtesttesttesttesttesttesttesttest' });
-    // }
+    var testData = [
+        { Id: 0, Stage: 'Done', Waiting: 'Rachel Falzone', Requestor: 'Todd The Builder', 'ActiveDate': '2014-09-30', StartDate: '2 days ago', Action: 'Poke' },
+        { Id: 1, Stage: 'Done', Waiting: 'Rachel Falzone', Requestor: 'Todd The Builder', 'ActiveDate': '2014-09-30', StartDate: '2 days ago', Action: 'Poke' },
+        { Id: 2, Stage: 'Waiting', Waiting: 'Rachel Falzone 2', Requestor: 'Todd The Builder', 'ActiveDate': '2014-09-30', StartDate: '2 days ago', Action: 'Poke' },
+        { Id: 3, Stage: 'Waiting', Waiting: 'Rachel Falzone 2', Requestor: 'Todd The Builder', 'ActiveDate': '2014-09-30', StartDate: '2 days ago', Action: 'Poke' },
+    ];
+
+    for (var i = 0; i < 100; i++) {
+        testData.push({ Id: i + 4, Stage: 'Done', Waiting: 'Rachel Falzone ' + i, Requestor: 'Todd The Builder', 'ActiveDate': '2014-09-30', StartDate: '2 days ago', Action: 'Poke', 'test19': 'testtesttesttesttesttesttesttesttest' });
+    }
 
     $(document.head).append($('<style></style>').html("document, body { border: 0px; padding: 0px; margin: 0px; overflow: hidden; } body { position: fixed; left: 0px; right: 0px; top: 0px; height: 100%; }"));
 

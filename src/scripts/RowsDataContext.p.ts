@@ -96,11 +96,11 @@ export class RowsDataContext {
     }
 
     public getRowIdByIndex(rowIndex) {
-        return this._rowId2IndexMap[rowIndex];
+        return this._rowIndex2IdMap[rowIndex];
     }
 
     public getRowIndexById(rowId) {
-        return this._rowIndex2IdMap[rowId];
+        return this._rowId2IndexMap[rowId];
     }
 
     public getRowById(rowId) {

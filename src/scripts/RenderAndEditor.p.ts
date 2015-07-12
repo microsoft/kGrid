@@ -8,7 +8,7 @@ export class SimpleTextHeaderRender implements IRender {
         this._alignToEnd = alignToEnd;
     }
 
-    public static instance() {
+    public static Instance() {
         if (!SimpleTextHeaderRender._instance) {
             SimpleTextHeaderRender._instance = new SimpleTextHeaderRender();
         }
@@ -49,12 +49,21 @@ export class SimpleTextHeaderRender implements IRender {
 }
 
 export class SimpleTextCellRender implements IRender {
+    private static _instance;
     private _alignToEnd;
     private _getter;
 
     constructor(getter = null, alignToEnd = false) {
         this._getter = getter;
         this._alignToEnd = alignToEnd;
+    }
+
+    public static Instance() {
+        if (!SimpleTextCellRender._instance) {
+            SimpleTextCellRender._instance = new SimpleTextHeaderRender();
+        }
+
+        return SimpleTextCellRender._instance;
     }
 
     public title(args) {
