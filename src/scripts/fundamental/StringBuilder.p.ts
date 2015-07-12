@@ -10,36 +10,29 @@ export class StringBuilder {
     }
 
     public append(text) {
-        if (!this._textTransformer) {
+        if (!this._context) {
             this._buffer += text;
         } else {
-            this._textTransformer.context = this._context;
+            if (!this._textTransformer) {
+                this._textTransformer = new TextTransformer(this._context);
+            } else {
+                this._textTransformer.context = this._context;
+            }
+
             this._buffer += this._textTransformer.transform(text);
         }
     }
 
     public context(value?) {
-        return PropertyBag.property({
-            target: this,
-            name: '_context',
-            args: arguments,
-            afterRead: (sender, args) => {
-                if (!this._textTransformer) {
-                    if (!args.newValue) {
-                        args.newValue = this._context = {};
-                    }
+        if (arguments.length == 0) {
+            if (!this._context) {
+                this._context = {};
+            }
 
-                    this._textTransformer = new TextTransformer(args.newValue);
-                }
-            },
-            afterChange: (sender, args) => {
-                if (args.newValue) {
-                    this._textTransformer = new TextTransformer(args.newValue);
-                } else {
-                    this._textTransformer = null;
-                }
-            },
-        });
+            return this._context;
+        } else {
+            return this._context = value;
+        }
     }
 
     public toString() {

@@ -67,14 +67,18 @@ require(['js/listcontrol', /* 'js/enhancedlistcontrol' */, /* 'DataPicker' */, '
     // ];
 
     var testData = [
-        { Id: 0, Stage: 'Done', Waiting: 'Rachel Falzone', Requestor: 'Todd The Builder', 'ActiveDate': '2014-09-30', StartDate: '2 days ago', Action: 'Poke' },
-        { Id: 1, Stage: 'Done', Waiting: 'Rachel Falzone', Requestor: 'Todd The Builder', 'ActiveDate': '2014-09-30', StartDate: '2 days ago', Action: 'Poke' },
-        { Id: 2, Stage: 'Waiting', Waiting: 'Rachel Falzone 2', Requestor: 'Todd The Builder', 'ActiveDate': '2014-09-30', StartDate: '2 days ago', Action: 'Poke' },
-        { Id: 3, Stage: 'Waiting', Waiting: 'Rachel Falzone 2', Requestor: 'Todd The Builder', 'ActiveDate': '2014-09-30', StartDate: '2 days ago', Action: 'Poke' },
+        // { Id: 0, Stage: 'Done', Waiting: 'Rachel Falzone', Requestor: 'Todd The Builder', 'ActiveDate': '2014-09-30', StartDate: '2 days ago', Action: 'Poke' },
+        // { Id: 1, Stage: 'Done', Waiting: 'Rachel Falzone', Requestor: 'Todd The Builder', 'ActiveDate': '2014-09-30', StartDate: '2 days ago', Action: 'Poke' },
+        // { Id: 2, Stage: 'Waiting', Waiting: 'Rachel Falzone 2', Requestor: 'Todd The Builder', 'ActiveDate': '2014-09-30', StartDate: '2 days ago', Action: 'Poke' },
+        // { Id: 3, Stage: 'Waiting', Waiting: 'Rachel Falzone 2', Requestor: 'Todd The Builder', 'ActiveDate': '2014-09-30', StartDate: '2 days ago', Action: 'Poke' },
     ];
 
     for (var i = 0; i < 100; i++) {
         testData.push({ Id: i + 4, Stage: 'Done', Waiting: 'Rachel Falzone ' + i, Requestor: 'Todd The Builder', 'ActiveDate': '2014-09-30', StartDate: '2 days ago', Action: 'Poke', 'test19': 'testtesttesttesttesttesttesttesttest' });
+
+        for (var j = 0; j < 1000; j++) {
+            testData[testData.length - 1]['test' + j] = 'test ' + j;
+        }
     }
 
     $(document.head).append($('<style></style>').html("document, body { border: 0px; padding: 0px; margin: 0px; overflow: hidden; } body { position: fixed; left: 0px; right: 0px; top: 0px; height: 100%; }"));
@@ -408,7 +412,7 @@ require(['js/listcontrol', /* 'js/enhancedlistcontrol' */, /* 'DataPicker' */, '
                 data: 'test' + i,
                 field: 'test' + i,
                 width: 100,
-                // cellRender: new listcontrol.SimpleTextCellRender((args) => args.cellData),
+                cellRender: new listcontrol.SimpleTextCellRender((args) => args.cellData),
             });
         }
 
