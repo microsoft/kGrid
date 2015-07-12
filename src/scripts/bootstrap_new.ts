@@ -401,18 +401,18 @@ require(['js/listcontrol', /* 'js/enhancedlistcontrol' */, /* 'DataPicker' */, '
         //     cellRender: new listcontrol.SimpleTextCellRender((args) => args.cellData, true),
         // })]);
 
-        // var columns = [];
+        var columns = [];
 
-        // for (var i = 0; i < columnCount; i++) {
-        //     columns.push(new enhancedlistcontrol.EnhancedColumnDefinition({
-        //         data: { displayName: 'test' + i, icons: [], },
-        //         field: 'test' + i,
-        //         table: { width: 100 },
-        //         cellRender: new listcontrol.SimpleTextCellRender((args) => args.cellData),
-        //     }));
-        // }
+        for (var i = 0; i < columnCount; i++) {
+            columns.push({
+                data: 'test' + i,
+                field: 'test' + i,
+                width: 100,
+                // cellRender: new listcontrol.SimpleTextCellRender((args) => args.cellData),
+            });
+        }
 
-        // listControlObject.addColumns(columns);
+        columnsDataContext.addColumns(columns);
 
         // listControlObject.on('rowClick', (sender, args) => {
         //     console.log(JSON.stringify(listControlObject.getRowsByIndex(args.rowIndex, 1)[0].Id, null, 2));

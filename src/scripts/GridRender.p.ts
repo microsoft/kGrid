@@ -4,6 +4,7 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
     private _invoke;
     private _elements;
     private _uiValues;
+    private _scrollbars;
     private _renderingScheduler;
     private _layoutStylesheetUpdater;
     private _cellStylesheetUpdater;
@@ -43,6 +44,8 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
         this._layoutStylesheetUpdater.add(() => this._getLayoutStylesheet());
         this._updaters.add(this._layoutStylesheetUpdater.getUpdater());
 
+        this._updaters.add(this._getUIValuesUpdater());
+
         this.disposer.addDisposable(this._cellStylesheetUpdater = new Fundamental.DynamicStylesheetUpdater('msoc-list-render-cell-' + this._runtime.id));
         this._cellStylesheetUpdater.add(() => this._getCellStylesheet());
         this._updaters.add(this._cellStylesheetUpdater.getUpdater());
@@ -68,7 +71,6 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
                 'propertyChange',
                 (sender, args) => {
                     if (args.name == 'width' || args.name == 'height') {
-                        this._updateUIValues();
                         this._updaters.update();
                     }
             }));
@@ -78,7 +80,6 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
                 this._runtime.dataContexts.columnsDataContext,
                 'visibleColumnIdsChange',
                 (sender, args) => {
-                    this._updateUIValues();
                     this._updaters.update();
             }));
 
@@ -87,7 +88,6 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
                 this._runtime.dataContexts.rowsDataContext,
                 'rowCountChange',
                 (sender, args) => {
-                    this._updateUIValues();
                     this._updaters.update();
             }));
 
@@ -134,8 +134,25 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
             },
         };
 
+        content.css('width', '100px');
+        content.css('height', '100px');
+        content.css('overflow', 'hidden');
+
+        var originalWidth = content[0].clientWidth,
+            originalHeight = content[0].clientHeight;
+
+        content.css('overflow', 'scroll');
+
+        this._scrollbars = {
+            vWidth: originalWidth - content[0].clientWidth,
+            hWidth: originalHeight - content[0].clientHeight,
+        };
+
+        content.css('width', '');
+        content.css('height', '');
+        content.css('overflow', '');
+
         this._attachEvents();
-        this._updateUIValues();
         this._updaters.update();
         this._renderingScheduler.start(true);
     }
@@ -146,7 +163,6 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
 
     private _attachEvents() {
         var scrollHandler = new Fundamental.AccumulateTimeoutInvoker(() => {
-            this._updateUIValues();
             this._updaters.update();
         }, 50); // 50 = 16.67 * 3, 20 fps
 
@@ -157,24 +173,29 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
         }));
     }
 
-    private _updateUIValues() {
-        var viewport = $(this._elements.content.viewport);
-        var canvas = $(this._elements.content.canvas);
-
-        this._uiValues = {
-            content: {
-                viewport: {
-                    width: viewport.width(),
-                    height: viewport.height(),
-                    clientWidth: viewport[0].clientWidth,
-                    clientHeight: viewport[0].clientHeight,
-                },
-                canvas: {
-                    width: canvas.width(),
-                    height: canvas.height(),
+    private _getUIValuesUpdater() {
+        return new Fundamental.Updater(
+            () => {
+                return {
+                    canvas: this._calculateCanvasRect(),
+                    width: this._runtime.width,
+                    height: this._runtime.height,
                 }
             },
-        };
+            () => {
+                var viewport = $(this._elements.content.viewport);
+
+                this._uiValues = {
+                    content: {
+                        viewport: {
+                            width: viewport.width(),
+                            height: viewport.height(),
+                            clientWidth: viewport[0].clientWidth,
+                            clientHeight: viewport[0].clientHeight,
+                        },
+                    },
+                };
+            });
     }
 
     private _getColumnWidthById(columnId) {
@@ -189,6 +210,7 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
             rowHeight = this._runtime.theme.value('table.rowHeight'),
             rowCount = this._runtime.dataContexts.rowsDataContext.rowCount(),
             headerRowHeight = this._runtime.theme.value('table.headerRowHeight'),
+            headerBottomBorder = this._runtime.theme.value('table.headerBottomBorder'),
             width = 0,
             cellHBorder = this._runtime.theme.value('table.cellHBorder'),
             height = rowCount == 0 ? 0 : rowCount * rowHeight + (rowCount - 1) * cellHBorder.width;
@@ -199,10 +221,14 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
 
         return {
             header: {
+                top: 0,
+                front: 0,
                 width: width,
                 height: headerRowHeight,
             },
             content: {
+                top: headerRowHeight + headerBottomBorder.width,
+                front: 0,
                 width: width,
                 height: height,
             }
@@ -221,31 +247,32 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
             end: this._runtime.direction.end(),
         });
 
+        // FIXME: raw.ltr and raw.rtl
         cssText.append(".$rootClass .msoc-list-table-header-cell { cursor: ${theme('table.headerCursor')}; font-family: ${theme('table.headerCellFontFamily')}; font-size: ${theme('table.headerCellFontSize')}; background-color: ${theme('table.headerRowBackgroundColor')}; color: ${theme('table.headerCellColor')}; height: ${theme('table.headerRowHeight')}px; }\n");
-        cssText.append(".$rootClass .msoc-list-table-header-cell-content { top: 0px; $front: 0px; $end: 0px; padding: ${theme('table.headerCellPadding')}; height: ${theme('table.headerRowHeight')}px; line-height: ${theme('table.headerRowHeight')}px; }\n");
+        cssText.append(".$rootClass .msoc-list-table-header-cell-content { top: 0px; $front: 0px; $end: 0px; padding: ${theme('table.headerCellPadding').raw.ltr}; height: ${theme('table.headerRowHeight')}px; line-height: ${theme('table.headerRowHeight')}px; }\n");
         cssText.append(".$rootClass .msoc-list-row { height: ${theme('table.rowHeight')}px; display: none; }\n");
         cssText.append(".$rootClass .msoc-list-table-row-border { height: ${theme('table.cellHBorder').width}px; width: 100%; border-bottom: ${theme('table.cellHBorder').raw}; top: ${theme('table.rowHeight')}px; }\n");
-        cssText.append(".$rootClass .msoc-list-table-cell { cursor: ${theme('table.cellCursor')}; font-family: ${theme('table.cellFontFamily')}; font-size: ${theme('table.cellFontSize')}; color: ${theme('table.cellColor')}; height: ${theme('table.rowHeight')}px; }\n");
+        cssText.append(".$rootClass .msoc-list-table-cell { cursor: ${theme('table.cellCursor')}; font-family: ${theme('table.cellFontFamily')}; font-size: ${theme('table.cellFontSize')}; color: ${theme('table.cellColor')}; height: ${theme('table.rowHeight')}px; display: none; }\n");
         cssText.append(".$rootClass .msoc-list-odd { background-color: ${theme('table.oddRowBackgroundColor')}; }\n");
         cssText.append(".$rootClass .msoc-list-even { background-color: ${theme('table.evenRowBackgroundColor')}; }\n");
         cssText.append(".$rootClass .msoc-list-table-header-bottom-border { height: ${theme('table.headerBottomBorder').width}px; border-bottom: ${theme('table.headerBottomBorder').raw}; }\n");
         cssText.append(".$rootClass .msoc-list-table-header-cell-splitter-front { $front: 0px; width: 2px; }\n");
         cssText.append(".$rootClass .msoc-list-table-header-cell-first > .msoc-list-table-header-cell-splitter-front { display: none; }\n");
         cssText.append(".$rootClass .msoc-list-table-header-cell-splitter-end { $end: ${-theme('table.cellVBorder').width}px; width: ${theme('table.cellVBorder').width + 2}px; }\n");
-        cssText.append(".$rootClass .msoc-list-table-cell-content { top: 0px; $front: 0px; $end: 0px; padding: ${theme('table.cellPadding').raw}; height: ${theme('table.rowHeight')}px; line-height: ${theme('table.rowHeight')}px; }\n");
+        cssText.append(".$rootClass .msoc-list-table-cell-content { top: 0px; $front: 0px; $end: 0px; padding: ${theme('table.cellPadding').raw.ltr}; height: ${theme('table.rowHeight')}px; line-height: ${theme('table.rowHeight')}px; }\n");
 
         $.each(visibleColumnIds, (index, columnId) => {
             cssText.context().width = this._getColumnWidthById(columnId);
             cssText.context().columnId = columnId;
             cssText.context().frontWidth = front;
 
-            cssText.append(".$rootClass .msoc-list-table-header-cell.msoc-list-table-header-cell-$columnId { $front, ${frontWidth}px; width: ${width}px; display: block; }\n");
+            cssText.append(".$rootClass .msoc-list-table-header-cell.msoc-list-table-header-cell-$columnId, .$rootClass .msoc-list-table-cell.msoc-list-table-cell-$columnId { $front: ${frontWidth}px; width: ${width}px; display: block; }\n");
 
             if (index != visibleColumnIds.length - 1) {
                 cssText.append(".$rootClass .msoc-list-table-header-cell-v-border-$columnId { $front: ${width}px; width: ${theme('table.cellVBorder').width}px; border-$end: ${theme('table.headerCellVBorder').raw}; }\n");
             }
 
-            cssText.append(".$rootClass .msoc-list-table-cell-$columnId, .$rootClass .msoc-list-table-header-cell-$columnId { $front: ${frontWidth}px; width: ${width}px; }\n");
+            front += this._getColumnWidthById(columnId);
         });
 
         return cssText.toString();
@@ -274,8 +301,6 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
             cssText.push(rowId);
             cssText.property('height', rowHeight, 'px');
             cssText.property('line-height', rowHeight, 'px');
-            // FIXME: change to a right number
-            cssText.property('width', '300000', 'px');
             cssText.property('top', rowIndex * rowHeight + rowIndex * cellHBorder.width, 'px');
             cssText.property('display', 'block');
         }
@@ -284,10 +309,12 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
     }
 
     private _getLayoutStylesheet() {
-        var cssText = new Fundamental.StringBuilder();
+        var cssText = new Fundamental.StringBuilder(),
+            canvas = this._calculateCanvasRect();
 
         cssText.context({
-            canvas: this._calculateCanvasRect(),
+            canvas: canvas,
+            minCanvasWidth: canvas.content.height > this._runtime.height ? this._runtime.width - this._scrollbars.vWidth : this._runtime.width,
             rootClass: this._runtime.rootClass,
             theme: (value) => this._runtime.theme.value(value),
             front: this._runtime.direction.front(),
@@ -296,10 +323,13 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
         });
 
         cssText.append('.$rootClass { width: ${runtime.width}px; height: ${runtime.height}px; background-color: ${theme("backgroundColor")}; }\n');
-        cssText.append('.$rootClass .msoc-list-content-viewport { overflow: auto; position: absolute; top: ${canvas.header.height + theme("table.headerBottomBorder").width}px; $front: 0px; $end: 0px; bottom: 0px; }\n');
-        cssText.append('.$rootClass .msoc-list-content-viewport .msoc-list-canvas-container { overflow: hidden; position: relative; width: ${canvas.content.width}px; height: ${canvas.content.height}px; }\n');
-        cssText.append('.$rootClass .msoc-list-header-viewport { overflow: hidden; position: absolute; width: 100%; height: ${canvas.header.height + theme("table.headerBottomBorder").width}px; }\n');
-        cssText.append('.$rootClass .msoc-list-header-viewport .msoc-list-canvas-container { overflow: hidden; position: relative; width: ${canvas.header.width}px; height: ${canvas.header.height}px; }\n');
+        cssText.append('.$rootClass .msoc-list-content-viewport { overflow: auto; position: absolute; top: ${canvas.content.top}px; $front: 0px; $end: 0px; bottom: 0px; }\n');
+        cssText.append('.$rootClass .msoc-list-content-viewport .msoc-list-canvas-container { overflow: hidden; position: relative; width: ${canvas.content.width}px; height: ${canvas.content.height}px; min-width: ${minCanvasWidth}px; }\n');
+
+        // FIXME: should put here?
+        cssText.append(".$rootClass .msoc-list-row { width: ${canvas.content.width}px; min-width: ${minCanvasWidth}px; }\n");
+        cssText.append('.$rootClass .msoc-list-header-viewport { overflow: hidden; position: absolute; width: 100%; height: ${canvas.content.top}px; }\n');
+        cssText.append('.$rootClass .msoc-list-header-viewport .msoc-list-canvas-container { overflow: hidden; position: relative; width: ${canvas.header.width}px; height: ${canvas.header.height}px; min-width: ${minCanvasWidth}px; }\n');
         // cssText.append('.$rootClass .msoc-list-header-viewport .msoc-list-canvas-container.msoc-list-canvas-main > .msoc-list-table-header-bottom-border');
 
         return cssText.toString();
@@ -331,7 +361,7 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
                     frontColumnIndex = columnIndex;
                 }
 
-                if (front < this._viewportScrollCoordinate.front() + this._uiValues.content.viewport.clientWidth) {
+                if (front < this._viewportScrollCoordinate.front() + this._uiValues.content.viewport.width) {
                     endColumnIndex = columnIndex;
                 } else {
                     break;

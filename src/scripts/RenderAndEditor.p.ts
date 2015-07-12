@@ -23,8 +23,10 @@ export class SimpleTextHeaderRender implements IRender {
     public render(args) {
         var value = this._getValue(args);
 
-        args.element.textContent = value;
-        $(args.element).attr('title', value);
+        if (typeof(value) != 'undefined' && value != null && value !== '') {
+            args.element.textContent = value;
+            $(args.element).attr('title', value);
+        }
 
         var align;
 
@@ -73,7 +75,7 @@ export class SimpleTextCellRender implements IRender {
     public render(args) {
         var value = this._getValue(args);
 
-        if (typeof(value) != undefined && value != null && value !== '') {
+        if (typeof(value) != 'undefined' && value != null && value !== '') {
             args.element.textContent = value;
             args.element.setAttribute('title', value);
 
