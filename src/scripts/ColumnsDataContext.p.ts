@@ -57,7 +57,7 @@ export class ColumnsDataContext {
     }
 
     public getColumnById(columnId) {
-        return this._columns[columnId]
+        return this._columns[columnId].raw;
     }
 
     public getColumnIndexById(columnId) {

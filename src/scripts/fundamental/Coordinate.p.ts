@@ -198,8 +198,10 @@ export class Coordinate {
 
 export class CoordinateFactory {
     public static fromElement(rtl, element) {
-        var offset = element.offset();
-        var coordinate;
+        element = $(element);
+
+        var offset = element.offset(),
+            coordinate;
 
         if (rtl) {
             coordinate = new Fundamental.Coordinate(Fundamental.CoordinateType.Viewport, offset.left + element.width(), offset.top, false, $(document).width());
@@ -246,6 +248,8 @@ export class CoordinateFactory {
     }
 
     public static scrollFromElement(rtl, element) {
+        element = $(element);
+
         var scrollLeft = element.scrollLeft(),
             scrollFront = scrollLeft,
             scrollOverflowWidth = element[0].scrollWidth - element[0].clientWidth,

@@ -35,7 +35,7 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
         this._runtime = runtime;
         this._invoke = $invoke;
         this._renderRange = Range.Null;
-        this._viewportScrollCoordinate = new Microsoft.Office.Controls.Fundamental.Coordinate(Microsoft.Office.Controls.Fundamental.CoordinateType.ViewportRelative, 0, 0),
+        this._viewportScrollCoordinate = new Fundamental.Coordinate(Fundamental.CoordinateType.ViewportRelative, 0, 0),
         this.disposer.addDisposable(this._renderingScheduler = new Fundamental.RenderingScheduler());
         this.disposer.addDisposable(this._updaters = new Fundamental.UpdaterGroup());
 
@@ -61,6 +61,7 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
 
         this._renderingScheduler.addWorker((context) => this._renderHeaderCellWorker(context), renderContext, 800);
         this._renderingScheduler.addWorker((context) => this._renderCellWorker(context), renderContext, 1000);
+        this._renderingScheduler.addWorker((context) => this._removeCellWorker(context), renderContext, 1200);
         this.disposer.addDisposable(
             new Fundamental.EventAttacher(
                 this._runtime.events,
@@ -133,6 +134,7 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
             },
         };
 
+        this._attachEvents();
         this._updateUIValues();
         this._updaters.update();
         this._renderingScheduler.start(true);
@@ -140,6 +142,19 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
 
     public name() {
         return 'GridRender';
+    }
+
+    private _attachEvents() {
+        var scrollHandler = new Fundamental.AccumulateTimeoutInvoker(() => {
+            this._updateUIValues();
+            this._updaters.update();
+        }, 50); // 50 = 16.67 * 3, 20 fps
+
+        this.disposer.addDisposable(new Fundamental.EventAttacher($(this._elements.content.viewport), 'scroll',  (event) => {
+            this._viewportScrollCoordinate = Fundamental.CoordinateFactory.scrollFromElement(this._runtime.direction.rtl(), this._elements.content.viewport);
+            this._elements.header.viewport.scrollLeft = this._elements.content.viewport.scrollLeft;
+            scrollHandler.invoke();
+        }));
     }
 
     private _updateUIValues() {
@@ -195,122 +210,42 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
     }
 
     private _getCellStylesheet() {
-        var cssText = new Microsoft.Office.Controls.Fundamental.CssTextBuilder(),
-            cellPadding = this._runtime.theme.value('table.cellPadding'),
-            headerCellPadding = this._runtime.theme.value('table.headerCellPadding'),
-            headerCellVBorder = this._runtime.theme.value('table.headerCellVBorder'),
-            headerBottomBorder = this._runtime.theme.value('table.headerBottomBorder'),
-            cellVBorder = this._runtime.theme.value('table.cellVBorder'),
-            cellHBorder = this._runtime.theme.value('table.cellHBorder'),
-            oddRowBackgroundColor = this._runtime.theme.value('table.oddRowBackgroundColor'),
-            evenRowBackgroundColor = this._runtime.theme.value('table.evenRowBackgroundColor'),
-            cellColor = this._runtime.theme.value('table.cellColor'),
-            headerRowBackgroundColor = this._runtime.theme.value('table.headerRowBackgroundColor'),
-            headerCellColor = this._runtime.theme.value('table.headerCellColor'),
-            headerRowHeight = this._runtime.theme.value('table.headerRowHeight'),
-            rowHeight = this._runtime.theme.value('table.rowHeight'),
+        var cssText = new Fundamental.StringBuilder(),
             visibleColumnIds = this._runtime.dataContexts.columnsDataContext.visibleColumnIds(),
             front = 0;
 
-        this._runtime.buildCssRootSelector(cssText);
-        cssText.push('.msoc-list-table-header-cell');
-        cssText.property('cursor', this._runtime.theme.value('table.headerCursor'));
-        cssText.property('font-family', this._runtime.theme.value('table.headerCellFontFamily'));
-        cssText.property('font-size', this._runtime.theme.value('table.headerCellFontSize'));
-        cssText.property('background-color', headerRowBackgroundColor);
-        cssText.property('color', headerCellColor);
-        cssText.property('height', headerRowHeight, 'px');
+        cssText.context({
+            rootClass: this._runtime.rootClass,
+            theme: (value) => this._runtime.theme.value(value),
+            front: this._runtime.direction.front(),
+            end: this._runtime.direction.end(),
+        });
 
-        this._runtime.buildCssRootSelector(cssText);
-        cssText.push('.msoc-list-table-header-cell-content');
-        cssText.property('top', 0, 'px');
-        cssText.property(this._runtime.direction.front(), 0, 'px');
-        cssText.property(this._runtime.direction.end(), 0, 'px');
-        cssText.property('padding', this._runtime.direction.rtl() ? headerCellPadding.raw.rtl : headerCellPadding.raw.ltr);
-        cssText.property('height', headerRowHeight, 'px');
-        cssText.property('line-height', headerRowHeight, 'px');
-
-        this._runtime.buildCssRootSelector(cssText);
-        cssText.push('.msoc-list-row');
-
-        this._runtime.buildCssRootSelector(cssText);
-        cssText.append('.msoc-list-table-row-border');
-        cssText.property('height', cellHBorder.width, 'px');
-        cssText.property('width', '100', '%');
-        cssText.property('border-bottom', cellHBorder.raw);
-        cssText.property('top', rowHeight, 'px');
-
-        this._runtime.buildCssRootSelector(cssText);
-        cssText.push('.msoc-list-table-cell');
-        cssText.property('cursor', this._runtime.theme.value('table.cellCursor'));
-        cssText.property('font-family', this._runtime.theme.value('table.cellFontFamily'));
-        cssText.property('font-size', this._runtime.theme.value('table.cellFontSize'));
-        cssText.property('color', cellColor);
-        cssText.property('height', rowHeight, 'px');
-
-        this._runtime.buildCssRootSelector(cssText);
-        cssText.push('.msoc-list-odd');
-        cssText.property('background-color', oddRowBackgroundColor);
-
-        this._runtime.buildCssRootSelector(cssText);
-        cssText.push('.msoc-list-even');
-        cssText.property('background-color', evenRowBackgroundColor);
-
-        this._runtime.buildCssRootSelector(cssText);
-        cssText.push('.msoc-list-table-header-bottom-border');
-        cssText.property('height', headerBottomBorder.width, 'px');
-        cssText.property('border-bottom', headerBottomBorder.raw);
-
-        this._runtime.buildCssRootSelector(cssText);
-        cssText.push('.msoc-list-table-header-cell-splitter-front');
-        cssText.property(this._runtime.direction.front(), 0, 'px');
-        cssText.property('width', 2, 'px');
-
-        this._runtime.buildCssRootSelector(cssText);
-        cssText.push('.msoc-list-table-header-cell-first > .msoc-list-table-header-cell-splitter-front');
-        cssText.property('display', 'none');
-
-        this._runtime.buildCssRootSelector(cssText);
-        cssText.push('.msoc-list-table-header-cell-splitter-end');
-        cssText.property(this._runtime.direction.end(), -cellVBorder.width, 'px');
-        cssText.property('width', cellVBorder.width + 2, 'px');
-
-        this._runtime.buildCssRootSelector(cssText);
-        cssText.push('.msoc-list-table-cell-content');
-        cssText.property('top', 0, 'px');
-        cssText.property(this._runtime.direction.front(), 0, 'px');
-        cssText.property(this._runtime.direction.end(), 0, 'px');
-        cssText.property('padding', this._runtime.direction.rtl() ? cellPadding.raw.rtl : cellPadding.raw.ltr);
-        cssText.property('height', rowHeight, 'px');
-        cssText.property('line-height', rowHeight, 'px');
+        cssText.append(".$rootClass .msoc-list-table-header-cell { cursor: ${theme('table.headerCursor')}; font-family: ${theme('table.headerCellFontFamily')}; font-size: ${theme('table.headerCellFontSize')}; background-color: ${theme('table.headerRowBackgroundColor')}; color: ${theme('table.headerCellColor')}; height: ${theme('table.headerRowHeight')}px; }\n");
+        cssText.append(".$rootClass .msoc-list-table-header-cell-content { top: 0px; $front: 0px; $end: 0px; padding: ${theme('table.headerCellPadding')}; height: ${theme('table.headerRowHeight')}px; line-height: ${theme('table.headerRowHeight')}px; }\n");
+        cssText.append(".$rootClass .msoc-list-row { height: ${theme('table.rowHeight')}px; display: none; }\n");
+        cssText.append(".$rootClass .msoc-list-table-row-border { height: ${theme('table.cellHBorder').width}px; width: 100%; border-bottom: ${theme('table.cellHBorder').raw}; top: ${theme('table.rowHeight')}px; }\n");
+        cssText.append(".$rootClass .msoc-list-table-cell { cursor: ${theme('table.cellCursor')}; font-family: ${theme('table.cellFontFamily')}; font-size: ${theme('table.cellFontSize')}; color: ${theme('table.cellColor')}; height: ${theme('table.rowHeight')}px; }\n");
+        cssText.append(".$rootClass .msoc-list-odd { background-color: ${theme('table.oddRowBackgroundColor')}; }\n");
+        cssText.append(".$rootClass .msoc-list-even { background-color: ${theme('table.evenRowBackgroundColor')}; }\n");
+        cssText.append(".$rootClass .msoc-list-table-header-bottom-border { height: ${theme('table.headerBottomBorder').width}px; border-bottom: ${theme('table.headerBottomBorder').raw}; }\n");
+        cssText.append(".$rootClass .msoc-list-table-header-cell-splitter-front { $front: 0px; width: 2px; }\n");
+        cssText.append(".$rootClass .msoc-list-table-header-cell-first > .msoc-list-table-header-cell-splitter-front { display: none; }\n");
+        cssText.append(".$rootClass .msoc-list-table-header-cell-splitter-end { $end: ${-theme('table.cellVBorder').width}px; width: ${theme('table.cellVBorder').width + 2}px; }\n");
+        cssText.append(".$rootClass .msoc-list-table-cell-content { top: 0px; $front: 0px; $end: 0px; padding: ${theme('table.cellPadding').raw}; height: ${theme('table.rowHeight')}px; line-height: ${theme('table.rowHeight')}px; }\n");
 
         $.each(visibleColumnIds, (index, columnId) => {
-            var column = this._runtime.dataContexts.columnsDataContext.getColumnById(columnId),
-                width = this._getColumnWidthById(columnId);
+            cssText.context().width = this._getColumnWidthById(columnId);
+            cssText.context().columnId = columnId;
+            cssText.context().frontWidth = front;
 
-            this._runtime.buildCssRootSelector(cssText);
-            cssText.push('.msoc-list-table-header-cell.msoc-list-table-header-cell-');
-            cssText.push(columnId);
-            cssText.property(this._runtime.direction.front(), front, 'px');
-            cssText.property('width', width, 'px');
-            cssText.property('display', 'block');
+            cssText.append(".$rootClass .msoc-list-table-header-cell.msoc-list-table-header-cell-$columnId { $front, ${frontWidth}px; width: ${width}px; display: block; }\n");
 
             if (index != visibleColumnIds.length - 1) {
-                this._runtime.buildCssRootSelector(cssText);
-                cssText.push('.msoc-list-table-header-cell-v-border-');
-                cssText.push(columnId);
-                cssText.property(this._runtime.direction.front(), width, 'px');
-                cssText.property('width', cellVBorder.width, 'px');
-                cssText.property('border-' + this._runtime.direction.end(), headerCellVBorder.raw);
+                cssText.append(".$rootClass .msoc-list-table-header-cell-v-border-$columnId { $front: ${width}px; width: ${theme('table.cellVBorder').width}px; border-$end: ${theme('table.headerCellVBorder').raw}; }\n");
             }
 
-            this._runtime.buildCssRootSelector(cssText);
-            cssText.push('.msoc-list-table-cell-');
-            cssText.push(columnId);
-            cssText.property(this._runtime.direction.front(), front, 'px');
-            cssText.property('width', width, 'px');
-
-            front += width;
+            cssText.append(".$rootClass .msoc-list-table-cell-$columnId, .$rootClass .msoc-list-table-header-cell-$columnId { $front: ${frontWidth}px; width: ${width}px; }\n");
         });
 
         return cssText.toString();
@@ -318,7 +253,7 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
 
     private _getRowTopStylesheet() {
         var renderRange = this._renderRange,
-            cssText = new Microsoft.Office.Controls.Fundamental.CssTextBuilder(),
+            cssText = new Fundamental.CssTextBuilder(),
             rowHeight = this._runtime.theme.value('table.rowHeight'),
             cellHBorder = this._runtime.theme.value('table.cellHBorder');
 
@@ -335,11 +270,12 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
             }
 
             this._runtime.buildCssRootSelector(cssText);
-            cssText.push('.msoc-list-row-');
+            cssText.push('.msoc-list-row.msoc-list-row-');
             cssText.push(rowId);
             cssText.property('height', rowHeight, 'px');
             cssText.property('line-height', rowHeight, 'px');
-            cssText.property('width', '100', '%');
+            // FIXME: change to a right number
+            cssText.property('width', '300000', 'px');
             cssText.property('top', rowIndex * rowHeight + rowIndex * cellHBorder.width, 'px');
             cssText.property('display', 'block');
         }
@@ -348,53 +284,24 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
     }
 
     private _getLayoutStylesheet() {
-        var cssText = new Microsoft.Office.Controls.Fundamental.CssTextBuilder(),
-            headerBottomBorderHeight = this._runtime.theme.value('table.headerBottomBorder').width,
-            canvas = this._calculateCanvasRect();
+        var cssText = new Fundamental.StringBuilder();
 
-        cssText.push('.');
-        cssText.push(this._runtime.rootClass);
-        cssText.property('width', this._runtime.width, 'px');
-        cssText.property('height', this._runtime.height, 'px');
-        cssText.property('background-color', this._runtime.theme.value('backgroundColor'));
+        cssText.context({
+            canvas: this._calculateCanvasRect(),
+            rootClass: this._runtime.rootClass,
+            theme: (value) => this._runtime.theme.value(value),
+            front: this._runtime.direction.front(),
+            end: this._runtime.direction.end(),
+            runtime: this._runtime,
+        });
 
-        cssText.push('.');
-        cssText.push(this._runtime.rootClass);
-        cssText.push(' .msoc-list-content-viewport');
-        cssText.property('overflow', 'auto');
-        cssText.property('position', 'absolute');
-        cssText.property('top', canvas.header.height + headerBottomBorderHeight, 'px');
-        cssText.property(this._runtime.direction.front(), 0, 'px');
-        cssText.property(this._runtime.direction.end(), 0, 'px');
-        cssText.property('bottom', 0, 'px');
+        cssText.append('.$rootClass { width: ${runtime.width}px; height: ${runtime.height}px; background-color: ${theme("backgroundColor")}; }\n');
+        cssText.append('.$rootClass .msoc-list-content-viewport { overflow: auto; position: absolute; top: ${canvas.header.height + theme("table.headerBottomBorder").width}px; $front: 0px; $end: 0px; bottom: 0px; }\n');
+        cssText.append('.$rootClass .msoc-list-content-viewport .msoc-list-canvas-container { overflow: hidden; position: relative; width: ${canvas.content.width}px; height: ${canvas.content.height}px; }\n');
+        cssText.append('.$rootClass .msoc-list-header-viewport { overflow: hidden; position: absolute; width: 100%; height: ${canvas.header.height + theme("table.headerBottomBorder").width}px; }\n');
+        cssText.append('.$rootClass .msoc-list-header-viewport .msoc-list-canvas-container { overflow: hidden; position: relative; width: ${canvas.header.width}px; height: ${canvas.header.height}px; }\n');
+        // cssText.append('.$rootClass .msoc-list-header-viewport .msoc-list-canvas-container.msoc-list-canvas-main > .msoc-list-table-header-bottom-border');
 
-        cssText.push('.');
-        cssText.push(this._runtime.rootClass);
-        cssText.push(' .msoc-list-content-viewport .msoc-list-canvas-container');
-        cssText.property('overflow', 'hidden');
-        cssText.property('position', 'relative');
-        cssText.property('width', canvas.content.width, 'px');
-        cssText.property('height', canvas.content.height, 'px');
-
-        cssText.push('.');
-        cssText.push(this._runtime.rootClass);
-        cssText.push(' .msoc-list-header-viewport');
-        cssText.property('overflow', 'hidden');
-        cssText.property('position', 'absolute');
-        cssText.property('width', '100%');
-        cssText.property('height', canvas.header.height + headerBottomBorderHeight, 'px');
-
-        cssText.push('.');
-        cssText.push(this._runtime.rootClass);
-        cssText.push(' .msoc-list-header-viewport .msoc-list-canvas-container');
-        cssText.property('overflow', 'hidden');
-        cssText.property('position', 'relative');
-        cssText.property('width', canvas.header.width, 'px');
-        cssText.property('height', canvas.header.height, 'px');
-
-        cssText.push('.');
-        cssText.push(this._runtime.rootClass);
-        cssText.push(' .msoc-list-header-viewport .msoc-list-canvas-container.msoc-list-canvas-main > .msoc-list-table-header-bottom-border');
         return cssText.toString();
     }
 
@@ -402,10 +309,6 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
         var __getRenderRange = () => {
             var visibleColumnIds = this._runtime.dataContexts.columnsDataContext.visibleColumnIds(),
                 rowCount = this._runtime.dataContexts.rowsDataContext.rowCount();
-
-            if (visibleColumnIds.length == 0 || rowCount == 0) {
-                return Range.Null;
-            }
 
             var topRowIndex,
                 bottomRowIndex,
@@ -435,10 +338,14 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
                 }
             }
 
-            return new Range(RangeType.Range, topRowIndex, bottomRowIndex, frontColumnIndex, endColumnIndex);
+            if (rowCount == 0) {
+                return new Range(RangeType.Column, NaN, NaN, frontColumnIndex, endColumnIndex);
+            } else {
+                return new Range(RangeType.Range, topRowIndex, bottomRowIndex, frontColumnIndex, endColumnIndex);
+            }
         };
 
-        var eventSender = new Microsoft.Office.Controls.Fundamental.AccumulateTimeoutInvoker(() => {
+        var eventSender = new Fundamental.AccumulateTimeoutInvoker(() => {
             if (this._renderRange.isValid()) {
                 // this._runtime.events.emit(
                 //     'table.beforeRender',
@@ -449,7 +356,7 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
             }
         }, 16.67);
 
-        return new Microsoft.Office.Controls.Fundamental.Updater(
+        return new Fundamental.Updater(
             () => {
                 var renderRange = __getRenderRange();
                 var rowIds = [];
@@ -488,7 +395,7 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
         }
 
         var headerMainCanvas = $(this._elements.header.mainCanvas),
-            html = new Microsoft.Office.Controls.Fundamental.StringBuilder(),
+            html = new Fundamental.StringBuilder(),
             addedColumnIds = [],
             visibleColumnIds = this._runtime.dataContexts.columnsDataContext.visibleColumnIds(),
             front = renderRange.front(),
@@ -504,20 +411,11 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
                     contentElement: null,
                 };
 
-                html.append('<div class="msoc-list-table-header-cell msoc-list-table-header-cell-');
-                html.append(columnId);
+                html.context().columnId = columnId;
 
-                html.append('" data-columnId="');
-                html.append(columnId);
-                html.append('">');
-                html.append('<div class="msoc-list-table-header-cell-content msoc-list-table-header-cell-content-');
-                html.append(columnId);
-                html.append('">');
-                html.append('</div>');
-                html.append('<div class="msoc-list-table-header-cell-v-border msoc-list-table-header-cell-v-border-');
-                html.append(columnId);
-                html.append('"></div>');
-
+                html.append('<div class="msoc-list-table-header-cell msoc-list-table-header-cell-$columnId" data-columnId="$columnId">');
+                html.append('<div class="msoc-list-table-header-cell-content msoc-list-table-header-cell-content-$columnId"></div>');
+                html.append('<div class="msoc-list-table-header-cell-v-border msoc-list-table-header-cell-v-border-$columnId"></div>');
                 html.append('<div class="msoc-list-table-header-cell-splitter msoc-list-table-header-cell-splitter-front"></div>');
                 html.append('<div class="msoc-list-table-header-cell-splitter msoc-list-table-header-cell-splitter-end"></div>');
                 html.append('</div>');
@@ -531,12 +429,12 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
         if (headerCellHtml.length > 0) {
             headerMainCanvas[0].insertAdjacentHTML('beforeend', headerCellHtml);
 
-            var headerCellContentElements = headerMainCanvas.find('> .msoc-list-table-header-cell > .msoc-list-table-header-cell-content');
+            var contentElements = headerMainCanvas.find('> .msoc-list-table-header-cell > .msoc-list-table-header-cell-content');
 
             for (var i = 0; i < addedColumnIds.length; i++) {
                 var columnId = addedColumnIds[i];
 
-                context.headerCells[columnId].contentElement = headerCellContentElements[headerCellContentElements.length - addedColumnIds.length + i];
+                context.headerCells[columnId].contentElement = contentElements[contentElements.length - addedColumnIds.length + i];
             }
         }
 
@@ -549,9 +447,9 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
 
                 render.render({
                     columnId: columnId,
-                    column: column.raw,
+                    column: column,
                     element: context.headerCells[columnId].contentElement,
-                    data: column.raw.data,
+                    data: column.data,
                     // height: rect.height,
                     // width: rect.width,
                     rtl: this._runtime.direction.rtl(),
@@ -564,7 +462,7 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
     }
 
     private _renderCellWorker(context) {
-        var html = new Microsoft.Office.Controls.Fundamental.StringBuilder(),
+        var html = new Fundamental.StringBuilder(),
             renderRange = this._renderRange;
 
         if (!renderRange.isValid()) {
@@ -581,30 +479,22 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
             var rowId = this._runtime.dataContexts.rowsDataContext.getRowIdByIndex(rowIndex),
                 painted = false;
 
+            html.context().rowId = rowId;
+
             if (!context.renderedRows[rowId]) {
                 context.renderedRows[rowId] = {
                     state: RenderState.Initial,
-                    front: NaN,
-                    end: NaN,
                     rowElement: null,
                     renderedCells: {},
                 };
             }
 
             if (context.renderedRows[rowId].state == RenderState.Initial) {
-                html.append('<div class="msoc-list-row-');
-                html.append(rowId);
-
-                if (row.rowIndex % 2 == 1) {
-                    html.append(' msoc-list-odd');
+                if (rowIndex % 2 == 1) {
+                    html.append('<div class="msoc-list-row msoc-list-row-$rowId msoc-list-odd" data-rowId="$rowId">');
                 } else {
-                    html.append(' msoc-list-even');
+                    html.append('<div class="msoc-list-row msoc-list-row-$rowId msoc-list-even" data-rowId="$rowId">');
                 }
-
-                html.append('"');
-                html.append(' data-rowId="');
-                html.append(rowId);
-                html.append('">');
 
                 if (rowIndex != this._runtime.dataContexts.rowsDataContext.rowCount() - 1) {
                     html.append('<div class="msoc-list-table-row-border"></div>');
@@ -623,32 +513,24 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
             var front = renderRange.front();
             var end = renderRange.end();
 
-            html = new Microsoft.Office.Controls.Fundamental.StringBuilder();
+            html = new Fundamental.StringBuilder();
             var addedColumnIds = [];
 
             for (var columnIndex = front; columnIndex <= end; columnIndex++) {
                 var columnId = this._runtime.dataContexts.columnsDataContext.getColumnIdByIndex(columnIndex),
                     column = this._runtime.dataContexts.columnsDataContext.getColumnById(columnId);
 
+                html.context().columnId = columnId;
+                html.context().rowId = rowId;
+
                 if (!renderedCells[columnId]) {
                     renderedCells[columnId] = {
                         state: RenderState.Initial,
-                        cellContentElement: null,
+                        contentElement: null,
                     };
 
-                    html.append('<div class="msoc-list-table-cell msoc-list-table-cell-');
-                    html.append(columnId);
-                    html.append('"');
-                    html.append(' data-rowId="');
-                    html.append(rowId);
-                    html.append('"');
-                    html.append(' data-columnId="');
-                    html.append(columnId);
-                    html.append('">');
-                    html.append('<div class="msoc-list-table-cell-content msoc-list-table-cell-content-');
-                    html.append(columnId);
-                    html.append('">');
-                    html.append('</div>');
+                    html.append('<div class="msoc-list-table-cell msoc-list-table-cell-$columnId" data-rowId="$rowId" data-columnId="$columnId">');
+                    html.append('<div class="msoc-list-table-cell-content msoc-list-table-cell-content-$columnId"></div>');
                     html.append('</div>');
 
                     addedColumnIds.push(columnId);
@@ -660,12 +542,12 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
             if (cellHtml.length > 0) {
                 rowElement[0].insertAdjacentHTML('beforeend', html.toString());
 
-                var cellContentElements = rowElement.find('> .msoc-list-table-cell > div');
+                var contentElements = rowElement.find('> .msoc-list-table-cell > div');
 
                 for (var i = 0; i < addedColumnIds.length; i++) {
                     var columnId = addedColumnIds[i];
 
-                    renderedCells[columnId].cellContentElement = cellContentElements[cellContentElements.length - addedColumnIds.length + i];
+                    renderedCells[columnId].contentElement = contentElements[contentElements.length - addedColumnIds.length + i];
                 }
 
                 painted = true;
@@ -680,8 +562,8 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
 
                     render.render({
                         columnId: columnId,
-                        column: column.raw,
-                        element: renderedCells[columnId].cellContentElement,
+                        column: column,
+                        element: renderedCells[columnId].contentElement,
                         cellData: row[column.field],
                         // height: rect.height,
                         // width: rect.width,
@@ -696,6 +578,57 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
 
             if (painted) {
                 return true;
+            }
+        }
+    }
+
+    private _removeCellWorker(context) {
+        for (var rowId in context.renderedRows) {
+            var rowIndex = this._runtime.dataContexts.rowsDataContext.getRowIndexById(rowId),
+                row = this._runtime.dataContexts.rowsDataContext.getRowById(rowId);
+
+            if (!row) {
+                // In the case a row has been deleted from table
+                var rowElement = context.renderedRows[rowId].rowElement;
+
+                if (rowElement) {
+                    rowElement.remove();
+                }
+
+                delete context.renderedRows[rowId];
+                return true;
+            } else if (rowIndex < this._renderRange.top() || rowIndex > this._renderRange.bottom()) {
+                // The row is not showed in the render area
+                var rowElement = context.renderedRows[rowId].rowElement;
+
+                if (rowElement) {
+                    rowElement.remove();
+                }
+
+                delete context.renderedRows[rowId];
+                return true;
+            } else {
+                var renderedCells = context.renderedRows[rowId].renderedCells;
+                var removed = false;
+
+                for (var columnId in renderedCells) {
+                    var columnIndex = this._runtime.dataContexts.columnsDataContext.getColumnIndexById(columnId);
+
+                    if (columnIndex < this._renderRange.front() || columnIndex > this._renderRange.end()) {
+                        var contentElement = renderedCells[columnId].contentElement;
+
+                        if (contentElement) {
+                            $(contentElement).parent().remove();
+                        }
+
+                        delete renderedCells[columnId];
+                        removed = true;
+                    }
+                }
+
+                if (removed) {
+                    return true;
+                }
             }
         }
     }
