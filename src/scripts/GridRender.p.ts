@@ -7,6 +7,7 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
     private _renderingScheduler;
     private _layoutStylesheetUpdater;
     private _cellStylesheetUpdater;
+    private _rowTopStylesheetUpdater;
     private _updaters;
     private _renderRange;
     private _viewportScrollCoordinate;
@@ -20,6 +21,7 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
             this._renderingScheduler = null;
             this._layoutStylesheetUpdater = null;
             this._cellStylesheetUpdater = null;
+            this._rowTopStylesheetUpdater = null;
             this._updaters = null;
             this._viewportScrollCoordinate = null;
         });
@@ -46,6 +48,11 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
         this._updaters.add(this._cellStylesheetUpdater.getUpdater());
 
         this._updaters.add(this._getRenderRangeUpdater());
+
+        this.disposer.addDisposable(this._rowTopStylesheetUpdater = new Fundamental.DynamicStylesheetUpdater('msoc-list-render-row-top-' + this._runtime.id));
+        this._rowTopStylesheetUpdater.add(() => this._getRowTopStylesheet());
+        this._updaters.add(this._rowTopStylesheetUpdater.getUpdater());
+
 
         var renderContext = {
             headerCells: [],
@@ -225,9 +232,6 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
 
         this._runtime.buildCssRootSelector(cssText);
         cssText.push('.msoc-list-row');
-        cssText.property('height', rowHeight, 'px');
-        cssText.property('line-height', rowHeight, 'px');
-        cssText.property('width', '100', '%');
 
         this._runtime.buildCssRootSelector(cssText);
         cssText.append('.msoc-list-table-row-border');
@@ -245,11 +249,11 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
         cssText.property('height', rowHeight, 'px');
 
         this._runtime.buildCssRootSelector(cssText);
-        cssText.push('.msoc-list-row.msoc-list-odd');
+        cssText.push('.msoc-list-odd');
         cssText.property('background-color', oddRowBackgroundColor);
 
         this._runtime.buildCssRootSelector(cssText);
-        cssText.push('.msoc-list-row.msoc-list-even');
+        cssText.push('.msoc-list-even');
         cssText.property('background-color', evenRowBackgroundColor);
 
         this._runtime.buildCssRootSelector(cssText);
@@ -312,6 +316,37 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
         return cssText.toString();
     }
 
+    private _getRowTopStylesheet() {
+        var renderRange = this._renderRange,
+            cssText = new Microsoft.Office.Controls.Fundamental.CssTextBuilder(),
+            rowHeight = this._runtime.theme.value('table.rowHeight'),
+            cellHBorder = this._runtime.theme.value('table.cellHBorder');
+
+        if (!renderRange.isValid()) {
+            return '';
+        }
+
+        for (var rowIndex = renderRange.top(); rowIndex <= renderRange.bottom(); rowIndex++) {
+            var row = this._runtime.dataContexts.rowsDataContext.getRowByIndex(rowIndex),
+                rowId = this._runtime.dataContexts.rowsDataContext.getRowIdByIndex(rowIndex);
+
+            if (!row) {
+                continue;
+            }
+
+            this._runtime.buildCssRootSelector(cssText);
+            cssText.push('.msoc-list-row-');
+            cssText.push(rowId);
+            cssText.property('height', rowHeight, 'px');
+            cssText.property('line-height', rowHeight, 'px');
+            cssText.property('width', '100', '%');
+            cssText.property('top', rowIndex * rowHeight + rowIndex * cellHBorder.width, 'px');
+            cssText.property('display', 'block');
+        }
+
+        return cssText.toString();
+    }
+
     private _getLayoutStylesheet() {
         var cssText = new Microsoft.Office.Controls.Fundamental.CssTextBuilder(),
             headerBottomBorderHeight = this._runtime.theme.value('table.headerBottomBorder').width,
@@ -365,10 +400,16 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
 
     private _getRenderRangeUpdater() {
         var __getRenderRange = () => {
+            var visibleColumnIds = this._runtime.dataContexts.columnsDataContext.visibleColumnIds(),
+                rowCount = this._runtime.dataContexts.rowsDataContext.rowCount();
+
+            if (visibleColumnIds.length == 0 || rowCount == 0) {
+                return Range.Null;
+            }
+
             var topRowIndex,
                 bottomRowIndex,
                 columnFront = 0,
-                visibleColumnIds = this._runtime.dataContexts.columnsDataContext.visibleColumnIds(),
                 frontColumnIndex = 0,
                 front = 0,
                 rowHeight = this._runtime.theme.value('table.rowHeight'),
@@ -551,7 +592,7 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
             }
 
             if (context.renderedRows[rowId].state == RenderState.Initial) {
-                html.append('<div class="msoc-list-row msoc-list-table-row-');
+                html.append('<div class="msoc-list-row-');
                 html.append(rowId);
 
                 if (row.rowIndex % 2 == 1) {
@@ -641,7 +682,7 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
                         columnId: columnId,
                         column: column.raw,
                         element: renderedCells[columnId].cellContentElement,
-                        cellData: row[column.raw.field],
+                        cellData: row[column.field],
                         // height: rect.height,
                         // width: rect.width,
                         rtl: this._runtime.direction.rtl(),
