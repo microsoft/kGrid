@@ -15,9 +15,9 @@ export class RowsDataContext {
             this._rowIndex2IdMap = null;
             this._rowId2IndexMap = null;
             this._rows = null;
-            this._rowCount = 0;
         });
 
+        this._rowCount = 0;
         this._lastRowId = 0;
         this._rowIndex2IdMap = [];
         this._rowId2IndexMap = [];

@@ -50,13 +50,13 @@ require.config({
             deps: [
                 'jquery',
                 'css!lib/bootstrap/css/bootstrap.min.css',
-                'css!lib/bootstrap/css/lib/bootstrap-theme.min.css'
+                'css!lib/bootstrap/css/bootstrap-theme.min.css'
             ],
         },
     }
 });
 
-require(['js/listcontrol', 'js/enhancedlistcontrol', /* 'DataPicker' */, 'jqueryui', 'Bootstrap'], function (listcontrol, enhancedlistcontrol) {
+require(['js/listcontrol', /* 'js/enhancedlistcontrol' */, /* 'DataPicker' */, 'jqueryui', 'Bootstrap'], function (listcontrol) {
     var columnCount = 1000;
 
     var testData = [
@@ -286,6 +286,22 @@ require(['js/listcontrol', 'js/enhancedlistcontrol', /* 'DataPicker' */, 'jquery
         }
     });
 
+    var button = $('<button id="animate">animate</button>');
+    $(document.body).append(button);
+
+    button.on('click', () => {
+        // dynamicStylesheet1.content("button#animate { width: 200px; }");
+        dynamicStylesheet1.content("button#animate { transition: width 4s; width: 200px; }");
+        window.setTimeout(() => console.log($('#animate').width()), 2000);
+    });
+
+    var dynamicStylesheet = new listcontrol.Fundamental.DynamicStylesheet("test");
+    var dynamicStylesheet1 = new listcontrol.Fundamental.DynamicStylesheet("test1");
+
+    // dynamicStylesheet.content("button#animate { transition: width 2s; }");
+    dynamicStylesheet1.content("button#animate { width: 100px; }");
+    // dynamicStylesheet1.content("button#animate { transition: width 2s; width: 100px; }");
+
     function generateRow(id, waitingResolver?, requestorResolver?) {
         var row = { Id: id, Stage: 'Done', Waiting: { status: 'busy', rawValue: 'Rachel Falzone ' + id, resolver: waitingResolver }, Requestor: { status: 'away', rawValue: 'Todd The Builder ' + id, resolver: requestorResolver }, 'ActiveDate': '2014-09-30', StartDate: '2 days ago', Action: 'Poke' };
 
@@ -298,11 +314,9 @@ require(['js/listcontrol', 'js/enhancedlistcontrol', /* 'DataPicker' */, 'jquery
 
     function createControl() {
         listControlObject = new listcontrol.Grid(listControlElement[0]);
-        var columnsDataContext = new listcontrol.ColumnsDataContext();
-        var rowsDataContext = new listcontrol.RowsDataContext();
-
-        listControlObject.rowsDataContext(rowsDataContext);
-        listControlObject.columnsDataContext(columnsDataContext);
+        // listControlObject = listcontrol.Grid.create(listControlElement[0]);
+        var columnsDataContext = listControlObject.columnsDataContext();
+        var rowsDataContext = listControlObject.rowsDataContext();
 
         var columnIds = columnsDataContext.addColumns([
             {

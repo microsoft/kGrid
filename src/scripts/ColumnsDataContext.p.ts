@@ -49,6 +49,10 @@ export class ColumnsDataContext {
             this._visibleColumnIds.push(columnId);
         }
 
+        if (columnDefinitions.length > 0) {
+            this._events.emit('visibleColumnIdsChange', this, this._visibleColumnIds);
+        }
+
         return columnIds;
     }
 
@@ -108,24 +112,26 @@ export class ColumnsDataContext {
         }
 
         this._visibleColumnIds.splice(columnIndex, 1);
+        this._events.emit('visibleColumnIdsChange', this, this._visibleColumnIds);
         // this._runtime.selection.remove(new Range(RangeType.Column, NaN, NaN, columnIndex, columnIndex));
         // this._updateColumnPosition();
         // this._invalidateHeader();
         // this._runtime.updateUI(1);
     }
 
-    private showColumnByIndex(columnIndex, columnUniqueId) {
+    private showColumnByIndex(columnIndex, columnId) {
         if (columnIndex < 0 || columnIndex > this._visibleColumnIds.length) {
             throw Microsoft.Office.Controls.Fundamental.createError(0, 'ColumnsDataContext', 'Invalidate columnIndex:' + columnIndex + ', validate range is [0, ' + this._visibleColumnIds.length + ']');
         }
 
-        var column = this._columns[columnUniqueId];
+        var column = this._columns[columnId];
 
         if (!column) {
-            throw Microsoft.Office.Controls.Fundamental.createError(0, 'ColumnsDataContext', 'Column with id ' + columnUniqueId + ' does not exist');
+            throw Microsoft.Office.Controls.Fundamental.createError(0, 'ColumnsDataContext', 'Column with id ' + columnId + ' does not exist');
         }
 
-        this._visibleColumnIds.splice(columnIndex, 0, columnUniqueId);
+        this._visibleColumnIds.splice(columnIndex, 0, columnId);
+        this._events.emit('visibleColumnIdsChange', this, this._visibleColumnIds);
         // this._runtime.selection.insert(new Range(RangeType.Column, NaN, NaN, columnIndex, columnIndex));
         // this._updateColumnPosition();
         // this._invalidateHeader();
@@ -140,10 +146,10 @@ export class ColumnsDataContext {
     //     var cellVBorderWidth = this._options.theme.value('table.cellVBorder').width, accumulateFront = 0;
 
     //     for (var i = 0; i < this._visibleColumnMap.length; i++) {
-    //         var columnUniqueId = this._visibleColumnMap[i], column = this._options.columns[columnUniqueId];
+    //         var columnId = this._visibleColumnMap[i], column = this._options.columns[columnId];
 
     //         column.table.front = accumulateFront;
-    //         accumulateFront += this.getColumnWidth(columnUniqueId) + cellVBorderWidth;
+    //         accumulateFront += this.getColumnWidth(columnId) + cellVBorderWidth;
     //     }
 
     //     this._renderRangeUpdater.update();

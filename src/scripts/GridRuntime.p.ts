@@ -1,22 +1,18 @@
 export class GridRuntime {
-    public container;
-    public dataContexts;
-    public direction;
-    public elements;
-    public events;
-    public height;
     public id;
-    public invoker;
     public rootClass;
+    public container;
     public rootElement;
-    public selectionMode;
-    public theme;
+    public dataContexts;
+    public features;
+    public events;
+    public invoker;
+
+    public direction;
     public width;
-    public renderingScheduler;
-    public uiValues;
-    public updaters;
-    public dynamicStylesheetUpdater;
-    public renderRange;
-    public viewportScrollCoordinate;
+    public height;
+    public theme;
+
+    public selectionMode;
 }
 
