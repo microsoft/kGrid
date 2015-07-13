@@ -13,13 +13,12 @@ export class Theme {
     };
     private _html;
     private _id;
-    private _direction;
     public values;
+    public texts;
 
-    constructor(html, id, direction) {
+    constructor(html, id) {
         this._html = html;
         this._id = id;
-        this._direction = false;
         this.values = {};
     }
 
@@ -34,16 +33,17 @@ export class Theme {
         var cssTexts = this._match(themeElement.find('*').addBack());
 
         this._parseCssText(cssTexts);
-        alert(JSON.stringify(this.values, null, 2));
 
         themeElement.remove();
     }
 
     private _parseCssText(cssTexts) {
         this.values = {};
+        this.texts = {}
 
         for (var prefix in cssTexts) {
             var cssStyles = cssTexts[prefix].split(';');
+            var cssStyleMap = {};
 
             for (var index in cssStyles) {
                 var cssStyle = cssStyles[index].trim();
@@ -54,8 +54,22 @@ export class Theme {
 
                 var cssStyleName = cssStyle.substring(0, cssStyle.indexOf(':')).trim(),
                     cssStyleValue = cssStyle.substring(cssStyle.indexOf(':') + 1).trim();
+                cssStyleMap[cssStyleName] = cssStyleValue;
+            }
+
+            var directions = { 'top': 0, 'right': 0, 'bottom': 0, 'left': 0 };
+
+            for (var direction in directions) {
+                if (cssStyleMap['border-' + direction + '-width'] && cssStyleMap['border-' + direction + '-style'] && cssStyleMap['border-' + direction + '-color']) {
+                    cssStyleMap['border-' + direction] = cssStyleMap['border-' + direction + '-width'] + ' ' + cssStyleMap['border-' + direction + '-style'] + ' ' + cssStyleMap['border-' + direction + '-color'];
+                }
+            }
+
+            for (var cssStyleName in cssStyleMap) {
+                var cssStyleValue = cssStyleMap[cssStyleName];
 
                 this.values[prefix + cssStyleName] = this._parseStyle(cssStyleName, cssStyleValue);
+                this.texts[prefix + cssStyleName] = this.values[prefix + cssStyleName].text;
             }
         }
     }
@@ -101,10 +115,11 @@ export class Theme {
         }
 
         return {
-            width: parseInt(width),
+            width: width,
+            number: parseInt(width),
             style: style,
             color: color,
-            text: parts[0] + ' ' + parts[1] + ' ' + parts[2],
+            text: width + ' ' + style + ' ' + color,
         };
     }
 

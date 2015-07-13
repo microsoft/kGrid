@@ -7,8 +7,7 @@ export class TextTransformer {
     }
 
     public transform(text, cache = true) {
-        var re = /\${([^}]+)}|\$([a-zA-Z0-9]+)/g,
-            funcStr = 'new Function(',
+        var funcStr = 'new Function(',
             funcArgNames = ['"$expr"'],
             funcArgs = [null],
             funcBody,

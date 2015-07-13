@@ -310,7 +310,7 @@ require(['js/listcontrol', /* 'js/enhancedlistcontrol' */, /* 'DataPicker' */, '
     $(document.body).append(button);
 
     button.on('click', () => {
-        var theme = new listcontrol.Fundamental.Theme('<div prefix="kGrid."><div class="content" prefix="kGrid.content."><div class="selection" prefix="kGrid.content.selection."></div><div class="cell" prefix="kGrid.content.cell."></div><div class="row" prefix="kGrid.content.row."></div><div class="row alternate" prefix="kGrid.content.row:alternate."></div><div class="row hover" prefix="kGrid.content.row:hover."></div></div><div class="header" prefix="kGrid.header."><div class="row" prefix="kGrid.header.row."></div><div class="cell" prefix="kGrid.header.cell."></div></div></div>', 'kGrid');
+        var theme = new listcontrol.Fundamental.Theme('<div prefix=""><div class="content" prefix="content."><div class="selection" prefix="content.selection."></div><div class="cell" prefix="content.cell."></div><div class="row" prefix="content.row."></div><div class="row alternate" prefix="content.row:alternate."></div><div class="row hover" prefix="content.row:hover."></div></div><div class="header" prefix="header."><div class="row" prefix="header.row."></div><div class="cell" prefix="header.cell."></div></div></div>', 'kGrid');
 
         theme.load('default');
     });
