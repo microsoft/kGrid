@@ -5,7 +5,9 @@ export class GridSelection implements Fundamental.IFeature, Fundamental.IDisposa
     private _selection;
     private _updaters;
     private _cursorUpdater;
+    private _selectionUpdater;
     private _positionService : IGridPosition;
+    private _selectionStylesheet;
     private _elementService : IGridElement;
 
     public constructor() {
@@ -35,7 +37,9 @@ export class GridSelection implements Fundamental.IFeature, Fundamental.IDisposa
         this.selectionMode(SelectionMode.Range);
 
         this.disposer.addDisposable(this._updaters = new Microsoft.Office.Controls.Fundamental.UpdaterGroup());
+        this.disposer.addDisposable(this._selectionStylesheet = new Microsoft.Office.Controls.Fundamental.DynamicStylesheet('msoc-list-selection-' + this._runtime.id));
         this._updaters.add(this._cursorUpdater = this._getCursorUpdater());
+        this._updaters.add(this._selectionUpdater = this._getSelectionUpdater());
 
         this._selection.rowCount(this._runtime.dataContexts.rowsDataContext.rowCount());
         this._selection.columnCount(this._runtime.dataContexts.columnsDataContext.visibleColumnIds().length);
@@ -138,5 +142,144 @@ export class GridSelection implements Fundamental.IFeature, Fundamental.IDisposa
                 }
             });
     }
+
+    private _getSelectionUpdater() {
+        return new Microsoft.Office.Controls.Fundamental.Updater(
+            () => {
+                var rowIdMap = {},
+                    rowIds = [],
+                    columnIdMap = {},
+                    columnIds = [],
+                    ranges = this._selection.ranges(),
+                    visibleColumnIds = this._runtime.dataContexts.columnsDataContext.visibleColumnIds();
+
+                for (var rangeIndex = 0; rangeIndex < ranges.length; rangeIndex++) {
+                    var range = ranges[rangeIndex];
+
+                    if (range.type() == RangeType.Row || range.type() == RangeType.Range) {
+                        for (var rowIndex = range.top(); rowIndex <= range.bottom(); rowIndex++) {
+                            var rowId = this._runtime.dataContexts.rowsDataContext.getRowIdByIndex(rowIndex);
+
+                            if (rowId) {
+                                rowIdMap[rowId] = 1;
+                            }
+                        }
+                    }
+
+                    if (range.type() == RangeType.Column || range.type() == RangeType.Range) {
+                        for (var columnIndex = range.front(); columnIndex <= range.end(); columnIndex++) {
+                            columnIdMap[visibleColumnIds[columnIndex]] = 1;
+                        }
+                    }
+                }
+
+                for (var rowId in rowIdMap) {
+                    rowIds.push(rowId);
+                }
+
+                rowIds.sort();
+
+                for (var columnId in columnIdMap) {
+                    columnIds.push(columnId);
+                }
+
+                columnIds.sort();
+
+                return {
+                    ranges: this._selection.ranges(),
+                    rowIds: rowIds,
+                    columnIds: columnIds,
+                    rtl: this._runtime.direction.rtl(),
+                    color: this._runtime.theme.texts['content.selection.background-color'],
+                }
+            },
+            (newValue) => {
+                var selectedRanges = newValue.ranges,
+                    cssText = new Microsoft.Office.Controls.Fundamental.CssTextBuilder(),
+                    color = newValue.color,
+                    visibleColumnIds = this._runtime.dataContexts.columnsDataContext.visibleColumnIds();
+
+                for (var i = 0; i < selectedRanges.length; i++) {
+                    var range = selectedRanges[i];
+
+                    switch (range.type()) {
+                        case RangeType.Row:
+                            for (var rowIndex = range.top(); rowIndex <= range.bottom(); rowIndex++) {
+                                var rowId = this._runtime.dataContexts.rowsDataContext.getRowIdByIndex(rowIndex);
+
+                                if (!rowId) {
+                                    continue;
+                                }
+
+                                this._runtime.buildCssRootSelector(cssText);
+                                cssText.push('.msoc-list-row.msoc-list-table-row-');
+                                cssText.push(rowId);
+                                cssText.push(',');
+                                this._runtime.buildCssRootSelector(cssText);
+                                cssText.push('.msoc-list-row.msoc-list-table-row-');
+                                cssText.push(rowId);
+                                cssText.push('>.msoc-list-table-cell,');
+                                this._runtime.buildCssRootSelector(cssText);
+                                cssText.push('.msoc-list-row.msoc-list-table-row-');
+                                cssText.push(rowId);
+                                cssText.push(':hover>.msoc-list-table-cell');
+                                cssText.property('background-color', color);
+                            }
+
+                            break;
+
+                        case RangeType.Column:
+                            for (var columnIndex = range.front(); columnIndex <= range.front(); columnIndex++) {
+                                var columnId = visibleColumnIds[columnIndex];
+
+                                this._runtime.buildCssRootSelector(cssText);
+                                cssText.push('.msoc-list-header-canvas>.msoc-list-table-header-cell-');
+                                cssText.push(columnId);
+                                cssText.push(',');
+                                this._runtime.buildCssRootSelector(cssText);
+                                cssText.push('.msoc-list-row>.msoc-list-table-cell-');
+                                cssText.push(columnId);
+                                cssText.push(',');
+                                this._runtime.buildCssRootSelector(cssText);
+                                cssText.push('.msoc-list-row>.msoc-list-table-cell-');
+                                cssText.push(columnId);
+                                cssText.push(':hover');
+                                cssText.property('background-color', color);
+                            }
+
+                            break;
+
+                        case RangeType.Range:
+                            for (var rowIndex = range.top(); rowIndex <= range.bottom(); rowIndex++) {
+                                for (var columnIndex = range.front(); columnIndex <= range.end(); columnIndex++) {
+                                    var columnId = visibleColumnIds[columnIndex],
+                                        rowId = this._runtime.dataContexts.rowsDataContext.getRowIdByIndex(rowIndex);
+
+                                    if (!rowId) {
+                                        continue;
+                                    }
+
+                                    this._runtime.buildCssRootSelector(cssText);
+                                    cssText.push('.msoc-list-row.msoc-list-table-row-');
+                                    cssText.push(rowId);
+                                    cssText.push('>.msoc-list-table-cell-');
+                                    cssText.push(columnId);
+                                    cssText.push(',');
+                                    this._runtime.buildCssRootSelector(cssText);
+                                    cssText.push('.msoc-list-row.msoc-list-table-row-');
+                                    cssText.push(rowId);
+                                    cssText.push(':hover>.msoc-list-table-cell-');
+                                    cssText.push(columnId);
+                                    cssText.property('background-color', color);
+                                }
+                            }
+                            break;
+                    }
+                }
+
+                this._selectionStylesheet.content(cssText.toString());
+            });
+    }
+
 }
 
