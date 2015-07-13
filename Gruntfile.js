@@ -214,6 +214,7 @@ module.exports = function(grunt) {
                     'src/scripts/fundamental/StringBuilder.p.ts',
                     'src/scripts/fundamental/TextDirection.p.ts',
                     'src/scripts/fundamental/TextTransformer.p.ts',
+                    'src/scripts/fundamental/Theme.p.ts',
                     'src/scripts/fundamental/Updater.p.ts',
                     'src/scripts/fundamental/UpdaterGroup.p.ts',
                     'src/scripts/fundamental/tail.p.ts',

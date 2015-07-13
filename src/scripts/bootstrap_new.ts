@@ -290,21 +290,30 @@ require(['js/listcontrol', /* 'js/enhancedlistcontrol' */, /* 'DataPicker' */, '
         }
     });
 
-    var button = $('<button id="animate">animate</button>');
+    //var button = $('<button id="animate">animate</button>');
+    //$(document.body).append(button);
+
+    //button.on('click', () => {
+    //    // dynamicStylesheet1.content("button#animate { width: 200px; }");
+    //    dynamicStylesheet1.content("button#animate { transition: width 4s; width: 200px; }");
+    //    window.setTimeout(() => console.log($('#animate').width()), 2000);
+    //});
+
+    //var dynamicStylesheet = new listcontrol.Fundamental.DynamicStylesheet("test");
+    //var dynamicStylesheet1 = new listcontrol.Fundamental.DynamicStylesheet("test1");
+
+    // dynamicStylesheet.content("button#animate { transition: width 2s; }");
+    // dynamicStylesheet1.content("button#animate { width: 100px; }");
+    // dynamicStylesheet1.content("button#animate { transition: width 2s; width: 100px; }");
+
+    var button = $('<button id="matchcss">match css</button>');
     $(document.body).append(button);
 
     button.on('click', () => {
-        // dynamicStylesheet1.content("button#animate { width: 200px; }");
-        dynamicStylesheet1.content("button#animate { transition: width 4s; width: 200px; }");
-        window.setTimeout(() => console.log($('#animate').width()), 2000);
+        var theme = new listcontrol.Fundamental.Theme('<div prefix="kGrid."><div class="content" prefix="kGrid.content."><div class="selection" prefix="kGrid.content.selection."></div><div class="cell" prefix="kGrid.content.cell."></div><div class="row" prefix="kGrid.content.row."></div><div class="row alternate" prefix="kGrid.content.row:alternate."></div><div class="row hover" prefix="kGrid.content.row:hover."></div></div><div class="header" prefix="kGrid.header."><div class="row" prefix="kGrid.header.row."></div><div class="cell" prefix="kGrid.header.cell."></div></div></div>', 'kGrid');
+
+        theme.load('default');
     });
-
-    var dynamicStylesheet = new listcontrol.Fundamental.DynamicStylesheet("test");
-    var dynamicStylesheet1 = new listcontrol.Fundamental.DynamicStylesheet("test1");
-
-    // dynamicStylesheet.content("button#animate { transition: width 2s; }");
-    dynamicStylesheet1.content("button#animate { width: 100px; }");
-    // dynamicStylesheet1.content("button#animate { transition: width 2s; width: 100px; }");
 
     function generateRow(id, waitingResolver?, requestorResolver?) {
         var row = { Id: id, Stage: 'Done', Waiting: { status: 'busy', rawValue: 'Rachel Falzone ' + id, resolver: waitingResolver }, Requestor: { status: 'away', rawValue: 'Todd The Builder ' + id, resolver: requestorResolver }, 'ActiveDate': '2014-09-30', StartDate: '2 days ago', Action: 'Poke' };
