@@ -59,7 +59,7 @@ export class RowsDataContext {
                 }
 
                 this._rows.length = this._rowIndex2IdMap.length = newValue;
-                this._events.emit('rowCountChange', this, newValue);
+                this._events.emit('rowCountChange', this, { newValue: newValue });
             },
         });
     }
@@ -90,7 +90,7 @@ export class RowsDataContext {
                 }
 
                 args.newValue = rows.slice();
-                this._events.emit('rowCountChange', this, args.newValue);
+                this._events.emit('rowCountChange', this, { newValue: args.newValue.length });
             },
         });
     }
@@ -203,7 +203,7 @@ export class RowsDataContext {
 
         this._rowCount -= count;
         this._events.emit('removeRows', this, { range: new Range(RangeType.Row, startRowIndex, startRowIndex + count - 1, NaN, NaN), });
-        this._events.emit('rowCountChange', this, this._rowCount);
+        this._events.emit('rowCountChange', this, { newValue: this._rowCount });
     }
 
     public insertRowById(rowId: number) {
@@ -267,7 +267,7 @@ export class RowsDataContext {
 
         this._rowCount += count;
         this._events.emit('insertRows', this, { range: new Range(RangeType.Row, startRowIndex, startRowIndex + rows.length - 1, NaN, NaN), });
-        this._events.emit('rowCountChange', this, this._rowCount);
+        this._events.emit('rowCountChange', this, { newValue: this._rowCount });
     }
 
     private _generateRowId() {

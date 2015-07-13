@@ -1,4 +1,8 @@
 export interface IGridPosition {
-    getRect(topRowIndex, bottomRowIndex, frontColumnIndex, endColumnIndex, type?);
+    getColumnWidthById(columnId);
+    getColumnWidthByIndex(columnIndex);
+    getRowHeightById(rowId);
+    getRowHeightByIndex(rowIndex);
+    getRect(topRowIndex, bottomRowIndex, frontColumnIndex, endColumnIndex, tag?);
 }
 

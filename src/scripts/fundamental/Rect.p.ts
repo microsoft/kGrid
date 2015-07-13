@@ -11,6 +11,5 @@ export class Rect {
         this.height = height;
         this.width = width;
     }
-
 }
 

@@ -50,14 +50,18 @@ export class ColumnsDataContext {
         }
 
         if (columnDefinitions.length > 0) {
-            this._events.emit('visibleColumnIdsChange', this, this._visibleColumnIds);
+            this._events.emit('visibleColumnIdsChange', this, { newValue: this._visibleColumnIds });
         }
 
         return columnIds;
     }
 
     public getColumnById(columnId) {
-        return this._columns[columnId].raw;
+        return this._columns[columnId] ? this._columns[columnId].raw : null;
+    }
+
+    public getColumnByIndex(columnIndex) {
+        return this.getColumnById(this.getColumnIdByIndex(columnIndex));
     }
 
     public getColumnIndexById(columnId) {

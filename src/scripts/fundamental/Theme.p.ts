@@ -1,4 +1,5 @@
 export class Theme {
+    // FIXME: see console warning and add it
     private static _StyleParserMapping = {
         'background-color': '_parser_default',
         'border': '_parser_border',
@@ -106,6 +107,7 @@ export class Theme {
                 break;
         }
 
+        // FIXME: change width to thickness?
         var width = parts.shift(),
             style = parts.shift(),
             color = parts.join(' ');
@@ -189,8 +191,6 @@ export class Theme {
 
             for (var ruleIndex in rules) {
                 var selectorText = rules[ruleIndex].selectorText;
-
-                console.log(selectorText);
 
                 if (!selectorText) {
                     continue;

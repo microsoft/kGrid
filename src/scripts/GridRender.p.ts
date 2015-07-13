@@ -12,6 +12,7 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
     private _updaters;
     private _renderRange;
     private _viewportScrollCoordinate;
+    private _positionService : IGridPosition;
 
     public constructor() {
         this.disposer = new Fundamental.Disposer(() => {
@@ -36,9 +37,16 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
         return 'gridRender';
     }
 
-    public initialize(runtime, $invoke) {
+    public inject($invoke) {
+        $invoke.inject('elementService', {
+            getFrontContentCanvas: () => this._elements.content.canvases[0],
+        });
+    }
+
+    public initialize(runtime, $invoke, positionService) {
         this._runtime = runtime;
         this._invoke = $invoke;
+        this._positionService = positionService;
         this._renderRange = Range.Null;
         this._viewportScrollCoordinate = new Fundamental.Coordinate(Fundamental.CoordinateType.ViewportRelative, 0, 0),
         this.disposer.addDisposable(this._renderingScheduler = new Fundamental.RenderingScheduler());
@@ -100,16 +108,16 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
                 '<div id="msocListScreenReader_' + runtime.id + '" class="msoc-list-screen-reader" aria-live="assertive"></div>' +
                 '<div class="msoc-list-header-viewport">' +
                     '<div class="msoc-list-canvas-container">' +
-                        '<div class="msoc-list-canvas"></div>' +
+                        '<div class="msoc-list-canvas msoc-list-front"></div>' +
                         '<div class="msoc-list-canvas msoc-list-canvas-primary"></div>' +
-                        '<div class="msoc-list-canvas"></div>' +
+                        '<div class="msoc-list-canvas msoc-list-back"></div>' +
                     '</div>' +
                 '</div>' +
                 '<div class="msoc-list-content-viewport">' +
                     '<div class="msoc-list-canvas-container">' +
-                        '<div class="msoc-list-canvas"></div>' +
+                        '<div class="msoc-list-canvas msoc-list-front"></div>' +
                         '<div class="msoc-list-canvas msoc-list-canvas-primary"></div>' +
-                        '<div class="msoc-list-canvas"></div>' +
+                        '<div class="msoc-list-canvas msoc-list-back"></div>' +
                     '</div>' +
                 '</div>' +
             '</div>');
@@ -127,13 +135,13 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
             header: {
                 viewport: header[0],
                 container: header.find('>.msoc-list-canvas-container')[0],
-                canvas: header.find('.msoc-list-canvas')[0],
+                canvases: header.find('.msoc-list-canvas'),
                 mainCanvas: header.find('.msoc-list-canvas')[1],
             },
             content: {
                 viewport: content[0],
                 container: content.find('>.msoc-list-canvas-container')[0],
-                canvas: content.find('.msoc-list-canvas')[0],
+                canvases: content.find('.msoc-list-canvas'),
                 mainCanvas: content.find('.msoc-list-canvas')[1],
             },
         };
@@ -198,13 +206,6 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
             });
     }
 
-    private _getColumnWidthById(columnId) {
-        var width = this._runtime.dataContexts.columnsDataContext.getColumnById(columnId).width;
-
-        // FIXME: default column width
-        return isNaN(width) || width < 0 ? 50 : width;
-    }
-
     private _calculateCanvasRect() {
         var visibleColumnIds = this._runtime.dataContexts.columnsDataContext.visibleColumnIds(),
             rowHeight = this._runtime.theme.values['content.row.height'].number,
@@ -216,7 +217,7 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
             height = rowCount == 0 ? 0 : rowCount * rowHeight + (rowCount - 1) * cellHBorder;
 
         for (var i = 0; i < visibleColumnIds.length; i++) {
-            width += this._getColumnWidthById(visibleColumnIds[i]);
+            width += this._positionService.getColumnWidthById(visibleColumnIds[i]);
         }
 
         return {
@@ -297,7 +298,7 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
 
         $.each(visibleColumnIds, (index, columnId) => {
             if (index >= renderRange.front() && index <= renderRange.end()) {
-                cssText.context().width = this._getColumnWidthById(columnId);
+                cssText.context().width = this._positionService.getColumnWidthById(columnId);
                 cssText.context().columnId = columnId;
                 cssText.context().frontWidth = front;
 
@@ -308,7 +309,7 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
                 }
             }
 
-            front += this._getColumnWidthById(columnId);
+            front += this._positionService.getColumnWidthById(columnId);
         });
 
         return cssText.toString();
@@ -331,6 +332,8 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
         cssText.append('.$rootClass { width: ${runtime.width}px; height: ${runtime.height}px; background-color: ${theme.texts["background-color"]}; }\n');
         cssText.append('.$rootClass .msoc-list-content-viewport { overflow: auto; position: absolute; top: ${canvas.content.top}px; $front: 0px; $end: 0px; bottom: 0px; }\n');
         cssText.append('.$rootClass .msoc-list-content-viewport .msoc-list-canvas-container { overflow: hidden; position: relative; width: ${canvas.content.width}px; height: ${canvas.content.height}px; min-width: ${minCanvasWidth}px; }\n');
+        cssText.append('.$rootClass .msoc-list-canvas.msoc-list-front { z-index: 100; }\n');
+        cssText.append('.$rootClass .msoc-list-canvas.msoc-list-back { z-index: 100; }\n');
 
         // FIXME: should put here?
         cssText.append(".$rootClass .msoc-list-row { width: ${canvas.content.width}px; min-width: ${minCanvasWidth}px; }\n");
@@ -363,7 +366,7 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
             bottomRowIndex = Math.max(0, bottomRowIndex);
 
             for (var columnIndex = 0; columnIndex < visibleColumnIds.length; columnIndex++) {
-                front += this._getColumnWidthById(visibleColumnIds[columnIndex]);
+                front += this._positionService.getColumnWidthById(visibleColumnIds[columnIndex]);
 
                 if (front <= this._viewportScrollCoordinate.front()) {
                     frontColumnIndex = columnIndex;
