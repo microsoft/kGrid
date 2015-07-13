@@ -1,6 +1,6 @@
 export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable {
     public disposer;
-    private _runtime;
+    private _runtime: GridRuntime;
     private _invoke;
     private _elements;
     private _uiValues;
@@ -30,6 +30,10 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
 
     public dispose() {
         this.disposer.dispose();
+    }
+
+    public name() {
+        return 'gridRender';
     }
 
     public initialize(runtime, $invoke) {
@@ -97,14 +101,14 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
                 '<div class="msoc-list-header-viewport">' +
                     '<div class="msoc-list-canvas-container">' +
                         '<div class="msoc-list-canvas"></div>' +
-                        '<div class="msoc-list-canvas"></div>' +
+                        '<div class="msoc-list-canvas msoc-list-canvas-primary"></div>' +
                         '<div class="msoc-list-canvas"></div>' +
                     '</div>' +
                 '</div>' +
                 '<div class="msoc-list-content-viewport">' +
                     '<div class="msoc-list-canvas-container">' +
                         '<div class="msoc-list-canvas"></div>' +
-                        '<div class="msoc-list-canvas"></div>' +
+                        '<div class="msoc-list-canvas msoc-list-canvas-primary"></div>' +
                         '<div class="msoc-list-canvas"></div>' +
                     '</div>' +
                 '</div>' +
@@ -155,10 +159,6 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
         this._attachEvents();
         this._updaters.update();
         this._renderingScheduler.start(true);
-    }
-
-    public name() {
-        return 'GridRender';
     }
 
     private _attachEvents() {
@@ -336,6 +336,8 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
         cssText.append(".$rootClass .msoc-list-row { width: ${canvas.content.width}px; min-width: ${minCanvasWidth}px; }\n");
         cssText.append('.$rootClass .msoc-list-header-viewport { overflow: hidden; position: absolute; width: 100%; height: ${canvas.content.top}px; }\n');
         cssText.append('.$rootClass .msoc-list-header-viewport .msoc-list-canvas-container { overflow: hidden; position: relative; width: ${canvas.header.width}px; height: ${canvas.header.height}px; min-width: ${minCanvasWidth}px; }\n');
+        cssText.append('.$rootClass .msoc-list-row:hover > .msoc-list-table-cell { background-color: ${theme.texts["content.row:hover.background-color"]}; }');
+
         // cssText.append('.$rootClass .msoc-list-header-viewport .msoc-list-canvas-container.msoc-list-canvas-main > .msoc-list-table-header-bottom-border');
 
         return cssText.toString();

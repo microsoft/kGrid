@@ -1,3 +1,4 @@
+// FIXME: deprecated
 export class Theme {
     public static parsePadding(text) {
         var parts = text.split(' ');

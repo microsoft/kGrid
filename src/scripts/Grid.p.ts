@@ -2,7 +2,6 @@ export class Grid {
     public disposer;
     private _runtime: GridRuntime;
     private _invoke;
-    private _events;
 
     public constructor(container, features, $invoke) {
         this.disposer = new Fundamental.Disposer(() => {
@@ -10,7 +9,7 @@ export class Grid {
         });
 
         if (!features) {
-            features = [new GridRender()];
+            features = [new GridPosition(), new GridRender(), new GridSelection()];
         }
 
         if (!$invoke) {
@@ -19,7 +18,6 @@ export class Grid {
             this._invoke = $invoke.inherit();
         }
 
-        this._events = null;
         this._runtime = new GridRuntime();
         this._runtime.width = $(container).width();
         this._runtime.height = $(container).height();
@@ -44,6 +42,10 @@ export class Grid {
 
         $.each(this._runtime.features, (index, feature) => {
             this.disposer.addDisposable(feature);
+            this._invoke.inject(feature.name, feature);
+        });
+
+        $.each(this._runtime.features, (index, feature) => {
             this._invoke.withThis(feature, feature.initialize);
         });
 
