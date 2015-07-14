@@ -1,18 +1,20 @@
 export class Selection {
     public disposer;
-    private _options;
     private _updaters;
     private _events;
+    private _ranges;
+    private _rowCount;
+    private _columnCount;
+    private _selectionMode;
+    private _cursor;
 
     constructor(selectionMode: SelectionMode = SelectionMode.SingleRow) {
         this.disposer = new Fundamental.Disposer();
-        this._options = new Fundamental.PropertyBag({
-            ranges: [],
-            rowCount: 0,
-            columnCount: 0,
-            selectionMode: selectionMode,
-            cursor: Position.Null,
-        });
+        this._ranges = [];
+        this._rowCount = 0;
+        this._columnCount = 0;
+        this._selectionMode = selectionMode;
+        this._cursor = Position.Null;
         this.disposer.addDisposable(this._events = new Fundamental.EventSite());
         this.disposer.addDisposable(this._updaters = new Microsoft.Office.Controls.Fundamental.UpdaterGroup());
         this._updaters.add(this._getSelectionChangeUpdater());
@@ -33,21 +35,22 @@ export class Selection {
     }
 
     public ranges() {
-        return this._options.ranges;
+        return this._ranges;
     }
 
     public rowCount() {
-        return this._options.$property({
-            name: 'rowCount',
+        return Fundamental.PropertyBag.property({
+            target: this,
+            name: '_rowCount',
             args: arguments,
             afterChange: () => {
-                this._options.ranges = this._normalize(this._options.ranges);
+                this._ranges = this._normalize(this._ranges);
 
-                if (!this._options.ranges) {
-                    this._options.ranges = [];
+                if (!this._ranges) {
+                    this._ranges = [];
                 }
 
-                this._options.cursor = this._normalizeCursor(this._options.cursor);
+                this._cursor = this._normalizeCursor(this._cursor);
                 this._ensureSingleSelection();
                 this._updaters.update();
             },
@@ -55,17 +58,18 @@ export class Selection {
     }
 
     public columnCount() {
-        return this._options.$property({
-            name: 'columnCount',
+        return Fundamental.PropertyBag.property({
+            target: this,
+            name: '_columnCount',
             args: arguments,
             afterChange: () => {
-                this._options.ranges = this._normalize(this._options.ranges);
+                this._ranges = this._normalize(this._ranges);
 
-                if (!this._options.ranges) {
-                    this._options.ranges = [];
+                if (!this._ranges) {
+                    this._ranges = [];
                 }
 
-                this._options.cursor = this._normalizeCursor(this._options.cursor);
+                this._cursor = this._normalizeCursor(this._cursor);
                 this._ensureSingleSelection();
                 this._updaters.update();
             },
@@ -73,8 +77,9 @@ export class Selection {
     }
 
     public cursor() {
-        return this._options.$property({
-            name: 'cursor',
+        return Fundamental.PropertyBag.property({
+            target: this,
+            name: '_cursor',
             args: arguments,
             beforeChange: (sender, args) => {
                 args.newValue = this._normalizeCursor(args.newValue);
@@ -91,12 +96,12 @@ export class Selection {
     }
 
     public rangeOfCursor() {
-        return this.rangeOfPosition(this._options.cursor);
+        return this.rangeOfPosition(this._cursor);
     }
 
     public rangeOfPosition(position) {
-        for (var index = 0; index < this._options.ranges.length; index++) {
-            var range = this._options.ranges[index];
+        for (var index = 0; index < this._ranges.length; index++) {
+            var range = this._ranges[index];
 
             switch (range.type()) {
                 case RangeType.Row:
@@ -126,11 +131,11 @@ export class Selection {
     }
 
     public moveCursor(cursorMovement: CursorMovement, pageRange?: Range) {
-        if (!this._options.cursor.isValid() || this._options.rowCount == 0 || this._options.columnCount == 0) {
+        if (!this._cursor.isValid() || this._rowCount == 0 || this._columnCount == 0) {
             return Position.Null;
         }
 
-        var rowIndex = this._options.cursor.rowIndex, columnIndex = this._options.cursor.columnIndex;
+        var rowIndex = this._cursor.rowIndex, columnIndex = this._cursor.columnIndex;
 
         switch (cursorMovement) {
             case CursorMovement.Forward:
@@ -154,7 +159,7 @@ export class Selection {
                 break;
 
             case CursorMovement.LineEnd:
-                columnIndex = this._options.columnCount - 1;
+                columnIndex = this._columnCount - 1;
                 break;
 
             case CursorMovement.PageUp:
@@ -168,7 +173,7 @@ export class Selection {
                 break;
 
             case CursorMovement.Bottom:
-                rowIndex = this._options.rowCount - 1;
+                rowIndex = this._rowCount - 1;
                 break;
 
         }
@@ -177,7 +182,7 @@ export class Selection {
     }
 
     public remove(range: Range) {
-        if (this._options.ranges.length == 0) {
+        if (this._ranges.length == 0) {
             return;
         }
 
@@ -199,12 +204,12 @@ export class Selection {
                 break;
         }
 
-        this._options.ranges.sort(Range.compare);
+        this._ranges.sort(Range.compare);
         this._updaters.update();
     }
 
     public insert(range: Range) {
-        if (this._options.ranges.length == 0) {
+        if (this._ranges.length == 0) {
             return;
         }
 
@@ -214,28 +219,28 @@ export class Selection {
 
         switch (range.type()) {
             case RangeType.Row:
-                if (range.top() <= this._options.rowCount) {
+                if (range.top() <= this._rowCount) {
                     this._insertRows(range);
                 }
                 break;
 
             case RangeType.Column:
-                if (range.front() <= this._options.columnCount) {
+                if (range.front() <= this._columnCount) {
                     this._insertColumns(range);
                 }
                 break;
         }
 
-        this._options.ranges.sort(Range.compare);
+        this._ranges.sort(Range.compare);
         this._updaters.update();
     }
 
     public deselect(range: Range) {
-        if (this._options.selectionMode == SelectionMode.SingleRow ||
-            this._options.selectionMode == SelectionMode.Cell) {
+        if (this._selectionMode == SelectionMode.SingleRow ||
+            this._selectionMode == SelectionMode.Cell) {
             throw Microsoft.Office.Controls.Fundamental.createError(0, 'Selection', 'Deny to deselect in current mode, move cursor instead');
         }
-        if (this._options.ranges.length == 0) {
+        if (this._ranges.length == 0) {
             return;
         }
 
@@ -257,7 +262,7 @@ export class Selection {
                 break;
 
             case RangeType.Range:
-                switch (this._options.ranges[0].type()) {
+                switch (this._ranges[0].type()) {
                     case RangeType.Row:
                         this._deselectRow(range);
                         break;
@@ -267,9 +272,9 @@ export class Selection {
                         break;
 
                     case RangeType.Range:
-                        for (var index = 0; index < this._options.ranges.length; index++) {
-                            if (this._options.ranges[index].equals(range)) {
-                                this._options.ranges.splice(index, 1);
+                        for (var index = 0; index < this._ranges.length; index++) {
+                            if (this._ranges[index].equals(range)) {
+                                this._ranges.splice(index, 1);
                                 return;
                             }
                         }
@@ -278,13 +283,13 @@ export class Selection {
                 break;
         }
 
-        this._options.ranges.sort(Range.compare);
+        this._ranges.sort(Range.compare);
         this._updaters.update();
     }
 
     public select(range: Range, keepSelectedRanges = true) {
-        if (this._options.selectionMode == SelectionMode.SingleRow ||
-            this._options.selectionMode == SelectionMode.Cell) {
+        if (this._selectionMode == SelectionMode.SingleRow ||
+            this._selectionMode == SelectionMode.Cell) {
             throw Microsoft.Office.Controls.Fundamental.createError(0, 'Selection', 'Deny to select in current mode, move cursor instead');
         }
         var ranges = this._normalize([range]);
@@ -296,10 +301,10 @@ export class Selection {
         range = ranges[0];
 
         if (!keepSelectedRanges) {
-            this._options.ranges = [];
+            this._ranges = [];
         }
 
-        switch (this._options.selectionMode) {
+        switch (this._selectionMode) {
             case SelectionMode.MultipleRows:
                 if (range.type() != RangeType.Row) {
                     throw Microsoft.Office.Controls.Fundamental.createError(0, 'Selection', 'invilidate range type [' + RangeType[range.type()]+ ']');
@@ -309,8 +314,8 @@ export class Selection {
                 break;
 
             case SelectionMode.Range:
-                if (this._options.ranges.length == 0 || this._options.ranges[this._options.ranges.length - 1].type() != range.type() || range.type() == RangeType.Range) {
-                    this._options.ranges = [range];
+                if (this._ranges.length == 0 || this._ranges[this._ranges.length - 1].type() != range.type() || range.type() == RangeType.Range) {
+                    this._ranges = [range];
                 } else {
                     this._merge(range);
                 }
@@ -325,32 +330,33 @@ export class Selection {
                     throw Microsoft.Office.Controls.Fundamental.createError(0, 'Selection', 'cannot select more than 1 cell');
                 }
 
-                this._options.ranges = [range];
+                this._ranges = [range];
                 break;
         }
 
-        this._options.ranges.sort(Range.compare);
+        this._ranges.sort(Range.compare);
         this._updaters.update();
     }
 
     public clear() {
-        this._options.ranges = [];
+        this._ranges = [];
         this._ensureSingleSelection();
-        this._options.ranges.sort(Range.compare);
+        this._ranges.sort(Range.compare);
         this._updaters.update();
     }
 
     public selectionMode() {
-        return this._options.$property({
-            name: 'selectionMode',
+        return Fundamental.PropertyBag.property({
+            target: this,
+            name: '_selectionMode',
             args: arguments,
             afterChange: () => this.clear()
         });
     }
 
     public rowSelected(rowIndex: number) {
-        for (var i = 0; i < this._options.ranges.length; i++) {
-            var range = this._options.ranges[i];
+        for (var i = 0; i < this._ranges.length; i++) {
+            var range = this._ranges[i];
 
             if (range.type() != RangeType.Row) {
                 return false;
@@ -365,47 +371,46 @@ export class Selection {
     }
 
     public clone() {
-        var clonedObject = new Selection(this._options.selection);
+        var clonedObject = new Selection(this._selectionMode);
 
-        clonedObject._options.ranges = this._options.ranges.slice();
-        clonedObject._options.rowCount = this._options.rowCount;
-        clonedObject._options.columnCount = this._options.columnCount;
-        clonedObject._options.selectionMode = this._options.selectionMode;
+        clonedObject._ranges = this._ranges.slice();
+        clonedObject._rowCount = this._rowCount;
+        clonedObject._columnCount = this._columnCount;
         return clonedObject;
     }
 
     private _removeRows(range) {
-        if (this._options.ranges.length == 0) {
+        if (this._ranges.length == 0) {
             return;
         }
 
         var removeTop = range.top(),
             removeBottom = range.bottom(),
-            cursorRowIndex = this._options.cursor.rowIndex,
+            cursorRowIndex = this._cursor.rowIndex,
             result = [],
             count = removeBottom - removeTop + 1;
 
 
-        if (this._options.ranges[0].type() == RangeType.Column) {
-            this._options.rowCount -= count;
+        if (this._ranges[0].type() == RangeType.Column) {
+            this._rowCount -= count;
             return;
         }
 
         if (cursorRowIndex >= removeTop && cursorRowIndex <= removeBottom) {
-            if (removeBottom == this._options.rowCount - 1) {
-                this._options.cursor = new Position(removeTop - 1, this._options.cursor.columnIndex);
+            if (removeBottom == this._rowCount - 1) {
+                this._cursor = new Position(removeTop - 1, this._cursor.columnIndex);
             } else {
-                this._options.cursor = new Position(removeTop, this._options.cursor.columnIndex);
+                this._cursor = new Position(removeTop, this._cursor.columnIndex);
             }
         } else if (cursorRowIndex > removeBottom) {
-            this._options.cursor = new Position(cursorRowIndex - count, this._options.cursor.columnIndex);
+            this._cursor = new Position(cursorRowIndex - count, this._cursor.columnIndex);
         }
 
-        if (this._options.rowCount > count) {
-            if (this._options.selectionMode == SelectionMode.MultipleRows
-                || this._options.selectionMode == SelectionMode.Range) {
-                for (var index = 0; index < this._options.ranges.length; index++) {
-                    var range = this._options.ranges[index],
+        if (this._rowCount > count) {
+            if (this._selectionMode == SelectionMode.MultipleRows
+                || this._selectionMode == SelectionMode.Range) {
+                for (var index = 0; index < this._ranges.length; index++) {
+                    var range = this._ranges[index],
                         rangeTop = range.top(),
                         rangeBottom = range.bottom();
 
@@ -428,42 +433,42 @@ export class Selection {
             }
         }
 
-        this._options.ranges = result;
+        this._ranges = result;
         this._ensureSingleSelection();
-        this._options.rowCount -= count;
+        this._rowCount -= count;
     }
 
     private _removeColumns(range) {
-        if (this._options.ranges.length == 0) {
+        if (this._ranges.length == 0) {
             return;
         }
 
         var removeFront = range.front(),
             removeEnd = range.end(),
-            cursorColumnIndex = this._options.cursor.columnIndex,
+            cursorColumnIndex = this._cursor.columnIndex,
             result = [],
             count = removeEnd - removeFront + 1;
 
-        if (this._options.ranges[0].type() == RangeType.Row) {
-            this._options.columnCount -= count;
+        if (this._ranges[0].type() == RangeType.Row) {
+            this._columnCount -= count;
             return;
         }
 
         if (cursorColumnIndex >= removeFront && cursorColumnIndex <= removeEnd) {
-            if (removeEnd == this._options.columnCount - 1) {
-                this._options.cursor = new Position(this._options.cursor.rowIndex, removeFront - 1);
+            if (removeEnd == this._columnCount - 1) {
+                this._cursor = new Position(this._cursor.rowIndex, removeFront - 1);
             } else {
-                this._options.cursor = new Position(this._options.cursor.rowIndex, removeFront);
+                this._cursor = new Position(this._cursor.rowIndex, removeFront);
             }
         } else if (cursorColumnIndex > removeEnd) {
-            this._options.cursor = new Position(this._options.cursor.rowIndex, cursorColumnIndex - count);
+            this._cursor = new Position(this._cursor.rowIndex, cursorColumnIndex - count);
         }
 
-        if (this._options.rowCount > count) {
-            if (this._options.selectionMode == SelectionMode.MultipleRows
-                || this._options.selectionMode == SelectionMode.Range) {
-                for (var index = 0; index < this._options.ranges.length; index++) {
-                    var range = this._options.ranges[index],
+        if (this._rowCount > count) {
+            if (this._selectionMode == SelectionMode.MultipleRows
+                || this._selectionMode == SelectionMode.Range) {
+                for (var index = 0; index < this._ranges.length; index++) {
+                    var range = this._ranges[index],
                         rangeFront = range.front(),
                         rangeEnd = range.end();
 
@@ -486,37 +491,37 @@ export class Selection {
             }
         }
 
-        this._options.ranges = result;
+        this._ranges = result;
         this._ensureSingleSelection();
-        this._options.columnCount -= count;
+        this._columnCount -= count;
     }
 
     private _insertRows(range) {
-        if (this._options.ranges.length == 0) {
+        if (this._ranges.length == 0) {
             return;
         }
 
         var insertTop = range.top(),
             insertBottom = range.bottom(),
-            cursorRowIndex = this._options.cursor.rowIndex,
+            cursorRowIndex = this._cursor.rowIndex,
             result = [],
             count = insertBottom - insertTop + 1;
 
-        this._options.rowCount += count;
+        this._rowCount += count;
 
-        if (this._options.ranges[0].type() == RangeType.Column) {
+        if (this._ranges[0].type() == RangeType.Column) {
             return;
         }
 
         if (cursorRowIndex >= insertTop) {
-            this._options.cursor = new Position(cursorRowIndex + count, this._options.cursor.columnIndex);
+            this._cursor = new Position(cursorRowIndex + count, this._cursor.columnIndex);
         }
 
-        if (this._options.rowCount > count) {
-            if (this._options.selectionMode == SelectionMode.MultipleRows
-                || this._options.selectionMode == SelectionMode.Range) {
-                for (var index = 0; index < this._options.ranges.length; index++) {
-                    var range = this._options.ranges[index],
+        if (this._rowCount > count) {
+            if (this._selectionMode == SelectionMode.MultipleRows
+                || this._selectionMode == SelectionMode.Range) {
+                for (var index = 0; index < this._ranges.length; index++) {
+                    var range = this._ranges[index],
                         rangeTop = range.top(),
                         rangeBottom = range.bottom();
 
@@ -533,36 +538,36 @@ export class Selection {
             }
         }
 
-        this._options.ranges = result;
+        this._ranges = result;
         this._ensureSingleSelection();
     }
 
     private _insertColumns(range) {
-        if (this._options.ranges.length == 0) {
+        if (this._ranges.length == 0) {
             return;
         }
 
         var insertFront = range.front(),
             insertEnd = range.end(),
-            cursorColumnIndex = this._options.cursor.columnIndex,
+            cursorColumnIndex = this._cursor.columnIndex,
             result = [],
             count = insertEnd - insertFront + 1;
 
-        this._options.columnCount += count;
+        this._columnCount += count;
 
-        if (this._options.ranges[0].type() == RangeType.Row) {
+        if (this._ranges[0].type() == RangeType.Row) {
             return;
         }
 
         if (cursorColumnIndex >= insertFront) {
-            this._options.cursor = new Position(this._options.cursor.rowIndex, cursorColumnIndex + count);
+            this._cursor = new Position(this._cursor.rowIndex, cursorColumnIndex + count);
         }
 
-        if (this._options.columnCount > count) {
-            if (this._options.selectionMode == SelectionMode.MultipleRows
-                || this._options.selectionMode == SelectionMode.Range) {
-                for (var index = 0; index < this._options.ranges.length; index++) {
-                    var range = this._options.ranges[index],
+        if (this._columnCount > count) {
+            if (this._selectionMode == SelectionMode.MultipleRows
+                || this._selectionMode == SelectionMode.Range) {
+                for (var index = 0; index < this._ranges.length; index++) {
+                    var range = this._ranges[index],
                         rangeFront = range.front(),
                         rangeEnd = range.end();
 
@@ -579,7 +584,7 @@ export class Selection {
             }
         }
 
-        this._options.ranges = result;
+        this._ranges = result;
         this._ensureSingleSelection();
     }
 
@@ -592,8 +597,8 @@ export class Selection {
             deselectTop = range.top(),
             deselectBottom = range.bottom();
 
-        for (var index = 0; index < this._options.ranges.length; index++) {
-            var range = this._options.ranges[index],
+        for (var index = 0; index < this._ranges.length; index++) {
+            var range = this._ranges[index],
                 rangeTop = range.top(),
                 rangeBottom = range.bottom();
 
@@ -614,7 +619,7 @@ export class Selection {
             }
         }
 
-        this._options.ranges = result;
+        this._ranges = result;
     }
 
     private _deselectColumn(range) {
@@ -626,8 +631,8 @@ export class Selection {
             deselectFront = range.front(),
             deselectEnd = range.end();
 
-        for (var index = 0; index < this._options.ranges.length; index++) {
-            var range = this._options.ranges[index],
+        for (var index = 0; index < this._ranges.length; index++) {
+            var range = this._ranges[index],
                 rangeFront = range.front(),
                 rangeEnd = range.end();
 
@@ -648,26 +653,26 @@ export class Selection {
             }
         }
 
-        this._options.ranges = result;
+        this._ranges = result;
     }
 
     private _normalizeCursor(cursor) {
-        if (this._options.rowCount == 0 || this._options.columnCount == 0) {
+        if (this._rowCount == 0 || this._columnCount == 0) {
             return Position.Null;
         }
 
-        if (cursor.rowIndex < this._options.rowCount && cursor.columnCount < this._options.columnCount) {
+        if (cursor.rowIndex < this._rowCount && cursor.columnCount < this._columnCount) {
             return cursor;
         }
 
         var rowIndex = cursor.rowIndex >= 0 && !isNaN(cursor.rowIndex) ? cursor.rowIndex : 0,
             columnIndex = cursor.columnIndex >= 0 && !isNaN(cursor.columnIndex) ? cursor.columnIndex : 0;
 
-        return new Position(Math.min(rowIndex, this._options.rowCount - 1), Math.min(columnIndex, this._options.columnCount - 1));
+        return new Position(Math.min(rowIndex, this._rowCount - 1), Math.min(columnIndex, this._columnCount - 1));
     }
 
     private _normalize(ranges: Range[]) {
-        if (this._options.rowCount == 0 || this._options.columnCount == 0) {
+        if (this._rowCount == 0 || this._columnCount == 0) {
             return;
         }
 
@@ -678,38 +683,38 @@ export class Selection {
 
             switch (range.type()) {
                 case RangeType.Row:
-                    if (range.top() >= this._options.rowCount) {
+                    if (range.top() >= this._rowCount) {
                         continue;
-                    } else if (range.bottom() < this._options.rowCount) {
+                    } else if (range.bottom() < this._rowCount) {
                         result.push(range);
                     } else {
-                        result.push(new Range(RangeType.Row, range.top(), this._options.rowCount - 1, NaN, NaN));
+                        result.push(new Range(RangeType.Row, range.top(), this._rowCount - 1, NaN, NaN));
                     }
                     break;
 
                 case RangeType.Column:
-                    if (range.front() >= this._options.columnCount) {
+                    if (range.front() >= this._columnCount) {
                         continue;
-                    } else if (range.end() < this._options.columnCount) {
+                    } else if (range.end() < this._columnCount) {
                         result.push(range);
                     } else {
-                        result.push(new Range(RangeType.Column, NaN, NaN, range.front(), this._options.columnCount - 1));
+                        result.push(new Range(RangeType.Column, NaN, NaN, range.front(), this._columnCount - 1));
                     }
                     break;
 
                 case RangeType.Range:
-                    if (range.top() >= this._options.rowCount || range.front() >= this._options.columnCount) {
+                    if (range.top() >= this._rowCount || range.front() >= this._columnCount) {
                         continue;
-                    } else if (range.bottom() < this._options.rowCount && range.end() < this._options.columnCount) {
+                    } else if (range.bottom() < this._rowCount && range.end() < this._columnCount) {
                         result.push(range);
                     } else {
                         result.push(
                             new Range(
                                 RangeType.Range,
                                 range.top(),
-                                Math.min(range.bottom(), this._options.rowCount - 1),
+                                Math.min(range.bottom(), this._rowCount - 1),
                                 range.front(),
-                                Math.min(range.end(), this._options.columnCount - 1)));
+                                Math.min(range.end(), this._columnCount - 1)));
                     }
                     break;
             }
@@ -723,11 +728,11 @@ export class Selection {
         while (merged) {
             merged = false;
 
-            for (var i = 0; i < this._options.ranges.length; i++) {
-                var union = Range.union(this._options.ranges[i], range);
+            for (var i = 0; i < this._ranges.length; i++) {
+                var union = Range.union(this._ranges[i], range);
 
                 if (union) {
-                    this._options.ranges.splice(i, 1);
+                    this._ranges.splice(i, 1);
                     range = union;
                     merged = true;
                     break;
@@ -735,21 +740,21 @@ export class Selection {
             }
         }
 
-        this._options.ranges.push(range);
+        this._ranges.push(range);
     }
 
     private _ensureSingleSelection() {
-        if (this._options.selectionMode == SelectionMode.SingleRow) {
-            if (this._options.cursor.isValid()) {
-                this._options.ranges = [new Range(RangeType.Row, this._options.cursor.rowIndex, this._options.cursor.rowIndex, NaN, NaN)];
+        if (this._selectionMode == SelectionMode.SingleRow) {
+            if (this._cursor.isValid()) {
+                this._ranges = [new Range(RangeType.Row, this._cursor.rowIndex, this._cursor.rowIndex, NaN, NaN)];
             } else {
-                this._options.ranges = [Range.Null];
+                this._ranges = [Range.Null];
             }
-        } else if (this._options.selectionMode == SelectionMode.Cell) {
-            if (this._options.cursor.isValid()) {
-                this._options.ranges = [new Range(RangeType.Range, this._options.cursor.rowIndex, this._options.cursor.rowIndex, this._options.cursor.columnIndex, this._options.cursor.columnIndex)];
+        } else if (this._selectionMode == SelectionMode.Cell) {
+            if (this._cursor.isValid()) {
+                this._ranges = [new Range(RangeType.Range, this._cursor.rowIndex, this._cursor.rowIndex, this._cursor.columnIndex, this._cursor.columnIndex)];
             } else {
-                this._options.ranges = [Range.Null];
+                this._ranges = [Range.Null];
             }
         }
     }
@@ -757,7 +762,7 @@ export class Selection {
     private _getSelectionChangeUpdater() {
         return new Microsoft.Office.Controls.Fundamental.Updater(
             () => {
-                return this._options.ranges;
+                return this._ranges;
             },
             (newValue, oldValue) => {
                 this._events.emit('selectionChange', this, { oldValue: oldValue, newValue: newValue });
@@ -767,7 +772,7 @@ export class Selection {
     private _getCursorChangeUpdater() {
         return new Microsoft.Office.Controls.Fundamental.Updater(
             () => {
-                return this._options.cursor;
+                return this._cursor;
             },
             (newValue, oldValue) => {
                 this._events.emit('cursorChange', this, { oldValue: oldValue, newValue: newValue });

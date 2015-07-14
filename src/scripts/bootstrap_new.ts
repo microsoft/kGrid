@@ -103,24 +103,22 @@ require(['js/listcontrol', /* 'js/enhancedlistcontrol' */, /* 'DataPicker' */, '
     $(document.body).append(button);
 
     button.on('click', () => {
-        listControlObject.cursor(new listcontrol.Position(4, 4));
+        listControlObject.features('selection').cursor(new listcontrol.Position(4, 4));
     });
 
     var button = $('<button>toggle selections</button>');
     $(document.body).append(button);
 
     button.on('click', () => {
-        switch (listControlObject.selectionMode()) {
+        switch (listControlObject.features('selection').selectionMode()) {
             case listcontrol.SelectionMode.MultipleRows:
-                listControlObject.select(new listcontrol.Range(listcontrol.RangeType.Row, 0, 2, -1, -1));
+                listControlObject.features('selection').select(new listcontrol.Range(listcontrol.RangeType.Row, 0, 2, -1, -1));
                 break;
 
             case listcontrol.SelectionMode.Range:
-                listControlObject.select(new listcontrol.Range(listcontrol.RangeType.Range, 0, 2, 1, 3));
+                listControlObject.features('selection').select(new listcontrol.Range(listcontrol.RangeType.Range, 0, 2, 1, 3));
                 break;
         }
-
-        listControlObject.invalidate();
     });
 
     var button = $('<button>toggle selection mode:SingleRow</button>');
@@ -129,7 +127,7 @@ require(['js/listcontrol', /* 'js/enhancedlistcontrol' */, /* 'DataPicker' */, '
     button.on('click', (event) => {
         var selectionMode;
 
-        switch (listControlObject.selectionMode()) {
+        switch (listControlObject.features('selection').selectionMode()) {
             case listcontrol.SelectionMode.SingleRow:
                 selectionMode = listcontrol.SelectionMode.MultipleRows;
                 break;
@@ -147,8 +145,7 @@ require(['js/listcontrol', /* 'js/enhancedlistcontrol' */, /* 'DataPicker' */, '
                 break;
         }
 
-        listControlObject.selectionMode(selectionMode);
-        listControlObject.invalidate();
+        listControlObject.features('selection').selectionMode(selectionMode);
         $(event.target).text('toggle selection mode:' + listcontrol.SelectionMode[selectionMode]);
     });
 

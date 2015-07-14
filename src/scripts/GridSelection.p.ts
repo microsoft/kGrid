@@ -8,7 +8,7 @@ export class GridSelection implements Fundamental.IFeature, Fundamental.IDisposa
     private _selectionUpdater;
     private _positionService : IGridPosition;
     private _selectionStylesheet;
-    private _elementService : IGridElement;
+    private _viewportService : IGridViewport;
 
     public constructor() {
         this.disposer = new Fundamental.Disposer(() => {
@@ -22,17 +22,17 @@ export class GridSelection implements Fundamental.IFeature, Fundamental.IDisposa
     }
 
     public name() {
-        return 'gridSelection';
+        return 'selection';
     }
 
     public inject($invoke) {
     }
 
-    public initialize(runtime, $invoke, positionService, elementService) {
+    public initialize(runtime, $invoke, positionService, viewportService) {
         this._runtime = runtime;
         this._invoke = $invoke;
         this._positionService = positionService;
-        this._elementService = elementService;
+        this._viewportService = viewportService;
         this._selection = new Selection();
         this.selectionMode(SelectionMode.Range);
 
@@ -59,15 +59,90 @@ export class GridSelection implements Fundamental.IFeature, Fundamental.IDisposa
         });
     }
 
+    public selectedRanges() {
+        return this._selection.ranges().slice();
+    }
+
+    public cursor(position?) {
+        return this._selection.cursor.apply(this._selection, arguments);
+    }
+
+    public select(range: Range, keepSelectedRanges = false) {
+        return this._selection.select(range, keepSelectedRanges);
+    }
+
+    public deselect(range: Range) {
+        this._selection.deselect(range);
+    }
+
+    public selectedRangeOfPosition(position) {
+        return this._selection.rangeOfPosition(position);
+    }
+
+    public selectedRangeOfCursor() {
+        return this._selection.rangeOfCursor();
+    }
+
     private _attachEvents() {
         this.disposer.addDisposable(new Fundamental.EventAttacher(this._runtime.dataContexts.rowsDataContext, 'rowCountChange',  (sender, args) => {
             this._selection.rowCount(args.newValue);
-            this._updaters.update();
         }));
         this.disposer.addDisposable(new Fundamental.EventAttacher(this._runtime.dataContexts.columnsDataContext, 'visibleColumnIdsChange',  (sender, args) => {
             this._selection.columnCount(args.newValue.length);
-            this._updaters.update();
         }));
+        this.disposer.addDisposable(new Fundamental.EventAttacher(this._selection, 'cursorChange', (sender, args) => {
+            this._cursorUpdater.update();
+        }));
+        this.disposer.addDisposable(new Fundamental.EventAttacher(this._selection, 'selectionChange', (sender, args) => {
+            this._selectionUpdater.update();
+        }));
+        this.disposer.addDisposable(new Fundamental.EventAttacher($(this._viewportService.rootElement()), 'keydown', (event) => {
+            this._rootKeyDown(event);
+        }));
+    }
+
+    private _rootKeyDown(event) {
+        var shiftKey = event.shiftKey,
+            currentCursor = this._selection.cursor(),
+            newCursor,
+            args;
+
+        if (!shiftKey) {
+            switch (event.which) {
+                case 38:
+                    // up
+                    newCursor = this._selection.moveCursor(CursorMovement.Up);
+                    break;
+
+                case 40:
+                    // down
+                    newCursor = this._selection.moveCursor(CursorMovement.Down);
+                    break;
+
+                case 37:
+                    // left
+                    newCursor = this._selection.moveCursor(CursorMovement.Backward);
+                    break;
+
+                case 39:
+                    // right
+                    newCursor = this._selection.moveCursor(CursorMovement.Forward);
+                    break;
+            }
+
+            if (newCursor) {
+                args = { oldValue: currentCursor, newValue: newCursor, cancel: false };
+                this._runtime.events.internal.emit('beforeCursorChange', this, args);
+
+                if (!args.cancel) {
+                    var cellPosition = this._positionService.getRect(args.newValue.rowIndex, args.newValue.columnIndex, args.newValue.rowIndex, args.newValue.columnIndex);
+                    this._selection.cursor(args.newValue);
+                    this._viewportService.scrollIntoView(new Fundamental.Rect(cellPosition.top, cellPosition.front, cellPosition.height, cellPosition.width));
+                }
+            }
+        }
+
+        // this._startKeySelect('table.keySelect', event);
     }
 
     private _getCursorUpdater() {
@@ -90,11 +165,11 @@ export class GridSelection implements Fundamental.IFeature, Fundamental.IDisposa
                     color = newValue.color,
                     style = newValue.style,
                     cursor = newValue.cursor,
-                    canvas = $(this._elementService.getFrontContentCanvas()),
-                    elements = canvas.find('.msoc-list-table-cursor');
+                    canvas = $(this._viewportService.frontContentCanvas()),
+                    elements = canvas.find('.msoc-list-cursor');
 
                 if (elements.length == 0) {
-                    elements = $('<div class="msoc-list-table-cursor"></div><div class="msoc-list-table-cursor"></div><div class="msoc-list-table-cursor"></div><div class="msoc-list-table-cursor"></div>');
+                    elements = $('<div class="msoc-list-cursor"></div><div class="msoc-list-cursor"></div><div class="msoc-list-cursor"></div><div class="msoc-list-cursor"></div>');
                     canvas.append(elements);
                 }
 
@@ -212,17 +287,17 @@ export class GridSelection implements Fundamental.IFeature, Fundamental.IDisposa
                                 }
 
                                 this._runtime.buildCssRootSelector(cssText);
-                                cssText.push('.msoc-list-row.msoc-list-table-row-');
+                                cssText.push('.msoc-list-row.msoc-list-row-');
                                 cssText.push(rowId);
                                 cssText.push(',');
                                 this._runtime.buildCssRootSelector(cssText);
-                                cssText.push('.msoc-list-row.msoc-list-table-row-');
+                                cssText.push('.msoc-list-row.msoc-list-row-');
                                 cssText.push(rowId);
-                                cssText.push('>.msoc-list-table-cell,');
+                                cssText.push('>.msoc-list-content-cell,');
                                 this._runtime.buildCssRootSelector(cssText);
-                                cssText.push('.msoc-list-row.msoc-list-table-row-');
+                                cssText.push('.msoc-list-row.msoc-list-row-');
                                 cssText.push(rowId);
-                                cssText.push(':hover>.msoc-list-table-cell');
+                                cssText.push(':hover>.msoc-list-content-cell');
                                 cssText.property('background-color', color);
                             }
 
@@ -233,15 +308,15 @@ export class GridSelection implements Fundamental.IFeature, Fundamental.IDisposa
                                 var columnId = visibleColumnIds[columnIndex];
 
                                 this._runtime.buildCssRootSelector(cssText);
-                                cssText.push('.msoc-list-header-canvas>.msoc-list-table-header-cell-');
+                                cssText.push('.msoc-list-header-canvas>.msoc-list-header-content-cell-');
                                 cssText.push(columnId);
                                 cssText.push(',');
                                 this._runtime.buildCssRootSelector(cssText);
-                                cssText.push('.msoc-list-row>.msoc-list-table-cell-');
+                                cssText.push('.msoc-list-row>.msoc-list-content-cell-');
                                 cssText.push(columnId);
                                 cssText.push(',');
                                 this._runtime.buildCssRootSelector(cssText);
-                                cssText.push('.msoc-list-row>.msoc-list-table-cell-');
+                                cssText.push('.msoc-list-row>.msoc-list-content-cell-');
                                 cssText.push(columnId);
                                 cssText.push(':hover');
                                 cssText.property('background-color', color);
@@ -260,15 +335,15 @@ export class GridSelection implements Fundamental.IFeature, Fundamental.IDisposa
                                     }
 
                                     this._runtime.buildCssRootSelector(cssText);
-                                    cssText.push('.msoc-list-row.msoc-list-table-row-');
+                                    cssText.push('.msoc-list-row.msoc-list-row-');
                                     cssText.push(rowId);
-                                    cssText.push('>.msoc-list-table-cell-');
+                                    cssText.push('>.msoc-list-content-cell-');
                                     cssText.push(columnId);
                                     cssText.push(',');
                                     this._runtime.buildCssRootSelector(cssText);
-                                    cssText.push('.msoc-list-row.msoc-list-table-row-');
+                                    cssText.push('.msoc-list-row.msoc-list-row-');
                                     cssText.push(rowId);
-                                    cssText.push(':hover>.msoc-list-table-cell-');
+                                    cssText.push(':hover>.msoc-list-content-cell-');
                                     cssText.push(columnId);
                                     cssText.property('background-color', color);
                                 }

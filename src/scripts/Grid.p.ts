@@ -35,7 +35,9 @@ export class Grid {
         this._runtime.theme = new Fundamental.Theme('<div prefix=""><div class="content" prefix="content."><div class="selection" prefix="content.selection."></div><div class="cursor" prefix="content.cursor."></div><div class="cell" prefix="content.cell."></div><div class="row" prefix="content.row."></div><div class="row alternate" prefix="content.row:alternate."><div class="row odd" prefix="content.row:odd."><div class="row even" prefix="content.row:even."></div><div class="row hover" prefix="content.row:hover."></div></div><div class="header" prefix="header."><div class="row" prefix="header.row."></div><div class="cell" prefix="header.cell."></div></div></div>', 'kGrid');
         this._runtime.theme.load('default');
         this._runtime.selectionMode = SelectionMode.SingleRow;
-        this._runtime.events = new Fundamental.EventSite();
+        this._runtime.events = {};
+        this.disposer.addDisposable(this._runtime.events.internal = new Fundamental.EventSite());
+        this.disposer.addDisposable(this._runtime.events.external = new Fundamental.EventSite());
         this._runtime.rootClass = 'msoc-list-' + this._runtime.id;
         this._runtime.direction = new Fundamental.TextDirection(Fundamental.TextDirection.LTR);
 
@@ -46,14 +48,43 @@ export class Grid {
         $.each(this._runtime.features, (index, feature) => {
             this.disposer.addDisposable(feature);
             this._invoke.withThis(feature, feature.inject);
-            this._features[feature.name] = feature;
+            this._features[feature.name()] = feature;
         });
 
         $.each(this._runtime.features, (index, feature) => {
             this._invoke.withThis(feature, feature.initialize);
         });
 
-        this._invoke((rootElement) => {
+        this._invoke((viewportService) => {
+            var rootElement = $(viewportService.rootElement());
+
+            // We listen to mousedown event to fix the different behavior across the different browser.
+            // Basicly, when user mouse down in the list control, the root element should get the focus.
+            // It makes something, such as key event and screen reader, simple.
+            // There is an exceptional case, we'll handle the focus in differnt way in edit mode, so we emit
+            // an event to make sure we can cancel it in edit mode
+            // FIXME: We should handle the case when user use keyboard to focus list control
+            this.disposer.addDisposable(new Fundamental.EventAttacher(rootElement, 'mousedown',  (event) => {
+                // Focus fix for IE, IE can focus on the cell element even if the tabindex of it is empty
+                if (document.activeElement != rootElement[0] || event.target != rootElement[0]) {
+                    var args = {
+                        event: event,
+                        element: rootElement[0],
+                        cancel: false,
+                    };
+                    this._runtime.events.internal.emit('beforeMouseDownFocus', this, args);
+
+                    if (!args.cancel) {
+                        args.element.focus();
+
+                        // FIXME: [low][1 day] this is a firefox only event to fix the focus issue in firefox, add browser check
+                        // In firefox, after we focused to a div, firefox will focus to document.body later which is a behavior
+                        // we don't want to do
+                        event.preventDefault();
+                    }
+                }
+            }));
+
             // var renderContext = {
             //     headerCells: [],
             // };
@@ -119,7 +150,7 @@ export class Grid {
             args: arguments,
             afterChange: (sender, args) => {
                 $(this._runtime.container).css('width', args.newValue + 'px');
-                this._runtime.events.emit('propertyChange', this, { name: 'width', newValue: args.newValue, oldValue: args.oldValue });
+                this._runtime.events.internal.emit('propertyChange', this, { name: 'width', newValue: args.newValue, oldValue: args.oldValue });
             },
         });
     }
@@ -131,7 +162,7 @@ export class Grid {
             args: arguments,
             afterChange: (sender, args) => {
                 $(this._runtime.container).css('height', args.newValue + 'px');
-                this._runtime.events.emit('propertyChange', this, { name: 'height', newValue: args.newValue, oldValue: args.oldValue });
+                this._runtime.events.internal.emit('propertyChange', this, { name: 'height', newValue: args.newValue, oldValue: args.oldValue });
             },
         });
     }

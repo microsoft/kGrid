@@ -6,7 +6,7 @@ export class GridPosition implements IGridPosition, Fundamental.IFeature {
     }
 
     public name() {
-        return 'gridPosition';
+        return 'position';
     }
 
     public inject($invoke) {
@@ -40,7 +40,7 @@ export class GridPosition implements IGridPosition, Fundamental.IFeature {
         return this._runtime.theme.values['content.row.height'].number;
     }
 
-    public getRect(topRowIndex, bottomRowIndex, frontColumnIndex, endColumnIndex, tag?) {
+    public getRect(topRowIndex, frontColumnIndex, bottomRowIndex, endColumnIndex, tag?) {
         var type = tag ? tag.type : null;
 
         if (!type || type == 'content') {

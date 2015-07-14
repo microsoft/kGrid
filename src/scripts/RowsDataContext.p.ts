@@ -90,6 +90,9 @@ export class RowsDataContext {
                 }
 
                 args.newValue = rows.slice();
+            },
+            afterChange: (sender, args) => {
+                this._rowCount = args.newValue.length;
                 this._events.emit('rowCountChange', this, { newValue: args.newValue.length });
             },
         });
