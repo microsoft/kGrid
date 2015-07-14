@@ -11,6 +11,7 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
     private _rowTopStylesheetUpdater;
     private _updaters;
     private _renderRange;
+    private _renderContext;
     private _viewportScrollCoordinate;
     private _positionService : IGridPosition;
 
@@ -40,9 +41,11 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
     public inject($invoke) {
         $invoke.inject('viewportService', {
             frontContentCanvas: () => this._elements.content.canvases[0],
+            contentViewport: () => this._elements.content.viewport,
             rootElement: () => this._elements.root,
             scrollIntoView: (rect) => this._scrollIntoView(rect.top, rect.front, rect.height, rect.width),
             scrollTo: (point) => this._scrollTo(point.top, point.front),
+            getCellPositionByEvent: (event) => this._getCellPositionByEvent(event),
         });
     }
 
@@ -60,26 +63,29 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
         this._updaters.add(this._layoutStylesheetUpdater.getUpdater());
 
         this._updaters.add(this._getUIValuesUpdater());
+        this._updaters.add(this._getRenderRangeUpdater());
 
         this.disposer.addDisposable(this._cellStylesheetUpdater = new Fundamental.DynamicStylesheetUpdater('msoc-list-render-cell-' + this._runtime.id));
         this._cellStylesheetUpdater.add(() => this._getCellStylesheet());
         this._updaters.add(this._cellStylesheetUpdater.getUpdater());
-
-        this._updaters.add(this._getRenderRangeUpdater());
 
         this.disposer.addDisposable(this._rowTopStylesheetUpdater = new Fundamental.DynamicStylesheetUpdater('msoc-list-render-row-top-' + this._runtime.id));
         this._rowTopStylesheetUpdater.add(() => this._getRowTopStylesheet());
         this._updaters.add(this._rowTopStylesheetUpdater.getUpdater());
 
 
-        var renderContext = {
-            headerCells: [],
-            renderedRows: [],
+        this._renderContext = {
+            header: {
+                rows: [{ cells: [] }],
+            },
+            content: {
+                rows: [],
+            },
         };
 
-        this._renderingScheduler.addWorker((context) => this._renderHeaderCellWorker(context), renderContext, 800);
-        this._renderingScheduler.addWorker((context) => this._renderCellWorker(context), renderContext, 1000);
-        this._renderingScheduler.addWorker((context) => this._removeCellWorker(context), renderContext, 1200);
+        this._renderingScheduler.addWorker((context) => this._renderHeaderCellWorker(context), this._renderContext, 800);
+        this._renderingScheduler.addWorker((context) => this._renderCellWorker(context), this._renderContext, 1000);
+        this._renderingScheduler.addWorker((context) => this._removeCellWorker(context), this._renderContext, 1200);
         this.disposer.addDisposable(
             new Fundamental.EventAttacher(
                 this._runtime.events.internal,
@@ -182,6 +188,168 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
             this._elements.header.viewport.scrollLeft = this._elements.content.viewport.scrollLeft;
             scrollHandler.invoke();
         }));
+        this.disposer.addDisposable(new Fundamental.EventAttacher(this._runtime.dataContexts.rowsDataContext, 'removeRows insertRows',  (sender, args) => {
+            this._onRemoveInsertRows(sender, args);
+        }));
+        this.disposer.addDisposable(new Fundamental.EventAttacher(this._runtime.dataContexts.rowsDataContext, 'updateRows',  (sender, args) => {
+            this._onUpdateRows(sender, args);
+        }));
+    }
+
+    private _getCellPositionByEvent(event) {
+        var cell;
+
+        cell = $(event.target).closest('.msoc-list-content-cell');
+
+        if (cell[0]) {
+            var rowId = cell.attr('data-rowId'),
+                columnId = cell.attr('data-columnId'),
+                rowIndex = this._runtime.dataContexts.rowsDataContext.getRowIndexById(rowId),
+                columnIndex = this._runtime.dataContexts.columnsDataContext.getColumnIndexById(columnId);
+
+            return {
+                type: 'content',
+                position: new Position(rowIndex, columnIndex),
+            };
+        }
+
+        cell = $(event.target).closest('.msoc-list-header-cell');
+
+        if (cell[0]) {
+            var columnId = cell.attr('columnId'),
+                columnIndex = this._runtime.dataContexts.columnsDataContext.getColumnIndexById(columnId);
+
+            return {
+                type: 'header',
+                position: new Position(0, columnIndex),
+            };
+        }
+    }
+
+    private _onUpdateRows(sender, args) {
+        this._updaters.update();
+        this._invalidateRows('content', args.range);
+    }
+
+    private _onRemoveInsertRows(sender, args) {
+        this._updaters.update();
+
+        if (args.range.top() <= this._renderRange.bottom()) {
+            this._adjustOddEvenRow();
+        }
+    }
+
+    private _invalidateRange(type, range?) {
+        if (type == 'content') {
+            if (range) {
+                range = <any>Range.intersection(range, this._renderRange);
+            } else if (this._renderRange.isValid()) {
+                range = this._renderRange;
+            }
+
+            if (!range || !range.isValid()) {
+                return;
+            }
+
+            for (var rowIndex = range.top(); rowIndex <= range.bottom(); rowIndex++) {
+                for (var columnIndex = range.front(); columnIndex <= range.end(); columnIndex++) {
+                    this._invalidateCell(type, rowIndex, columnIndex);
+                }
+            }
+        } else {
+            if (!range) {
+                range = new Range(RangeType.Range, 0, 0, 0, this._runtime.dataContexts.columnsDataContext.visibleColumnIds().length - 1);
+            }
+
+            if (!range.isValid()) {
+                return;
+            }
+
+            for (var columnIndex = range.front(); columnIndex <= range.end(); columnIndex++) {
+                this._invalidateCell(type, 0, columnIndex);
+            }
+        }
+    }
+
+    private _invalidateRows(type, range) {
+        if (type == 'content') {
+            var range = <any>Range.intersection(range, this._renderRange);
+
+            if (!range || !range.isValid()) {
+                return;
+            }
+
+            for (var rowIndex = range.top(); rowIndex <= range.bottom(); rowIndex++) {
+                this._invalidateRow(type, rowIndex);
+            }
+        } else {
+            this._invalidateRow(type, 0);
+        }
+    }
+
+    private _invalidateRow(type, rowIndex) {
+        if (type == 'content') {
+            var rowId = this._runtime.dataContexts.rowsDataContext.getRowIndexById(rowIndex),
+                renderedRow = this._renderContext.content.rows[rowId];
+
+            if (!renderedRow) {
+                return;
+            }
+
+            for (var i in renderedRow.cells) {
+                var cell = renderedRow.cells[i];
+
+                if (cell.state == RenderState.Painted) {
+                    cell.state = RenderState.OutDated;
+                }
+            }
+        } else {
+            for (var i in this._renderContext.header.rows[0].cells) {
+                var cell = this._renderContext.header.rows[0].cells[i];
+
+                if (cell && cell.state == RenderState.Painted) {
+                    cell.state = RenderState.OutDated;
+                }
+            }
+        }
+    }
+
+    private _invalidateCell(type, rowIndex, columnIndex) {
+        var rowId = this._runtime.dataContexts.rowsDataContext.getRowIdByIndex(rowIndex),
+            columnId = this._runtime.dataContexts.columnsDataContext.getColumnIdByIndex(columnIndex);
+
+        if (type == 'content') {
+            var cell = this._renderContext.content.rows[rowId] ? this._renderContext.content.rows[rowId].cells[columnId] : null;
+
+            if (cell && cell.state == RenderState.Painted) {
+                cell.state = RenderState.OutDated;
+            }
+        } else {
+            var cell = this._renderContext.header.rows[0].cells[columnId];
+
+            if (cell && cell.state == RenderState.Painted) {
+                cell.state = RenderState.OutDated;
+            }
+        }
+    }
+
+    private _adjustOddEvenRow() {
+        for (var rowId in this._renderContext.content.rows) {
+            if (this._renderContext.content.rows[rowId].state == RenderState.Painted) {
+                var rowElement = this._renderContext.content.rows[rowId].rowElement,
+                    rowIndex = this._runtime.dataContexts.rowsDataContext.getRowIndexById(rowId);
+
+                if (!isNaN(rowIndex)) {
+                    rowElement.removeClass('msoc-list-odd msoc-list-even');
+
+                    if (rowIndex % 2 == 1) {
+                        rowElement.addClass('msoc-list-odd');
+                    } else {
+                        rowElement.addClass('msoc-list-even');
+                    }
+                }
+            }
+        }
     }
 
     private _scrollIntoView(top, front, height, width) {
@@ -526,15 +694,15 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
             var columnId = visibleColumnIds[columnIndex],
                 column = this._runtime.dataContexts.columnsDataContext.getColumnById(columnId);
 
-            if (!context.headerCells[columnId]) {
-                context.headerCells[columnId] = {
+            if (!context.header.rows[0].cells[columnId]) {
+                context.header.rows[0].cells[columnId] = {
                     state: RenderState.Initial,
                     contentElement: null,
                 };
 
                 html.context().columnId = columnId;
 
-                html.append('<div class="msoc-list-header-cell msoc-list-header-cell-$columnId" data-columnId="$columnId">');
+                html.append('<div class="msoc-list-header-cell msoc-list-header-cell-$columnId" data-rowId="0" data-columnId="$columnId">');
                 html.append('<div class="msoc-list-header-cell-content msoc-list-header-cell-content-$columnId"></div>');
                 html.append('<div class="msoc-list-header-cell-v-border msoc-list-header-cell-v-border-$columnId"></div>');
                 html.append('<div class="msoc-list-header-cell-splitter msoc-list-header-cell-splitter-front"></div>');
@@ -555,7 +723,7 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
             for (var i = 0; i < addedColumnIds.length; i++) {
                 var columnId = addedColumnIds[i];
 
-                context.headerCells[columnId].contentElement = contentElements[contentElements.length - addedColumnIds.length + i];
+                context.header.rows[0].cells[columnId].contentElement = contentElements[contentElements.length - addedColumnIds.length + i];
             }
         }
 
@@ -563,13 +731,13 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
             var columnId = visibleColumnIds[i],
                 column = this._runtime.dataContexts.columnsDataContext.getColumnById(columnId);
 
-            if (context.headerCells[columnId].state != RenderState.Painted) {
+            if (context.header.rows[0].cells[columnId].state != RenderState.Painted) {
                 var render = column.headerRender || SimpleTextHeaderRender.Instance();
 
                 render.render({
                     columnId: columnId,
                     column: column,
-                    element: context.headerCells[columnId].contentElement,
+                    element: context.header.rows[0].cells[columnId].contentElement,
                     data: column.data,
                     // height: rect.height,
                     // width: rect.width,
@@ -577,7 +745,7 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
                     theme: this._runtime.theme,
                 });
 
-                context.headerCells[columnId].state = RenderState.Painted;
+                context.header.rows[0].cells[columnId].state = RenderState.Painted;
             }
         }
     }
@@ -602,15 +770,15 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
 
             html.context().rowId = rowId;
 
-            if (!context.renderedRows[rowId]) {
-                context.renderedRows[rowId] = {
+            if (!context.content.rows[rowId]) {
+                context.content.rows[rowId] = {
                     state: RenderState.Initial,
                     rowElement: null,
-                    renderedCells: {},
+                    cells: {},
                 };
             }
 
-            if (context.renderedRows[rowId].state == RenderState.Initial) {
+            if (context.content.rows[rowId].state == RenderState.Initial) {
                 if (rowIndex % 2 == 1) {
                     html.append('<div class="msoc-list-row msoc-list-row-$rowId msoc-list-odd" data-rowId="$rowId">');
                 } else {
@@ -624,13 +792,13 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
                 html.append('</div>');
 
                 this._elements.content.mainCanvas.insertAdjacentHTML('beforeend', html.toString());
-                context.renderedRows[rowId].rowElement = $(this._elements.content.mainCanvas.lastChild);
-                context.renderedRows[rowId].state = RenderState.Painted;
+                context.content.rows[rowId].rowElement = $(this._elements.content.mainCanvas.lastChild);
+                context.content.rows[rowId].state = RenderState.Painted;
                 painted = true;
             }
 
-            var rowElement = context.renderedRows[rowId].rowElement;
-            var renderedCells = context.renderedRows[rowId].renderedCells;
+            var rowElement = context.content.rows[rowId].rowElement;
+            var cells = context.content.rows[rowId].cells;
             var front = renderRange.front();
             var end = renderRange.end();
 
@@ -644,8 +812,8 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
                 html.context().columnId = columnId;
                 html.context().rowId = rowId;
 
-                if (!renderedCells[columnId]) {
-                    renderedCells[columnId] = {
+                if (!cells[columnId]) {
+                    cells[columnId] = {
                         state: RenderState.Initial,
                         contentElement: null,
                     };
@@ -668,7 +836,7 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
                 for (var i = 0; i < addedColumnIds.length; i++) {
                     var columnId = addedColumnIds[i];
 
-                    renderedCells[columnId].contentElement = contentElements[contentElements.length - addedColumnIds.length + i];
+                    cells[columnId].contentElement = contentElements[contentElements.length - addedColumnIds.length + i];
                 }
 
                 painted = true;
@@ -678,13 +846,13 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
                 var columnId = this._runtime.dataContexts.columnsDataContext.getColumnIdByIndex(columnIndex),
                     column = this._runtime.dataContexts.columnsDataContext.getColumnById(columnId);
 
-                if (renderedCells[columnId].state != RenderState.Painted) {
+                if (cells[columnId].state != RenderState.Painted) {
                     var render = column.cellRender || SimpleTextCellRender.Instance();
 
                     render.render({
                         columnId: columnId,
                         column: column,
-                        element: renderedCells[columnId].contentElement,
+                        element: cells[columnId].contentElement,
                         cellData: row[column.field],
                         // height: rect.height,
                         // width: rect.width,
@@ -692,7 +860,7 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
                         theme: this._runtime.theme,
                     });
 
-                    renderedCells[columnId].state = RenderState.Painted;
+                    cells[columnId].state = RenderState.Painted;
                     painted = true;
                 }
             }
@@ -704,45 +872,45 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
     }
 
     private _removeCellWorker(context) {
-        for (var rowId in context.renderedRows) {
+        for (var rowId in context.content.rows) {
             var rowIndex = this._runtime.dataContexts.rowsDataContext.getRowIndexById(rowId),
                 row = this._runtime.dataContexts.rowsDataContext.getRowById(rowId);
 
             if (!row) {
                 // In the case a row has been deleted from table
-                var rowElement = context.renderedRows[rowId].rowElement;
+                var rowElement = context.content.rows[rowId].rowElement;
 
                 if (rowElement) {
                     rowElement.remove();
                 }
 
-                delete context.renderedRows[rowId];
+                delete context.content.rows[rowId];
                 return true;
             } else if (rowIndex < this._renderRange.top() || rowIndex > this._renderRange.bottom()) {
                 // The row is not showed in the render area
-                var rowElement = context.renderedRows[rowId].rowElement;
+                var rowElement = context.content.rows[rowId].rowElement;
 
                 if (rowElement) {
                     rowElement.remove();
                 }
 
-                delete context.renderedRows[rowId];
+                delete context.content.rows[rowId];
                 return true;
             } else {
-                var renderedCells = context.renderedRows[rowId].renderedCells;
+                var cells = context.content.rows[rowId].cells;
                 var removed = false;
 
-                for (var columnId in renderedCells) {
+                for (var columnId in cells) {
                     var columnIndex = this._runtime.dataContexts.columnsDataContext.getColumnIndexById(columnId);
 
                     if (columnIndex < this._renderRange.front() || columnIndex > this._renderRange.end()) {
-                        var contentElement = renderedCells[columnId].contentElement;
+                        var contentElement = cells[columnId].contentElement;
 
                         if (contentElement) {
                             $(contentElement).parent().remove();
                         }
 
-                        delete renderedCells[columnId];
+                        delete cells[columnId];
                         removed = true;
                     }
                 }

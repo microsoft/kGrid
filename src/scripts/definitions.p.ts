@@ -81,3 +81,35 @@ export class ColumnDefinition {
     public cellEditor;
 }
 
+export interface IGridPosition {
+    getColumnWidthById(columnId);
+    getColumnWidthByIndex(columnIndex);
+    getRowHeightById(rowId);
+    getRowHeightByIndex(rowIndex);
+    getRect(topRowIndex, bottomRowIndex, frontColumnIndex, endColumnIndex, tag?);
+}
+
+export interface IGridViewport {
+    rootElement();
+    headerViewport();
+    contentViewport();
+    frontContentCanvas();
+    backContentCanvas();
+    frontHeaderCanvas();
+    backHeaderCanvas();
+    scrollIntoView(rect);
+    getCellPositionByEvent(event);
+}
+
+export interface IGridOperator {
+    start(operationName, operation: IOperation): JQueryPromise<any>;
+    stop();
+}
+
+export interface IGridSelection {
+    select(range: Range, keepSelectedRanges);
+    deselect(range: Range);
+    selectionMode(selectionMode?);
+    selectedRanges();
+}
+

@@ -12,8 +12,6 @@ export class GridRuntime {
     public height;
     public theme;
 
-    public selectionMode;
-
     public buildCssRootSelector(builder: Fundamental.CssTextBuilder, additinalSelector?: string) {
         builder.push('.');
         builder.push(this.rootClass);

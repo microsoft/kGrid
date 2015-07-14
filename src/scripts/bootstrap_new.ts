@@ -242,14 +242,14 @@ require(['js/listcontrol', /* 'js/enhancedlistcontrol' */, /* 'DataPicker' */, '
     $(document.body).append(button);
 
     button.on('click', () => {
-        listControlObject.removeRowsByIndex(0, 1);
+        listControlObject.rowsDataContext().removeRowsByIndex(0, 1);
     });
 
     var button = $('<button>insert to the second row</button>');
     $(document.body).append(button);
 
     button.on('click', () => {
-        listControlObject.insertRowsByIndex([generateRow('i_0'), generateRow('i_1')], 1, 2);
+        listControlObject.rowsDataContext().insertRowsByIndex([generateRow('i_0'), generateRow('i_1')], 1, 2);
     });
 
     var button = $('<button>clear data</button>');

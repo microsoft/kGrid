@@ -12,7 +12,7 @@ export class Grid {
         this._features = {};
 
         if (!features) {
-            features = [new GridPosition(), new GridRender(), new GridSelection()];
+            features = [new GridUIOperator(), new GridPosition(), new GridRender(), new GridSelection(), new GridMouseSelect()];
         }
 
         if (!$invoke) {
@@ -34,7 +34,6 @@ export class Grid {
 
         this._runtime.theme = new Fundamental.Theme('<div prefix=""><div class="content" prefix="content."><div class="selection" prefix="content.selection."></div><div class="cursor" prefix="content.cursor."></div><div class="cell" prefix="content.cell."></div><div class="row" prefix="content.row."></div><div class="row alternate" prefix="content.row:alternate."><div class="row odd" prefix="content.row:odd."><div class="row even" prefix="content.row:even."></div><div class="row hover" prefix="content.row:hover."></div></div><div class="header" prefix="header."><div class="row" prefix="header.row."></div><div class="cell" prefix="header.cell."></div></div></div>', 'kGrid');
         this._runtime.theme.load('default');
-        this._runtime.selectionMode = SelectionMode.SingleRow;
         this._runtime.events = {};
         this.disposer.addDisposable(this._runtime.events.internal = new Fundamental.EventSite());
         this.disposer.addDisposable(this._runtime.events.external = new Fundamental.EventSite());

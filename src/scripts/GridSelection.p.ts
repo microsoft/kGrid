@@ -26,6 +26,7 @@ export class GridSelection implements Fundamental.IFeature, Fundamental.IDisposa
     }
 
     public inject($invoke) {
+        $invoke.inject('selectionService', this);
     }
 
     public initialize(runtime, $invoke, positionService, viewportService) {
@@ -34,7 +35,7 @@ export class GridSelection implements Fundamental.IFeature, Fundamental.IDisposa
         this._positionService = positionService;
         this._viewportService = viewportService;
         this._selection = new Selection();
-        this.selectionMode(SelectionMode.Range);
+        this.selectionMode(SelectionMode.SingleRow);
 
         this.disposer.addDisposable(this._updaters = new Microsoft.Office.Controls.Fundamental.UpdaterGroup());
         this.disposer.addDisposable(this._selectionStylesheet = new Microsoft.Office.Controls.Fundamental.DynamicStylesheet('msoc-list-selection-' + this._runtime.id));

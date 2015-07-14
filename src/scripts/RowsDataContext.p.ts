@@ -20,7 +20,7 @@ export class RowsDataContext {
         this._rowCount = 0;
         this._lastRowId = 0;
         this._rowIndex2IdMap = [];
-        this._rowId2IndexMap = [];
+        this._rowId2IndexMap = {};
         this.disposer.addDisposable(this._events = new Fundamental.EventSite());
     }
 
@@ -79,6 +79,7 @@ export class RowsDataContext {
                 }
 
                 this._rowIndex2IdMap = [];
+                this._rowId2IndexMap = {};
 
                 for (var i = 0; i < rows.length; i++) {
                     if (typeof(rows) != 'undefined') {
@@ -129,10 +130,10 @@ export class RowsDataContext {
     }
 
     public updateRowById(row, rowId) {
-        var rowIndex = this._getRowInfoById(rowId);
+        var rowInfo = this._getRowInfoById(rowId);
 
-        if (rowIndex) {
-            this.updateRowsByIndex([row], rowIndex.rowIndex, 1);
+        if (rowInfo) {
+            this.updateRowsByIndex([row], rowInfo.rowIndex, 1);
         }
     }
 
