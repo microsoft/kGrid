@@ -597,7 +597,7 @@ require(['js/listcontrol', /* 'js/enhancedlistcontrol' */, /* 'DataPicker' */, '
     $(document.body).append('<input id="forWidth"></input>');
 
     var listControlElement = $('<div style="position: absolute; left: 10px; right: 10px; top: 120px; bottom: 10px;"></div>');
-    $(document.body).append('<div><h1>New List Control</h1></div>');
+    $(document.body).append('<div><h1>kGrid</h1></div>');
     $(document.body).append(listControlElement);
 
     createControl();
