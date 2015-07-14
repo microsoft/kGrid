@@ -34,6 +34,10 @@ class TableViewResizeColumnOperation implements IOperation {
         });
     }
 
+    public canStart() {
+        return true;
+    }
+
     public start(tableView: TableView, runtime, columnUniqueId, isTouch, pointerId, pointers, initialFront, initialWidth, selectionStylesheet): JQueryPromise<any> {
         this._deferred = $.Deferred();
         this._tableView = tableView;

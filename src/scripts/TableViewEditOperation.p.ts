@@ -26,6 +26,10 @@ class TableViewEditOperation implements IOperation {
         });
     }
 
+    public canStart() {
+        return true;
+    }
+
     public start(tableView, runtime, rowIndex, columnIndex) {
         this._tableView = tableView;
         this._runtime = runtime;

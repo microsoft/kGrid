@@ -35,6 +35,10 @@ class TableViewReorderColumnOperation implements IOperation {
         });
     }
 
+    public canStart() {
+        return true;
+    }
+
     public start(tableView, runtime, headerCellElement, isTouch, pointerId, pointerDownCoordinate, selectionStylesheet): JQueryPromise<any> {
         this._deferred = $.Deferred();
         this._tableView = tableView;

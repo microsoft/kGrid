@@ -35,18 +35,24 @@ export class GridUIOperator implements Fundamental.IFeature, IGridOperator {
             return deferred.promise();
         }
 
-        var args = Array.prototype.slice.call(arguments, 2);
+        this._invoke.withThis(operation, operation.canStart).done((canStart) => {
+            if (typeof(canStart) != 'undefined' && !canStart) {
+                return;
+            }
 
-        this._operation = operation;
-        this._operationName = operationName;
-        this._invoke.withThis(this._operation, this._operation.start)
-            .done((result) => {
-                result
-                .always(() => this._operation && this._operation.disposer.dispose())
-                .done(() => deferred.resolve.apply(deferred, arguments))
-                .fail(() => deferred.reject.apply(deferred, arguments))
-                .always(() => this.stop());
-            });
+            var args = Array.prototype.slice.call(arguments, 2);
+
+            this._operation = operation;
+            this._operationName = operationName;
+            this._invoke.withThis(this._operation, this._operation.start)
+                .done((result) => {
+                    result
+                    .always(() => this._operation && this._operation.disposer.dispose())
+                    .done(() => deferred.resolve.apply(deferred, arguments))
+                    .fail(() => deferred.reject.apply(deferred, arguments))
+                    .always(() => this.stop());
+                });
+        });
 
         return deferred.promise();
     }

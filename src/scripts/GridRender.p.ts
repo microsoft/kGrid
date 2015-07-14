@@ -45,6 +45,7 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
             rootElement: () => this._elements.root,
             scrollIntoView: (rect) => this._scrollIntoView(rect.top, rect.front, rect.height, rect.width),
             scrollTo: (point) => this._scrollTo(point.top, point.front),
+            scroll: (topOffset, frontOffset) => this._scroll(topOffset, frontOffset),
             getCellPositionByEvent: (event) => this._getCellPositionByEvent(event),
         });
     }
@@ -408,24 +409,50 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
             if (this._runtime.direction.rtl()) {
                 if (Fundamental.TextDirection.zeroEnd() == 'front' && Fundamental.TextDirection.scrollFrontDirection() == -1) {
                     // FireFox
+                    this._elements.header.viewport.scrollLeft = -front;
                     this._elements.content.viewport.scrollLeft = -front;
                 } else if (Fundamental.TextDirection.zeroEnd() == 'end' && Fundamental.TextDirection.scrollFrontDirection() == 1) {
                     // Chrome
+                    this._elements.header.viewport.scrollLeft = scrollWidth - clientWidth - front;
                     this._elements.content.viewport.scrollLeft = scrollWidth - clientWidth - front;
                 } else if (Fundamental.TextDirection.zeroEnd() == 'front' && Fundamental.TextDirection.scrollFrontDirection() == 1) {
                     // IE
+                    this._elements.header.viewport.scrollLeft = front;
                     this._elements.content.viewport.scrollLeft = front;
                 } else {
                     // Unknown??
+                    this._elements.header.viewport.scrollLeft = front - scrollWidth + clientWidth;
                     this._elements.content.viewport.scrollLeft = front - scrollWidth + clientWidth;
                 }
             } else {
+                this._elements.header.viewport.scrollLeft = front;
                 this._elements.content.viewport.scrollLeft = front;
             }
         }
 
         if (!isNaN(top)) {
             this._elements.content.viewport.scrollTop = Math.max(0, Math.min(top, canvasRect.height));
+        }
+    }
+
+    private _scroll(topOffset, frontOffset) {
+        if (!!frontOffset) {
+            if (this._runtime.direction.rtl()) {
+                // FireFox & Chrome
+                if (Fundamental.TextDirection.zeroEnd() == 'front' && Fundamental.TextDirection.scrollFrontDirection() == -1 ||
+                    Fundamental.TextDirection.zeroEnd() == 'end' && Fundamental.TextDirection.scrollFrontDirection() == 1) {
+                    frontOffset = -frontOffset;
+                }
+            }
+
+            var scrollLeft = this._elements.content.viewport.scrollLeft + frontOffset;
+
+            this._elements.content.viewport.scrollLeft = scrollLeft;
+            this._elements.header.viewport.scrollLeft = scrollLeft;
+        }
+
+        if (!!topOffset) {
+            this._elements.content.viewport.scrollTop = this._elements.content.viewport.scrollTop + topOffset;
         }
     }
 

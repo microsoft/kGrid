@@ -9,6 +9,10 @@ class TableViewKeySelectOperation implements IOperation {
         });
     }
 
+    public canStart() {
+        return true;
+    }
+
     public start(tableView, runtime, event, selectionUpdater) {
         this._tableView = tableView;
         this._visibleColumnMap = this._tableView.visibleColumnMap();

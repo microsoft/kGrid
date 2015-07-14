@@ -4,6 +4,7 @@ class Constants {
 }
 
 export interface IOperation {
+    canStart();
     start(...args): JQueryPromise<any>;
     disposer: Microsoft.Office.Controls.Fundamental.Disposer;
 }
@@ -98,6 +99,8 @@ export interface IGridViewport {
     frontHeaderCanvas();
     backHeaderCanvas();
     scrollIntoView(rect);
+    scrollTo(point);
+    scroll(topOffset, frontOffset);
     getCellPositionByEvent(event);
 }
 
@@ -109,7 +112,8 @@ export interface IGridOperator {
 export interface IGridSelection {
     select(range: Range, keepSelectedRanges);
     deselect(range: Range);
-    selectionMode(selectionMode?);
+    selectionMode(selectionMode?: SelectionMode);
     selectedRanges();
+    cursor(position?: Position);
 }
 
