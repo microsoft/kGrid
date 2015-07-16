@@ -36,7 +36,6 @@ describe('Basic Functionality', function () {
                 front: coordinate.front(),
                 top: coordinate.top(),
                 width: coordinate.width(),
-                type: coordinate.type(),
                 rtl: coordinate.rtl(),
             });
         }
@@ -47,27 +46,25 @@ describe('Basic Functionality', function () {
         });
 
         it('Create', function () {
-            expect(typeof(new MSOC.Fundamental.Coordinate(MSOC.Fundamental.CoordinateType.Viewport, 0, 0))).toBe('object');
-            expect(typeof(new MSOC.Fundamental.Coordinate(MSOC.Fundamental.CoordinateType.Viewport, 0, 0, false))).toBe('object');
-            expect(typeof(new MSOC.Fundamental.Coordinate(MSOC.Fundamental.CoordinateType.Viewport, 0, 0, false, 0))).toBe('object');
-            expect(() => new MSOC.Fundamental.Coordinate(MSOC.Fundamental.CoordinateType.Viewport, 0, 0, false, -1)).toThrow();
-            expect(() => new MSOC.Fundamental.Coordinate(256, 0, 0, true, -1)).toThrow();
-            expect(() => new MSOC.Fundamental.Coordinate('Viewport', 0, 0, true, 0)).toThrow();
+            expect(typeof(new MSOC.Fundamental.Coordinate(0, 0))).toBe('object');
+            expect(typeof(new MSOC.Fundamental.Coordinate(0, 0, 0))).toBe('object');
+            expect(typeof(new MSOC.Fundamental.Coordinate(0, 0, 0, false))).toBe('object');
+            expect(() => new MSOC.Fundamental.Coordinate(0, 0, -1, false)).toThrow();
         });
 
         it('Set Property', function () {
             var coordinate;
 
-            coordinate = new MSOC.Fundamental.Coordinate(MSOC.Fundamental.CoordinateType.Viewport, 0, 0);
+            coordinate = new MSOC.Fundamental.Coordinate(0, 0, NaN, false);
             coordinate.x(1);
             coordinate.y(2);
-            expect(() => coordinate.rtl(true)).toThrow();
+            expect(coordinate.rtl(true)).toBe(true);
             coordinate.width(3);
             expect(coordinate.x()).toBe(1);
             expect(coordinate.front()).toBe(1);
             expect(coordinate.top()).toBe(2);
             expect(coordinate.y()).toBe(2);
-            expect(coordinate.rtl()).toBe(false);
+            expect(coordinate.rtl()).toBe(true);
             expect(coordinate.width()).toBe(3);
 
             coordinate.front(2);
@@ -84,22 +81,22 @@ describe('Basic Functionality', function () {
         it('Rtl', function () {
             var coordinate
 
-            coordinate = new MSOC.Fundamental.Coordinate(MSOC.Fundamental.CoordinateType.Viewport, 5, 10, false, 100);
+            coordinate = new MSOC.Fundamental.Coordinate(5, 10, 100, false);
             coordinate.rtl(true);
             expect(coordinate.rtl()).toBeTruthy();
             expect(coordinate.x()).toBe(95);
 
-            coordinate = new MSOC.Fundamental.Coordinate(MSOC.Fundamental.CoordinateType.Viewport, 5, 10, true, 100);
+            coordinate = new MSOC.Fundamental.Coordinate(5, 10, 100, true);
             coordinate.rtl(false);
             expect(coordinate.rtl()).toBeFalsy();
             expect(coordinate.x()).toBe(95);
 
-            coordinate = new MSOC.Fundamental.Coordinate(MSOC.Fundamental.CoordinateType.ViewportRelative, 5, 10, false, 100);
+            coordinate = new MSOC.Fundamental.Coordinate(5, 10, NaN, false);
             coordinate.rtl(true);
             expect(coordinate.rtl()).toBeTruthy();
             expect(coordinate.x()).toBe(5);
 
-            coordinate = new MSOC.Fundamental.Coordinate(MSOC.Fundamental.CoordinateType.ViewportRelative, 5, 10, true, 100);
+            coordinate = new MSOC.Fundamental.Coordinate(5, 10, NaN, true);
             coordinate.rtl(false);
             expect(coordinate.rtl()).toBeFalsy();
             expect(coordinate.x()).toBe(5);
@@ -109,11 +106,11 @@ describe('Basic Functionality', function () {
             var cases, caseIndex;
 
             cases = [
-                [new MSOC.Fundamental.Coordinate(MSOC.Fundamental.CoordinateType.Viewport, 10, 3, false, 100), new MSOC.Fundamental.Coordinate(MSOC.Fundamental.CoordinateType.ViewportRelative, 3, 7, false), new MSOC.Fundamental.Coordinate(MSOC.Fundamental.CoordinateType.Viewport, 13, 10, false, 100)],
-                [new MSOC.Fundamental.Coordinate(MSOC.Fundamental.CoordinateType.Viewport, 10, 3, true, 100), new MSOC.Fundamental.Coordinate(MSOC.Fundamental.CoordinateType.ViewportRelative, 3, 7, true), new MSOC.Fundamental.Coordinate(MSOC.Fundamental.CoordinateType.Viewport, 13, 10, true, 100)],
+                [new MSOC.Fundamental.Coordinate(10, 3, 100, false), new MSOC.Fundamental.Coordinate(3, 7, NaN, false), new MSOC.Fundamental.Coordinate(13, 10, 100, false)],
+                [new MSOC.Fundamental.Coordinate(10, 3, 100, true), new MSOC.Fundamental.Coordinate(3, 7, NaN, true), new MSOC.Fundamental.Coordinate(13, 10, 100, true)],
 
-                [new MSOC.Fundamental.Coordinate(MSOC.Fundamental.CoordinateType.ViewportRelative, 10, 3, false, 100), new MSOC.Fundamental.Coordinate(MSOC.Fundamental.CoordinateType.ViewportRelative, 3, 7, false), new MSOC.Fundamental.Coordinate(MSOC.Fundamental.CoordinateType.ViewportRelative, 13, 10, false, NaN)],
-                [new MSOC.Fundamental.Coordinate(MSOC.Fundamental.CoordinateType.ViewportRelative, 10, 3, true, 100), new MSOC.Fundamental.Coordinate(MSOC.Fundamental.CoordinateType.ViewportRelative, 3, 7, true), new MSOC.Fundamental.Coordinate(MSOC.Fundamental.CoordinateType.ViewportRelative, 13, 10, true, NaN)],
+                [new MSOC.Fundamental.Coordinate(10, 3, NaN, false), new MSOC.Fundamental.Coordinate(3, 7, NaN, false), new MSOC.Fundamental.Coordinate(13, 10, NaN, false)],
+                [new MSOC.Fundamental.Coordinate(10, 3, NaN, true), new MSOC.Fundamental.Coordinate(3, 7, NaN, true), new MSOC.Fundamental.Coordinate(13, 10, NaN, true)],
             ];
 
             caseIndex = 0;
@@ -123,11 +120,11 @@ describe('Basic Functionality', function () {
             expect(formatCoordinate(cases[caseIndex][0].add(cases[caseIndex][1]))).toBe(formatCoordinate(cases[caseIndex++][2]));
 
             cases = [
-                [new MSOC.Fundamental.Coordinate(MSOC.Fundamental.CoordinateType.Viewport, 10, 3, true, 100), new MSOC.Fundamental.Coordinate(MSOC.Fundamental.CoordinateType.ViewportRelative, 3, 7, false)],
-                [new MSOC.Fundamental.Coordinate(MSOC.Fundamental.CoordinateType.Viewport, 10, 3, false, 100), new MSOC.Fundamental.Coordinate(MSOC.Fundamental.CoordinateType.ViewportRelative, 3, 7, true)],
+                [new MSOC.Fundamental.Coordinate(10, 3, 100, true), new MSOC.Fundamental.Coordinate(3, 7, NaN, false)],
+                [new MSOC.Fundamental.Coordinate(10, 3, 100, false), new MSOC.Fundamental.Coordinate(3, 7, NaN, true)],
 
-                [new MSOC.Fundamental.Coordinate(MSOC.Fundamental.CoordinateType.ViewportRelative, 10, 3, true, 100), new MSOC.Fundamental.Coordinate(MSOC.Fundamental.CoordinateType.ViewportRelative, 3, 7, false)],
-                [new MSOC.Fundamental.Coordinate(MSOC.Fundamental.CoordinateType.ViewportRelative, 10, 3, false, 100), new MSOC.Fundamental.Coordinate(MSOC.Fundamental.CoordinateType.ViewportRelative, 3, 7, true)],
+                [new MSOC.Fundamental.Coordinate(10, 3, 100, true), new MSOC.Fundamental.Coordinate(3, 7, 100, true)],
+                [new MSOC.Fundamental.Coordinate(10, 3, NaN, false), new MSOC.Fundamental.Coordinate(3, 7, NaN, true)],
             ];
 
             expect(() => cases[caseIndex][0].add(cases[caseIndex][1])).toThrow();
@@ -141,14 +138,14 @@ describe('Basic Functionality', function () {
             var cases, caseIndex;
 
             cases = [
-                [new MSOC.Fundamental.Coordinate(MSOC.Fundamental.CoordinateType.Viewport, 10, 3, false, 100), new MSOC.Fundamental.Coordinate(MSOC.Fundamental.CoordinateType.ViewportRelative, 3, 7, false), new MSOC.Fundamental.Coordinate(MSOC.Fundamental.CoordinateType.Viewport, 7, -4, false, 100)],
-                [new MSOC.Fundamental.Coordinate(MSOC.Fundamental.CoordinateType.Viewport, 10, 3, true, 100), new MSOC.Fundamental.Coordinate(MSOC.Fundamental.CoordinateType.ViewportRelative, 3, 7, true), new MSOC.Fundamental.Coordinate(MSOC.Fundamental.CoordinateType.Viewport, 7, -4, true, 100)],
+                [new MSOC.Fundamental.Coordinate(10, 3, 100, false), new MSOC.Fundamental.Coordinate(3, 7, NaN, false), new MSOC.Fundamental.Coordinate(7, -4, 100, false)],
+                [new MSOC.Fundamental.Coordinate(10, 3, 100, true), new MSOC.Fundamental.Coordinate(3, 7, NaN, true), new MSOC.Fundamental.Coordinate(7, -4, 100, true)],
 
-                [new MSOC.Fundamental.Coordinate(MSOC.Fundamental.CoordinateType.ViewportRelative, 10, 3, false, 100), new MSOC.Fundamental.Coordinate(MSOC.Fundamental.CoordinateType.ViewportRelative, 3, 7, false), new MSOC.Fundamental.Coordinate(MSOC.Fundamental.CoordinateType.ViewportRelative, 7, -4, false, NaN)],
-                [new MSOC.Fundamental.Coordinate(MSOC.Fundamental.CoordinateType.ViewportRelative, 10, 3, true, 100), new MSOC.Fundamental.Coordinate(MSOC.Fundamental.CoordinateType.ViewportRelative, 3, 7, true), new MSOC.Fundamental.Coordinate(MSOC.Fundamental.CoordinateType.ViewportRelative, 7, -4, true, NaN)],
+                [new MSOC.Fundamental.Coordinate(10, 3, NaN, false), new MSOC.Fundamental.Coordinate(3, 7, NaN, false), new MSOC.Fundamental.Coordinate(7, -4, NaN, false)],
+                [new MSOC.Fundamental.Coordinate(10, 3, NaN, true), new MSOC.Fundamental.Coordinate(3, 7, NaN, true), new MSOC.Fundamental.Coordinate(7, -4, NaN, true)],
 
-                [new MSOC.Fundamental.Coordinate(MSOC.Fundamental.CoordinateType.Viewport, 10, 3, false, 100), new MSOC.Fundamental.Coordinate(MSOC.Fundamental.CoordinateType.Viewport, 3, 7, false, 100), new MSOC.Fundamental.Coordinate(MSOC.Fundamental.CoordinateType.ViewportRelative, 7, -4, false, 100)],
-                [new MSOC.Fundamental.Coordinate(MSOC.Fundamental.CoordinateType.Viewport, 10, 3, true, 100), new MSOC.Fundamental.Coordinate(MSOC.Fundamental.CoordinateType.Viewport, 3, 7, true, 100), new MSOC.Fundamental.Coordinate(MSOC.Fundamental.CoordinateType.ViewportRelative, 7, -4, true, 100)],
+                [new MSOC.Fundamental.Coordinate(10, 3, 100, false), new MSOC.Fundamental.Coordinate(3, 7, 100, false), new MSOC.Fundamental.Coordinate(7, -4, NaN, false)],
+                [new MSOC.Fundamental.Coordinate(10, 3, 100, true), new MSOC.Fundamental.Coordinate(3, 7, 100, true), new MSOC.Fundamental.Coordinate(7, -4, NaN, true)],
             ];
 
             caseIndex = 0;
@@ -160,14 +157,14 @@ describe('Basic Functionality', function () {
             expect(formatCoordinate(cases[caseIndex][0].minus(cases[caseIndex][1]))).toBe(formatCoordinate(cases[caseIndex++][2]));
 
             cases = [
-                [new MSOC.Fundamental.Coordinate(MSOC.Fundamental.CoordinateType.Viewport, 10, 3, true, 100), new MSOC.Fundamental.Coordinate(MSOC.Fundamental.CoordinateType.ViewportRelative, 3, 7, false)],
-                [new MSOC.Fundamental.Coordinate(MSOC.Fundamental.CoordinateType.Viewport, 10, 3, false, 100), new MSOC.Fundamental.Coordinate(MSOC.Fundamental.CoordinateType.ViewportRelative, 3, 7, true)],
+                [new MSOC.Fundamental.Coordinate(10, 3, 100, true), new MSOC.Fundamental.Coordinate(3, 7, NaN, false)],
+                [new MSOC.Fundamental.Coordinate(10, 3, 100, false), new MSOC.Fundamental.Coordinate(3, 7, NaN, true)],
 
-                [new MSOC.Fundamental.Coordinate(MSOC.Fundamental.CoordinateType.ViewportRelative, 10, 3, true, 100), new MSOC.Fundamental.Coordinate(MSOC.Fundamental.CoordinateType.ViewportRelative, 3, 7, false)],
-                [new MSOC.Fundamental.Coordinate(MSOC.Fundamental.CoordinateType.ViewportRelative, 10, 3, false, 100), new MSOC.Fundamental.Coordinate(MSOC.Fundamental.CoordinateType.ViewportRelative, 3, 7, true)],
+                [new MSOC.Fundamental.Coordinate(10, 3, NaN, true), new MSOC.Fundamental.Coordinate(3, 7, NaN, false)],
+                [new MSOC.Fundamental.Coordinate(10, 3, NaN, false), new MSOC.Fundamental.Coordinate(3, 7, NaN, true)],
 
-                [new MSOC.Fundamental.Coordinate(MSOC.Fundamental.CoordinateType.Viewport, 10, 3, true, 100), new MSOC.Fundamental.Coordinate(MSOC.Fundamental.CoordinateType.Viewport, 3, 7, false, 100)],
-                [new MSOC.Fundamental.Coordinate(MSOC.Fundamental.CoordinateType.Viewport, 10, 3, false, 100), new MSOC.Fundamental.Coordinate(MSOC.Fundamental.CoordinateType.Viewport, 3, 7, true, 100)],
+                [new MSOC.Fundamental.Coordinate(10, 3, 100, true, 100), new MSOC.Fundamental.Coordinate(3, 7, 100, false)],
+                [new MSOC.Fundamental.Coordinate(10, 3, 100, false), new MSOC.Fundamental.Coordinate(3, 7, 100, true)],
             ];
 
             caseIndex = 0;

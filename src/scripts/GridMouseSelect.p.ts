@@ -8,7 +8,11 @@ class GridMouseSelect implements Fundamental.IFeature {
 
     constructor() {
         this.disposer = new Fundamental.Disposer(() => {
-            this._runtime = null
+            this._runtime = null;
+            this._invoke = null;
+            this._viewportService = null;
+            this._operatorService = null;
+            this._selectionService = null;
         });
     }
 

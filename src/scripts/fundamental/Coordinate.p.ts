@@ -8,23 +8,18 @@ export enum CoordinateType {
 export class Coordinate {
     private _options;
 
-    public constructor(type: CoordinateType, x, y, rtl: boolean = false, width?) {
-        type = parseInt(<any>type);
+    public constructor(x, y, width: any = 0, rtl: boolean = false) {
         x = parseFloat(x);
         y = parseFloat(y);
-        width = parseFloat(width);
+        width = isNaN(width) ? NaN : parseFloat(<string>width);
         rtl = !!rtl;
-
-        if (Fundamental.CoordinateType[type] == undefined) {
-            throw createError(0, 'Coordinate', 'type must be a value of CoordinateType');
-        }
 
         if (!isNaN(width) && width < 0) {
             throw createError('0', 'Coordinate', 'width must be greater or equal than zero');
         }
 
-        this._options = new Fundamental.PropertyBag({
-            type: type,
+        this._options = new PropertyBag({
+            type: isNaN(width) ? CoordinateType.ViewportRelative : CoordinateType.Viewport,
             x: x,
             y: y,
             width: width,
@@ -44,7 +39,7 @@ export class Coordinate {
             rtl = left._options.rtl,
             width = left._options.width;
 
-        return new Coordinate(CoordinateType.Viewport, x, y, rtl, width);
+        return new Coordinate(x, y, width, rtl);
     }
 
     private static _addViewportRelativeByViewportRelative(left: Coordinate, right: Coordinate) {
@@ -58,7 +53,7 @@ export class Coordinate {
             y = left._options.y + yOffset,
             rtl = left._options.rtl;
 
-        return new Coordinate(CoordinateType.ViewportRelative, x, y, rtl, NaN);
+        return new Coordinate(x, y, NaN, rtl);
     }
 
     private static _minusViewportByViewportRelative(left: Coordinate, right: Coordinate) {
@@ -73,7 +68,7 @@ export class Coordinate {
             rtl = left._options.rtl,
             width = left._options.width;
 
-        return new Coordinate(CoordinateType.Viewport, x, y, rtl, width);
+        return new Coordinate(x, y, width, rtl);
     }
 
     private static _minusViewportRelativeByViewportRelative(left: Coordinate, right: Coordinate) {
@@ -87,7 +82,7 @@ export class Coordinate {
             y = left._options.y - yOffset,
             rtl = left._options.rtl;
 
-        return new Coordinate(CoordinateType.ViewportRelative, x, y, rtl, NaN);
+        return new Coordinate(x, y, NaN, rtl);
     }
 
     private static _minusViewportByViewport(left: Coordinate, right: Coordinate) {
@@ -106,7 +101,7 @@ export class Coordinate {
             rtl = left._options.rtl,
             width = left._options.width;
 
-        return new Coordinate(CoordinateType.ViewportRelative, x, y, rtl, width);
+        return new Coordinate(x, y, NaN, rtl);
     }
 
     public rtl(rtl?: boolean) {
@@ -152,7 +147,7 @@ export class Coordinate {
             name: 'width',
             args: arguments,
             beforeChange: (sender, args) => {
-                args.newValue = parseFloat(args.newValue);
+                args.newValue = isNaN(args.newValue) ? NaN : parseFloat(args.newValue);
 
                 if (!isNaN(args.newValue) && args.newValue < 0) {
                     throw createError('0', 'Coordinate', 'width must be greater or equal than zero');
@@ -167,10 +162,11 @@ export class Coordinate {
         }
 
         var leftType = this._options.type, rightType = target._options.type;
-        var func = Coordinate['_add' + Fundamental.CoordinateType[leftType] + 'By' + Fundamental.CoordinateType[rightType]];
+        console.log('leftType: ' + leftType);
+        var func = Coordinate['_add' + CoordinateType['' + leftType] + 'By' + CoordinateType['' + rightType]];
 
         if (!func) {
-            throw createError(0, 'Coordinate', 'cannot add ' + Fundamental.Coordinate[rightType] + ' to ' + Fundamental.Coordinate[leftType]);
+            throw createError(0, 'Coordinate', 'cannot add ' + CoordinateType[rightType] + ' to ' + CoordinateType[leftType]);
         }
 
         return func(this, target);
@@ -182,17 +178,13 @@ export class Coordinate {
         }
 
         var leftType = this._options.type, rightType = target._options.type;
-        var func = Coordinate['_minus' + Fundamental.CoordinateType[leftType] + 'By' + Fundamental.CoordinateType[rightType]];
+        var func = Coordinate['_minus' + CoordinateType[leftType] + 'By' + CoordinateType[rightType]];
 
         if (!func) {
-            throw createError(0, 'Coordinate', 'cannot minus ' + Fundamental.Coordinate[rightType] + ' to ' + Fundamental.Coordinate[leftType]);
+            throw createError(0, 'Coordinate', 'cannot minus ' + CoordinateType['' + rightType] + ' to ' + CoordinateType['' + leftType]);
         }
 
         return func(this, target);
-    }
-
-    public type(type?: CoordinateType) {
-        return this._options.type;
     }
 }
 
@@ -204,11 +196,10 @@ export class CoordinateFactory {
             coordinate;
 
         if (rtl) {
-            coordinate = new Fundamental.Coordinate(Fundamental.CoordinateType.Viewport, offset.left + element.width(), offset.top, false, $(document).width());
+            coordinate = new Coordinate(offset.left + element.width(), offset.top, $(document).width(), false);
             coordinate.rtl(rtl);
         } else {
-
-            coordinate = new Fundamental.Coordinate(Fundamental.CoordinateType.Viewport, offset.left, offset.top);
+            coordinate = new Coordinate(offset.left, offset.top);
         }
 
         return coordinate;
@@ -217,15 +208,15 @@ export class CoordinateFactory {
     public static fromEvent(rtl, event) {
         var result = {};
 
-        if (Fundamental.BrowserDetector.isTouchEvent(event.type)) {
+        if (BrowserDetector.isTouchEvent(event.type)) {
             for (var i = 0; i < event.originalEvent.touches.length; i++) {
                 var touch = event.originalEvent.touches[i];
                 var coordinate;
 
                 if (rtl) {
-                    coordinate = new Fundamental.Coordinate(Fundamental.CoordinateType.Viewport, touch.pageX, touch.pageY, false, $(document).width());
+                    coordinate = new Coordinate(touch.pageX, touch.pageY, $(document).width(), true);
                 } else {
-                    coordinate = new Fundamental.Coordinate(Fundamental.CoordinateType.Viewport, touch.pageX, touch.pageY, false);
+                    coordinate = new Coordinate(touch.pageX, touch.pageY);
                 }
 
                 coordinate.rtl(rtl);
@@ -235,9 +226,9 @@ export class CoordinateFactory {
             var coordinate;
 
             if (rtl) {
-                coordinate = new Fundamental.Coordinate(Fundamental.CoordinateType.Viewport, event.pageX, event.pageY, false, $(document).width());
+                coordinate = new Coordinate(event.pageX, event.pageY, $(document).width(), true);
             } else {
-                coordinate = new Fundamental.Coordinate(Fundamental.CoordinateType.Viewport, event.pageX, event.pageY, false);
+                coordinate = new Coordinate(event.pageX, event.pageY, 0);
             }
 
             coordinate.rtl(rtl);
@@ -257,21 +248,21 @@ export class CoordinateFactory {
 
         if (rtl) {
             // scrollFront = scrollOverflowWidth - scrollLeft;
-            if (Fundamental.TextDirection.zeroEnd() == 'front' && Fundamental.TextDirection.scrollFrontDirection() == 1) {
+            if (TextDirection.zeroEnd() == 'front' && TextDirection.scrollFrontDirection() == 1) {
                 scrollFront = scrollLeft;
-            } else if (Fundamental.TextDirection.zeroEnd() == 'front' && Fundamental.TextDirection.scrollFrontDirection() == -1) {
+            } else if (TextDirection.zeroEnd() == 'front' && TextDirection.scrollFrontDirection() == -1) {
                 // FireFox
                 scrollFront = -scrollLeft;
-            } else if (Fundamental.TextDirection.zeroEnd() == 'end' && Fundamental.TextDirection.scrollFrontDirection() == 1) {
+            } else if (TextDirection.zeroEnd() == 'end' && TextDirection.scrollFrontDirection() == 1) {
                 // Chrome
                 scrollFront = Math.max(0, scrollOverflowWidth - scrollLeft);
-            } else if (Fundamental.TextDirection.zeroEnd() == 'end' && Fundamental.TextDirection.scrollFrontDirection() == -1) {
+            } else if (TextDirection.zeroEnd() == 'end' && TextDirection.scrollFrontDirection() == -1) {
                 // Unknown
                 scrollFront = Math.max(0, scrollLeft - scrollOverflowWidth);
             }
         }
 
-        return new Fundamental.Coordinate(Fundamental.CoordinateType.ViewportRelative, scrollFront, scrollTop, rtl, NaN);
+        return new Coordinate(scrollFront, scrollTop, NaN, rtl);
     }
 }
 

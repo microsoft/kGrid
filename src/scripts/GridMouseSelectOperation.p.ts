@@ -97,19 +97,16 @@ class GridMouseSelectOperation implements IOperation {
             frontOffset = Constants.OperationScrollNumber;
         }
 
-        if (pointerToViewportCoordinate.top() < this._viewportService.contentViewport().clientWidth * Constants.RatioToOperationScrollArea) {
+        if (pointerToViewportCoordinate.top() < this._viewportService.contentViewport().clientHeight * Constants.RatioToOperationScrollArea) {
             topOffset = -Constants.OperationScrollNumber;
-        } else if (pointerToViewportCoordinate.top() > this._viewportService.contentViewport().clientWidth * (1 - Constants.RatioToOperationScrollArea)) {
+        } else if (pointerToViewportCoordinate.top() > this._viewportService.contentViewport().clientHeight * (1 - Constants.RatioToOperationScrollArea)) {
             topOffset = Constants.OperationScrollNumber;
         }
 
         if (frontOffset != 0 || topOffset != 0) {
             this._viewportService.scroll(topOffset, frontOffset);
-            console.log('scroll(' + topOffset + ', ' + frontOffset + ')');
         }
 
-        console.log('rowIndex: ' + rowIndex);
-        console.log('columnIndex: ' + columnIndex);
         if (isNaN(rowIndex) || isNaN(columnIndex)) {
             return;
         }
@@ -126,7 +123,6 @@ class GridMouseSelectOperation implements IOperation {
             }
 
             this._selectionService.select(this._selectedRange, false);
-            console.log('select(' + JSON.stringify(this._selectedRange) + ')');
         }
     }
 

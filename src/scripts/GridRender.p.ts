@@ -44,7 +44,7 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
             contentViewport: () => this._elements.content.viewport,
             rootElement: () => this._elements.root,
             scrollIntoView: (rect) => this._scrollIntoView(rect.top, rect.front, rect.height, rect.width),
-            scrollTo: (point) => this._scrollTo(point.top, point.front),
+            scrollTo: (point) => this._scrollTo(point.top(), point.front()),
             scroll: (topOffset, frontOffset) => this._scroll(topOffset, frontOffset),
             getCellPositionByEvent: (event) => this._getCellPositionByEvent(event),
         });
@@ -55,7 +55,7 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
         this._invoke = $invoke;
         this._positionService = positionService;
         this._renderRange = Range.Null;
-        this._viewportScrollCoordinate = new Fundamental.Coordinate(Fundamental.CoordinateType.ViewportRelative, 0, 0),
+        this._viewportScrollCoordinate = new Fundamental.Coordinate(0, 0, NaN),
         this.disposer.addDisposable(this._renderingScheduler = new Fundamental.RenderingScheduler());
         this.disposer.addDisposable(this._updaters = new Fundamental.UpdaterGroup());
 
@@ -641,8 +641,6 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
             bottomRowIndex = Math.max(0, bottomRowIndex);
 
             for (var columnIndex = 0; columnIndex < visibleColumnIds.length; columnIndex++) {
-                front += this._positionService.getColumnWidthById(visibleColumnIds[columnIndex]);
-
                 if (front <= this._viewportScrollCoordinate.front()) {
                     frontColumnIndex = columnIndex;
                 }
@@ -652,6 +650,8 @@ export class GridRender implements Fundamental.IFeature, Fundamental.IDisposable
                 } else {
                     break;
                 }
+
+                front += this._positionService.getColumnWidthById(visibleColumnIds[columnIndex]);
             }
 
             if (rowCount == 0) {
