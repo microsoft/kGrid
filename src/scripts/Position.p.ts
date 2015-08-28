@@ -12,12 +12,12 @@ export class Position {
         return !isNaN(this.rowIndex) && !isNaN(this.columnIndex);
     }
 
-    public equals(cursor) {
-        if (!this.isValid() && !cursor.isValid()) {
+    public equals(position) {
+        if (!this.isValid() && !position.isValid()) {
             return true;
         }
 
-        return this.rowIndex == cursor.rowIndex && this.columnIndex == cursor.columnIndex;
+        return this.rowIndex == position.rowIndex && this.columnIndex == position.columnIndex;
     }
 }
 
