@@ -2,7 +2,8 @@
 
 * If you meet problem in installing jsdom, which says VS 2010 tools not found blablabla.  
 ```Batchfile
-    npm install jsdom --msvs_version=2013
+    'C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\Tools\vsvars32.bat'
+    npm install jsdom@3 --msvs_version=2013
 ```
 
 * Hit issue: *Failed to execute "jasmine.executeSpecsInFolder": TypeError: undefined is not a function*. See [here](https://mamascode.wordpress.com/2014/07/08/jasmine-node-1-7-x-is-dead/) for more details  
