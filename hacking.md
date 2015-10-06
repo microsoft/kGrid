@@ -18,3 +18,7 @@ Replace in file node_modules\grunt-ts\node_modules\typescript\bin\tsc.js
 this.bits.length = 0; ==> this.bits.splice(0, this.bits.length);
 this.vectors.length = 0; ==> this.vectors.splice(0, this.vectors.length);
 
+* Hit issue: TRACKER : error TRK0005: Failed to locate: "CL.exe". The system cannot find the file specified.
+Check if you are using VS2015. It doesn't install C++ compiler by default. You should go to control panel to modify the installed feature of VS2015.++
+See [here](https://social.msdn.microsoft.com/Forums/vstudio/en-US/8198fcde-caab-445e-95fb-f30765be008d/cannot-find-clexe-file?forum=visualstudiogeneral) for more details
+
