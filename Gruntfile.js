@@ -317,17 +317,17 @@ module.exports = function(grunt) {
     grunt.registerTask('prepare', ['bower:install']);
     grunt.registerTask('build:debug', ['less:debug', 'concat', 'ts:dev']);
     grunt.registerTask('build:ship', ['less:debug', 'concat', 'ts:dev', 'uglify']);
+    grunt.registerTask('build:test', ['ts:test']);
     grunt.registerTask('build', 'build:debug');
     grunt.registerTask('install:debug', 'copy:dev_install');
     grunt.registerTask('install:ship', 'copy:dev_install');
     grunt.registerTask('install:test', 'copy:test_install');
     grunt.registerTask('install', 'install:debug');
-    grunt.registerTask('build:test', ['ts:test']);
-    grunt.registerTask('test:karma', ['karma']);
-    grunt.registerTask('test:jasmine', ['jasmine_node:all']);
-    grunt.registerTask('test', ['jasmine_node:all', 'karma']);
-    grunt.registerTask('all:debug', ['clean', 'build:debug', 'build:test', 'install:debug', 'install:test', 'test']);
-    grunt.registerTask('all:ship', ['clean', 'build:ship', 'build:test', 'install:ship', 'install:test', 'test', 'jsdoc']);
+    grunt.registerTask('test:karma', ['build:test', 'install:test', 'karma']);
+    grunt.registerTask('test:jasmine', ['build:test', 'install:test', 'jasmine_node:all']);
+    grunt.registerTask('test', ['build:test', 'install:test', 'jasmine_node:all', 'karma']);
+    grunt.registerTask('all:debug', ['clean', 'build:debug', 'install:debug', 'test']);
+    grunt.registerTask('all:ship', ['clean', 'build:ship', 'install:ship', 'test', 'jsdoc']);
     grunt.registerTask('all', 'all:debug');
     grunt.registerTask('default', function () {
         console.log('Use grunt build to build');
