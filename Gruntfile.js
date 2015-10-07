@@ -165,20 +165,19 @@ module.exports = function(grunt) {
             }
         },
         jasmine_node: {
-            options: {
-                forceExit: true,
-                match: '.',
-                matchall: false,
-                extensions: 'js',
-                specNameMatcher: 'jasmine.spec',
-                jUnit: {
-                    report: true,
-                    savePath : "reports/jasmine/",
-                    useDotNotation: true,
-                    consolidate: true
-                }
+            forceExit: true,
+            match: '.',
+            matchall: false,
+            extensions: 'js',
+            specNameMatcher: 'jasmine.spec',
+            jUnit: {
+                report: true,
+                savePath : "reports/jasmine/",
+                useDotNotation: true,
+                consolidate: true
             },
-            all: ['install/js/']
+            projectRoot: 'install/js/test/',
+            all: {},
         },
         less: {
             debug: {
@@ -325,8 +324,8 @@ module.exports = function(grunt) {
     grunt.registerTask('install', 'install:debug');
     grunt.registerTask('build:test', ['ts:test']);
     grunt.registerTask('test:karma', ['karma']);
-    grunt.registerTask('test:jasmine', ['jasmine_node']);
-    grunt.registerTask('test', ['jasmine_node', 'karma']);
+    grunt.registerTask('test:jasmine', ['jasmine_node:all']);
+    grunt.registerTask('test', ['jasmine_node:all', 'karma']);
     grunt.registerTask('all:debug', ['clean', 'build:debug', 'build:test', 'install:debug', 'install:test', 'test']);
     grunt.registerTask('all:ship', ['clean', 'build:ship', 'build:test', 'install:ship', 'install:test', 'test', 'jsdoc']);
     grunt.registerTask('all', 'all:debug');

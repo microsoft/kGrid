@@ -13,7 +13,6 @@ beforeEach(function(done) {
     var jsdom = require('jsdom');
 
     jsdom.env({
-
         html: '<html><body></body></html>',
         src: [
             fs.readFileSync('install/lib/jquery/jquery.js', 'utf-8'),
