@@ -21,10 +21,9 @@
     "require-css": "~0.1.5",
     "angular-route": "~1.2.25",
     "requirejs": "~2.1.15",
-    "jquery-ui": "~1.11.2"
+    "jquery-ui": "~1.11.2",
+    "invoker": "~1.0.0"
   },
   "devDependencies": {
-    "pickadate": "~3.5.6",
-    "invoker": "~1.0.0"
   }
 }
